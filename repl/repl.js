@@ -12,23 +12,25 @@ import $HO$ from '../global';
 
 $HO$.log('starting ho REPL...');
 
-$HO('repl', REPL.start({
-  replMode: REPL.REPL_MODE_STRICT,
-  useGlobal: true
-}));
 
 global.repl = {};
 
-let WEB_DIR = path.resolve(__dirname, '../web');
 let formatPath = f => f.replace(/\\/g, '/').replace(/^\/+/, '').trim();
+
 repl.reload = f => {
-  let rf = path.resolve(WEB_DIR, formatPath(f));
+  let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
   $HO$.log(`reload('${f}' as '${rf}')`);
   if (require.cache[rf]) {
     delete require.cache[rf];
   } else {
     $HO$.log(`  - '${rf}' does not in cache`);
   }
+  require(rf);
+};
+
+repl.load = f => {
+  let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
+  $HO$.log(`load('${f}' as '${rf}')`);
   require(rf);
 };
 
@@ -57,3 +59,10 @@ repl.exit = () => {
   $HO$.log('exit');
   process.exit();
 };
+
+
+repl.load('index');
+$HO('repl', REPL.start({
+  replMode: REPL.REPL_MODE_STRICT,
+  useGlobal: true,
+}));
