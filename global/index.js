@@ -12,13 +12,13 @@ import config from 'lei-config';
 
 
 // global namespace
-global.$HO = new Namespace();
-global.$HO$ = $HO.data;
-export default $HO$;
+let $HO = global.$HO = new Namespace();
+let $HO$ = global.$HO$ = $HO.data;
+export {$HO, $HO$};
 
 // debug
-$HO('utils.createDebug', name => createDebug('ho:' + name));
-$HO('debug', $HO$.utils.createDebug('global'));
+$HO('utils.debug', name => createDebug('ho:' + name));
+$HO('debug', $HO$.utils.debug('global'));
 
 // log
 $HO('log', (...args) => console.log(...args));

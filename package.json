@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "repl": "node repl"
+    "repl": "export DEBUG='ho*' && node repl"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "babel-core": "^6.3.2",
     "babel-preset-es2015-node4": "^2.0.2",
     "babel-preset-stage-0": "^6.1.18",
+    "babel-register": "^6.3.13",
     "mocha": "^2.3.4"
   },
   "dependencies": {

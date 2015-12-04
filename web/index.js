@@ -8,6 +8,8 @@ import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import serveStatic from 'serve-static';
+import {$HO, $HO$} from '../global';
+let debug = $HO$.utils.debug('web');
 
 
 $HO('web.express', express());
@@ -17,7 +19,9 @@ $HO('web.express', express());
 
   let route = (method, path, fn) => {
     method = method.toLowerCase();
+    debug(`route: [${method}] ${path}`);
     app[method](path, (req, res, next) => {
+      debug(`accept request: [${method} ${path}] ${req.method} ${req.url}`);
       fn(req, res, next);
     });
   };
