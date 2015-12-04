@@ -1,0 +1,41 @@
+{
+  "name": "ho",
+  "version": "0.0.1",
+  "description": "A lightweight forum system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "repl": "node repl"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leizongmin/ho.git"
+  },
+  "keywords": [
+    "forum",
+    "bbs",
+    "club",
+    "board",
+    "discuss",
+    "topic"
+  ],
+  "author": "Zongmin Lei <leizongmin@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leizongmin/ho/issues"
+  },
+  "homepage": "https://github.com/leizongmin/ho#readme",
+  "devDependencies": {
+    "babel-cli": "^6.2.0",
+    "babel-core": "^6.3.2",
+    "babel-preset-es2015-node4": "^2.0.2",
+    "babel-preset-stage-0": "^6.1.18",
+    "mocha": "^2.3.4"
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "lei-ns": "^0.1.3",
+    "lei-utils": "^1.0.9",
+    "serve-static": "^1.10.0"
+  }
+}
