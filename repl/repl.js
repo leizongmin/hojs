@@ -109,15 +109,44 @@ $HO$.repl.defineCommand('i', {
   },
 });
 
+const WATCH_FILES = Symbol('watch_files');
+$HO$.repl[WATCH_FILES] = {};
+
 $HO$.repl.defineCommand('w', {
   help: 'HO: watch file',
   action: f => {
     let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
     debug(`watch('${f}' as '${rf}')`);
-    fs.watch(rf, (e) => {
-      debug(`file ${e}: ${f}`);
-      reload(f);
-    });
+    if (!$HO$.repl[WATCH_FILES][rf]) {
+      $HO$.repl[WATCH_FILES][rf] = fs.watch(rf, (e) => {
+        debug(`file ${e}: ${f}`);
+        reload(f);
+      });
+    }
+  }
+});
+
+$HO$.repl.defineCommand('uw', {
+  help: 'HO: unwatch file',
+  action: f => {
+    let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
+    debug(`unwatch('${f}' as '${rf}')`);
+    let w = $HO$.repl[WATCH_FILES][rf];
+    if (w) {
+      w.close();
+      debug(` -- ok`);
+    }
+  }
+});
+
+$HO$.repl.defineCommand('uwa', {
+  help: 'HO: unwatch all files',
+  action: () => {
+    debug('unwatch all files');
+    for (let f in $HO$.repl[WATCH_FILES]) {
+      debug(`  - unwatch('${f}')`);
+      $HO$.repl[WATCH_FILES][f].close();
+    }
   }
 });
 

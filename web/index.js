@@ -9,11 +9,24 @@ import fs from 'fs';
 import express from 'express';
 import serveStatic from 'serve-static';
 import {eachFileFilterSync} from 'rd';
+import expressLiquid from 'express-liquid';
 import {$HO, $HO$} from '../global';
 let debug = $HO$.utils.debug('web');
 
 
 let app = express();
+
+
+$HO('web.liuqid.context', expressLiquid.newContext());
+app.set('views', path.resolve($HO$.WEB_DIR, 'views'));
+app.set('view engine', 'html');
+app.engine('html', expressLiquid({
+  traceError: true,
+  context: $HO$.web.liuqid.context,
+}));
+app.use(expressLiquid.middleware);
+
+
 let router = express.Router();
 let ROUTER_REGISTERED = Symbol('router_registered');
 router[ROUTER_REGISTERED] = {};

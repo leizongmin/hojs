@@ -7,10 +7,6 @@
 
 $HO$.web.route.get('/', (req, res, next) => {
 
-  //res.render('home');
-
-  setTimeout(() => {
-    res.send(new Date().getTime().toString() + '-BB');
-  }, 0);
+  res.render('home');
 
 });
