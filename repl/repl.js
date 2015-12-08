@@ -19,7 +19,7 @@ debug('starting ho REPL...');
 $HO('repl', REPL.start({
   prompt: clc.yellow('HO') + clc.green('> '),
   replMode: REPL.REPL_MODE_STRICT,
-  useGlobal: true,
+  useGlobal: false,
 }));
 
 
@@ -37,12 +37,12 @@ let reload = f => {
   $HO$.repl.displayPrompt();
 };
 $HO$.repl.defineCommand('rl', {
-  help: 'reload file from WEB_DIR',
+  help: 'HO: reload file from WEB_DIR',
   action: reload,
 });
 
 $HO$.repl.defineCommand('l', {
-  help: 'load file from WEB_DIR',
+  help: 'HO: load file from WEB_DIR',
   action: f => {
     let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
     debug(`load('${f}' as '${rf}')`);
@@ -52,7 +52,7 @@ $HO$.repl.defineCommand('l', {
 });
 
 $HO$.repl.defineCommand('rmp', {
-  help: 'remove package',
+  help: 'HO: remove package',
   action: n => {
     let f = require.resolve(n);
     let ss = f.split('/node_modules/');
@@ -70,7 +70,7 @@ $HO$.repl.defineCommand('rmp', {
 });
 
 $HO$.repl.defineCommand('rlp', {
-  help: 'reload packkage',
+  help: 'HO: reload packkage',
   action: (n, ret = true) => {
     repl.removePackage(n);
     debug(`reloadPackage('${n}')`);
@@ -80,7 +80,7 @@ $HO$.repl.defineCommand('rlp', {
 });
 
 $HO$.repl.defineCommand('cc', {
-  help: 'clear cache',
+  help: 'HO: clear cache',
   action: () => {
     let c = 0;
     for (let i in require.cache) {
@@ -93,7 +93,7 @@ $HO$.repl.defineCommand('cc', {
 });
 
 $HO$.repl.defineCommand('i', {
-  help: 'inspect object',
+  help: 'HO: inspect object',
   action: n => {
     let data = eval(n);
     if (typeof data === 'function') {
@@ -110,7 +110,7 @@ $HO$.repl.defineCommand('i', {
 });
 
 $HO$.repl.defineCommand('w', {
-  help: 'watch file',
+  help: 'HO: watch file',
   action: f => {
     let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
     debug(`watch('${f}' as '${rf}')`);
@@ -123,6 +123,7 @@ $HO$.repl.defineCommand('w', {
 
 
 $HO$.repl.on('exit', () => {
+  $HO$.log(`REPL exit`);
   process.exit();
 });
 
@@ -163,3 +164,6 @@ process.on('uncaughtException', err => {
 
 
 reload('index');
+$HO$.event.on('web server listening', port => {
+  $HO$.repl.displayPrompt();
+});

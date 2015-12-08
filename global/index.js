@@ -6,6 +6,7 @@
 
 import path from 'path';
 import fs from 'fs';
+import {EventEmitter} from 'events';
 import {Namespace} from 'lei-ns';
 import createDebug from 'debug';
 import config from 'lei-config';
@@ -15,6 +16,10 @@ import config from 'lei-config';
 let $HO = global.$HO = new Namespace();
 let $HO$ = global.$HO$ = $HO.data;
 export {$HO, $HO$};
+
+// envent listener
+$HO('event', new EventEmitter());
+$HO$.event.setMaxListeners(0);
 
 // debug
 $HO('utils.debug', name => createDebug('ho:' + name));

@@ -70,6 +70,7 @@ function listen() {
     });
 
     $HO$.log(`web server listen on port ${port}`);
+    $HO$.event.emit('web server listening', port);
   });
 }
 
