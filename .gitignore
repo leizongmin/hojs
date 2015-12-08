@@ -28,5 +28,5 @@ node_modules
 
 lib
 
-!config/default.js
-config
+/config/*.js
+!/config/default.js

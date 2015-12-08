@@ -10,6 +10,7 @@ import {EventEmitter} from 'events';
 import {Namespace} from 'lei-ns';
 import createDebug from 'debug';
 import config from 'lei-config';
+import MySQL from 'lei-mysql';
 
 
 // global namespace
@@ -40,3 +41,6 @@ config.init({
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 config.load();
 $HO('config', config);
+
+// init MySQL connection
+$HO('db.mysql', new MySQL($HO$.config.get('db.mysql')));
