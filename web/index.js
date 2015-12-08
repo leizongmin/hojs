@@ -52,13 +52,6 @@ app.use(router);
 router.use('/assets', serveStatic(path.resolve($HO$.WEB_DIR, 'assets'), $HO$.config.get('web.assets')));
 
 
-// auto load routes
-eachFileFilterSync($HO$.WEB_DIR, /\.js$/, f => {
-  debug(`load routes: ${f}`);
-  require(f);
-});
-
-
 function listen() {
   let port = $HO$.config.get('web.port');
   let server = app.listen(port, err => {
@@ -70,11 +63,17 @@ function listen() {
     $HO('web.route', route);
     $HO('web.routeHandler', routeHandler);
 
+    // auto load routes
+    eachFileFilterSync(path.resolve($HO$.WEB_DIR, 'routes'), /\.js$/, f => {
+      debug(`load routes: ${f}`);
+      require(f);
+    });
+
     $HO$.log(`web server listen on port ${port}`);
   });
 }
 
-if ($HO$.web.server) {
+if ($HO('web.server')) {
   $HO$.log(`stop web server...`);
   $HO$.web.server.close(err => {
     if (err) throw err;

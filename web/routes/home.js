@@ -5,5 +5,5 @@
  */
 
 $HO$.web.route.get('/', (req, res, next) => {
-  res.json({date: new Date, value: Math.random(), env: process.env});
+  res.json({date: new Date, value: Math.random()});
 });

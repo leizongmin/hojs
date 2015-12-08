@@ -25,21 +25,24 @@ $HO('repl', REPL.start({
 
 let formatPath = f => f.replace(/\\/g, '/').replace(/^\/+/, '').trim();
 
+let reload = f => {
+  let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
+  debug(`reload('${f}' as '${rf}')`);
+  if (require.cache[rf]) {
+    delete require.cache[rf];
+  } else {
+    debug(`  - '${rf}' does not in cache`);
+  }
+  require(rf);
+  $HO$.repl.displayPrompt();
+};
 $HO$.repl.defineCommand('rl', {
-  action: f => {
-    let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
-    debug(`reload('${f}' as '${rf}')`);
-    if (require.cache[rf]) {
-      delete require.cache[rf];
-    } else {
-      debug(`  - '${rf}' does not in cache`);
-    }
-    require(rf);
-    $HO$.repl.displayPrompt();
-  },
+  help: 'reload file from WEB_DIR',
+  action: reload,
 });
 
 $HO$.repl.defineCommand('l', {
+  help: 'load file from WEB_DIR',
   action: f => {
     let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
     debug(`load('${f}' as '${rf}')`);
@@ -49,6 +52,7 @@ $HO$.repl.defineCommand('l', {
 });
 
 $HO$.repl.defineCommand('rmp', {
+  help: 'remove package',
   action: n => {
     let f = require.resolve(n);
     let ss = f.split('/node_modules/');
@@ -66,6 +70,7 @@ $HO$.repl.defineCommand('rmp', {
 });
 
 $HO$.repl.defineCommand('rlp', {
+  help: 'reload packkage',
   action: (n, ret = true) => {
     repl.removePackage(n);
     debug(`reloadPackage('${n}')`);
@@ -75,6 +80,7 @@ $HO$.repl.defineCommand('rlp', {
 });
 
 $HO$.repl.defineCommand('cc', {
+  help: 'clear cache',
   action: () => {
     let c = 0;
     for (let i in require.cache) {
@@ -87,7 +93,8 @@ $HO$.repl.defineCommand('cc', {
 });
 
 $HO$.repl.defineCommand('i', {
-  action: (n) => {
+  help: 'inspect object',
+  action: n => {
     let data = eval(n);
     if (typeof data === 'function') {
       console.log(clc.green(data.toString()));
@@ -100,6 +107,18 @@ $HO$.repl.defineCommand('i', {
     }
     $HO$.repl.displayPrompt();
   },
+});
+
+$HO$.repl.defineCommand('w', {
+  help: 'watch file',
+  action: f => {
+    let rf = path.resolve($HO$.WEB_DIR, formatPath(f));
+    debug(`watch('${f}' as '${rf}')`);
+    fs.watch(rf, (e) => {
+      debug(`file ${e}: ${f}`);
+      reload(f);
+    });
+  }
 });
 
 
@@ -141,3 +160,6 @@ process.on('uncaughtException', err => {
     require.extensions[i] = wrapExtensionLoader(require.extensions[i]);
   }
 }
+
+
+reload('index');
