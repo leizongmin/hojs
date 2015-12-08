@@ -4,6 +4,13 @@
  * @author Zongmin Lei <leizongmin@gmail.com>
  */
 
+
 $HO$.web.route.get('/', (req, res, next) => {
-  res.json({date: new Date, value: Math.random()});
+
+  //res.render('home');
+
+  setTimeout(() => {
+    res.send(new Date().getTime().toString() + '-BB');
+  }, 0);
+
 });

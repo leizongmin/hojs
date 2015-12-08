@@ -78,8 +78,8 @@ if ($HO('web.server')) {
   $HO$.log(`stop web server...`);
   $HO$.web.server.close(err => {
     if (err) throw err;
-    listen();
   });
+  listen();
 } else {
   listen();
 }

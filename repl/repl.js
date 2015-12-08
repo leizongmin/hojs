@@ -137,7 +137,7 @@ process.on('uncaughtException', err => {
 });
 
 
-// HOOK require()
+// hook require()
 {
   let SYMBOL_EXTENSIONS = Symbol('require');
   global[SYMBOL_EXTENSIONS] = {};
@@ -163,7 +163,21 @@ process.on('uncaughtException', err => {
 }
 
 
-reload('index');
+// hook http server
+$HO('web.connections', []);
 $HO$.event.on('web server listening', port => {
+  for (let c of $HO$.web.connections) {
+    let addr = c.address();
+    debug(`destroy http connection from ${addr.address}:${addr.port}`);
+    c.destroy();
+  }
+  $HO$.web.connections = [];
+  $HO$.web.server.on('connection', c => {
+    let addr = c.address();
+    debug(`new http connection from ${addr.address}:${addr.port}`);
+    $HO$.web.connections.push(c);
+  });
   $HO$.repl.displayPrompt();
 });
+
+reload('index');
