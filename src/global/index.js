@@ -35,7 +35,7 @@ $HO('WEB_DIR', path.resolve(__dirname, '../web'));
 // load config
 config.init({
   envName: 'NODE_ENV',
-  path: path.resolve($HO$.APP_DIR, './config'),
+  path: path.resolve($HO$.APP_DIR, '../config'),
   defaultName: 'default',
 });
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';

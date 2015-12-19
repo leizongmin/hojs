@@ -6,6 +6,8 @@
 
 module.exports = function (ns) {
 
+  ns('debug', false);
+
   ns('web.port', 3000);
   ns('web.assets', {
     maxAge: '365d',
