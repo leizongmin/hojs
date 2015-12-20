@@ -1,7 +1,7 @@
 # ho.js
 A lightweight forum system
 
-**Notes: ho.js is under development. If you are interested in it, please watch this project to get the newest progress.**
+**Notes: ho.js is under development, not recommend to use at the moment. If you are interested in it, please watch this project to get the newest progress.**
 
 ## Start development
 
@@ -17,7 +17,7 @@ $ npm install
 $ npm run dev
 ```
 
-**hojs** is base on `rddx-express`, see more detail: https://github.com/leizongmin/rddx-express
+**ho.js** is base on `rddx-express`, for more details, please see https://github.com/leizongmin/rddx-express
 
 
 ## License
