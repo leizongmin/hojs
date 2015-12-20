@@ -5,7 +5,7 @@
  */
 
 
-module.exports = function (project, mod, router) {
+export default function (project, mod, router) {
 
   router.get('/', (req, res, next) => {
     res.send(new Date);

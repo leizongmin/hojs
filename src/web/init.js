@@ -9,7 +9,7 @@ import express from 'express';
 import serveStatic from 'serve-static';
 import ejs from 'ejs';
 
-module.exports = function (project) {
+export default function (project) {
 
   let app = express();
 
