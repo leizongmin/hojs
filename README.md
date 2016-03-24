@@ -29,7 +29,7 @@ $.method('user.get')
   name: [(v) => v.length > 4 && v.length < 20, '用户名'],
 }, {
   required: [],                   // 必须包含的参数
-  oneOf: ['id', 'email', 'name'], // 需要包含其中一个参数
+  oneOf: [['id', 'email', 'name']], // 需要包含其中一个参数
   formatParams: true,             // 是否自动格式化输入参数，比如把为string的number转换为number
 })
 .register(function (params, callback) {
@@ -87,11 +87,15 @@ $.api.get('/user/:id',
 
 请求地址：`GET /user/:id`
 
-请求参数 | 类型（验证方式） | 必填     | 说明
--------:|---------------------------------------:|--------:|-----
+请求参数 | 类型（验证方式）                          | 必填     | 说明
+:-------|:---------------------------------------|:--------|:-----
 id      | number                                 | 多选一   | 无
 email   | email                                  | 多选一   | 用户邮箱
 name    | `(v) => v.length > 4 && v.length < 20` | 多选一   | 用户名
+
+说明：
+
++ `id`, `email`, `name` 这三个需要提交其中一个
 
 返回格式：
 
