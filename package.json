@@ -1,7 +1,7 @@
 {
   "name": "hojs",
-  "version": "0.0.1",
-  "description": "A lightweight forum system",
+  "version": "0.0.2",
+  "description": "基于 Express 的轻量级 RESTful API 服务器框架",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,12 +12,9 @@
     "url": "git+https://github.com/leizongmin/ho.git"
   },
   "keywords": [
-    "forum",
-    "bbs",
-    "club",
-    "board",
-    "discuss",
-    "topic"
+    "RESTful",
+    "API",
+    "HTTP"
   ],
   "author": "Zongmin Lei <leizongmin@gmail.com>",
   "license": "MIT",
@@ -35,14 +32,6 @@
   },
   "dependencies": {
     "cli-color": "^1.1.0",
-    "ejs": "^2.3.4",
-    "express": "^4.13.3",
-    "lei-config": "^1.0.1",
-    "lei-mysql": "^0.1.8",
-    "lei-ns": "^0.1.3",
-    "lei-utils": "^1.0.9",
-    "rd": "0.0.2",
-    "rddx-express": "0.0.1",
-    "serve-static": "^1.10.0"
+    "express": "^4.13.3"
   }
 }
