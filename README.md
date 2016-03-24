@@ -60,7 +60,7 @@ $.api.get('/user/:id',
   {
     method: 'user.get', // 需要调用 $.method('user.get') 来处理
     group: 'user',      // API 分组，用于自动生成文档
-    description: 'XX',  // API 说明
+    description: '查询用户信息',  // API 说明
     examples: [         // 定义使用示例
       {
         input: {email: 'ooxx@qq.com'},
@@ -82,6 +82,8 @@ $.api.get('/user/:id',
 -----
 
 ### user.get
+
+查询用户信息
 
 请求地址：`GET /user/:id`
 
