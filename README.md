@@ -47,42 +47,43 @@ $.api.registerType('loginUserInfo', (v) => {
 }, '登录信息');
 
 // 注册 API
-$.api.get('/user/:id')
-  .title('查询用户信息')       // API标题
-  .description('')           // API 说明
-  .use($.api.checkSign)      // 使用内置的 checkSign 中间件来检查签名
-  .use(checkAccessToken)     // 使用 checkAccessToken 中间件检查用户登录情况
-  .group('user')             // API 分组，用于自动生成文档
-  .example({                 // API 使用示例
-    input: {email: 'ooxx@qq.com'},
-    output: {
-      email: 'ooxx@qq.com',
-      name: 'ooxx',
-      id: '1',
-      create_at: '2016-03-24 23:42:24',
-    }
-  })
-  .params({
-    $user: {
-      type: 'loginUserInfo',
-      comment: '通过`access_token`参数指定'
-    },
-    id: {
-      type: 'number',
-      format: true,
-    },
-    email: type: 'email',
-    username: type: 'username',
-  })
-  .required('$user')                        // 必须提供的参数
-  .requiredOneOf('id', 'email', 'username') // 必须提供其中一个的参数
-  .register(async function (params) {       // API 处理函数
-    return {id: params.id, name: `用户${params.id}`};
-  });
-  // 也可使用callback方式
-  // .register(function (params, callback) {
-  //   callback(null, {id: params.id, name: `用户${params.id}`});
-  // })
+$.api
+.get('/user/:id')
+.title('查询用户信息')       // API标题
+.description('')           // API 说明
+.use($.api.checkSign)      // 使用内置的 checkSign 中间件来检查签名
+.use(checkAccessToken)     // 使用 checkAccessToken 中间件检查用户登录情况
+.group('user')             // API 分组，用于自动生成文档
+.example({                 // API 使用示例
+  input: {email: 'ooxx@qq.com'},
+  output: {
+    email: 'ooxx@qq.com',
+    name: 'ooxx',
+    id: '1',
+    create_at: '2016-03-24 23:42:24',
+  }
+})
+.params({
+  $user: {
+    type: 'loginUserInfo',
+    comment: '通过`access_token`参数指定'
+  },
+  id: {
+    type: 'number',
+    format: true,
+  },
+  email: type: 'email',
+  username: type: 'username',
+})
+.required('$user')                        // 必须提供的参数
+.requiredOneOf('id', 'email', 'username') // 必须提供其中一个的参数
+.register(async function (params) {       // API 处理函数
+  return {id: params.id, name: `用户${params.id}`};
+});
+// 也可使用callback方式
+// .register(function (params, callback) {
+//   callback(null, {id: params.id, name: `用户${params.id}`});
+// })
 
 // 初始化
 $.init();
