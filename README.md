@@ -19,7 +19,7 @@ import validator from 'validator';
 const $ = global.$ = new Hojs();
 
 // 开启的POST请求参数编码方法
-$.api.enable('json', 'multiparty', 'urlencoded');
+$.api.enable('json', 'multipart', 'urlencoded');
 
 // 返回API格式
 $.api.output((err, ret, req, res, next) => {
@@ -72,8 +72,8 @@ $.api
     type: 'number',
     format: true,
   },
-  email: type: 'email',
-  username: type: 'username',
+  email: 'email',
+  username: 'username',
 })
 .required('$user')                        // 必须提供的参数
 .requiredOneOf('id', 'email', 'username') // 必须提供其中一个的参数

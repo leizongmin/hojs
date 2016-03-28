@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -Rf target",
+    "watch": "npm run clean && babel src -d target --watch",
     "dev": "export DEBUG='ho*' && export NODE_ENV=development && node babel_run ./src/web/app.js"
   },
   "repository": {
@@ -23,15 +25,16 @@
   },
   "homepage": "https://github.com/leizongmin/ho#readme",
   "devDependencies": {
-    "babel-cli": "^6.2.0",
-    "babel-core": "^6.3.2",
-    "babel-preset-es2015-node4": "^2.0.2",
-    "babel-preset-stage-0": "^6.1.18",
-    "babel-register": "^6.3.13",
+    "babel-cli": "^6.6.5",
+    "babel-preset-es2015-node4": "^2.0.3",
+    "babel-preset-stage-0": "^6.5.0",
     "mocha": "^2.3.4"
   },
   "dependencies": {
+    "body-parser": "^1.15.0",
     "cli-color": "^1.1.0",
-    "express": "^4.13.3"
+    "connect-multiparty": "^2.0.0",
+    "express": "^4.13.4",
+    "project-core": "^0.1.1"
   }
 }
