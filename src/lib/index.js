@@ -136,108 +136,117 @@ export default class Hojs extends ProjectCore {
       strict: true,
     });
 
-    this.extends({
-      after: () => {
-
-        const DOCS_PATH = resolvePath(__dirname, '../docs');
-        const SRC_DOCS_PATH = resolvePath(__dirname, '../../src/docs');
-
-        const DOCS_DATA = {
-          types: this.api.$types,
-          schemas: this.api.$schemas.map(v => v.options),
-        };
-
-        sysRouter.get('/data.json', (req, res, next) => {
-          res.json(DOCS_DATA);
-        });
-        sysRouter.get('/data.js', (req, res, next) => {
-          res.header('content-type', 'application/javascript');
-          res.end(`DOCS_DATA = ${JSON.stringify(DOCS_DATA)}`);
-        });
-
-        sysRouter.get('/', (req, res, next) => {
-          res.sendFile(resolvePath(SRC_DOCS_PATH, 'index.html'));
-        });
-
-        sysRouter.use('/assets', express.static(DOCS_PATH));
-        sysRouter.use('/assets', express.static(SRC_DOCS_PATH));
-
-      },
+    const tasks = [];
+    this.ready(() => {
+      debug('run tasks');
+      this.utils.runSeries(tasks, this, (err) => {
+        debug('ready: err=%s', err);
+        if (err) {
+          this.emit('error', err);
+        }
+      });
     });
 
-    this.extends({
-      after: () => {
+    tasks.push(() => {
 
-        const handleOutput = this.api.getOption('handleOutput');
-        assert(typeof handleOutput === 'function', `api output handler must be function`);
+      const DOCS_PATH = resolvePath(__dirname, '../docs');
+      const SRC_DOCS_PATH = resolvePath(__dirname, '../../src/docs');
 
-        const mergeParams = (...list) => {
-          const ret = {};
-          for (const item of list) {
-            if (item && typeof item === 'object') {
-              for (const i in item) {
-                ret[i] = item[i];
-              }
-            }
-          }
-          return ret;
-        };
-        apiRouter.use((req, res, next) => {
-          res.apiOutput = (err, ret) => {
-            debug('apiOutput: err=%j, ret=%j', (err && err.stack || err), ret);
-            handleOutput(err, ret, req, res, next);
-          };
-          debug('new api request: [%s] %s', req.method, req.url);
-          next();
-        });
+      const DOCS_DATA = {
+        types: this.api.$types,
+        schemas: this.api.$schemas.map(v => v.options),
+      };
 
-        for (const item of this.api.$express.middlewares) {
-          apiRouter.use(item);
-        }
+      sysRouter.get('/data.json', (req, res, next) => {
+        res.json(DOCS_DATA);
+      });
+      sysRouter.get('/data.js', (req, res, next) => {
+        res.header('content-type', 'application/javascript');
+        res.end(`DOCS_DATA = ${JSON.stringify(DOCS_DATA)}`);
+      });
 
-        apiRouter.use((err, req, res, next) => {
-          debug('api error: %j', err && err.stack || err);
-          handleOutput(err, null, req, res, next);
-        });
+      sysRouter.get('/', (req, res, next) => {
+        res.sendFile(resolvePath(SRC_DOCS_PATH, 'index.html'));
+      });
 
-        const wrapApiCall = (name) => {
-          return (req, res, next) => {
-            req.apiInput = mergeParams(req.query, req.body, req.params)
-            debug('api call: %s params=%j', name, req.apiInput);
-            let p = null;
-            try {
-              p = this.method(name).call(req.apiInput);
-            } catch (err) {
-              return res.apiOutput(err);
-            }
-            p.then(ret => res.apiOutput(null, ret));
-            p.catch(err => res.apiOutput(err));
-          };
-        };
+      sysRouter.use('/assets', express.static(DOCS_PATH));
+      sysRouter.use('/assets', express.static(SRC_DOCS_PATH));
 
-        for (const schema of this.api.$schemas) {
-          const {name, before, handler} = schema.init(this.api);
-          for (const fn of before) {
-            this.method(name).before(fn);
-          }
-          this.method(name).register(handler);
-          apiRouter[schema.options.method](schema.options.path, wrapApiCall(name));
-          debug('register api route: %s before=%s [%s] %s', name, before.length, schema.options.method, schema.options.path);
-        }
-
-        if (this.api.getOption('port')) {
-          const port = this.api.getOption('port');
-          debug('listen port %s', port)
-          app.listen(port);
-        }
-      },
     });
 
-    this.extends({
-      after: () => {
-        app.use('/-docs', sysRouter);
-        app.use(apiRouter);
-      },
+    tasks.push(() => {
+      debug('extends apiRouter init...');
+
+      const handleOutput = this.api.getOption('handleOutput');
+      assert(typeof handleOutput === 'function', `api output handler must be function`);
+
+      const mergeParams = (...list) => {
+        const ret = {};
+        for (const item of list) {
+          if (item && typeof item === 'object') {
+            for (const i in item) {
+              ret[i] = item[i];
+            }
+          }
+        }
+        return ret;
+      };
+      apiRouter.use((req, res, next) => {
+        res.apiOutput = (err, ret) => {
+          debug('apiOutput: err=%j, ret=%j', (err && err.stack || err), ret);
+          handleOutput(err, ret, req, res, next);
+        };
+        debug('new api request: [%s] %s', req.method, req.url);
+        next();
+      });
+
+      debug('init api global middlewares: %s', this.api.$express.middlewares.length);
+      for (const item of this.api.$express.middlewares) {
+        apiRouter.use(item);
+      }
+
+      apiRouter.use((err, req, res, next) => {
+        debug('api error: %j', err && err.stack || err);
+        handleOutput(err, null, req, res, next);
+      });
+
+      const wrapApiCall = (name) => {
+        return (req, res, next) => {
+          req.apiInput = mergeParams(req.query, req.body, req.params)
+          debug('api call: %s params=%j', name, req.apiInput);
+          let p = null;
+          try {
+            p = this.method(name).call(req.apiInput);
+          } catch (err) {
+            return res.apiOutput(err);
+          }
+          p.then(ret => res.apiOutput(null, ret));
+          p.catch(err => res.apiOutput(err));
+        };
+      };
+
+      debug('register schemas: %s', this.api.$schemas.length);
+      for (const schema of this.api.$schemas) {
+        const {name, before, handler} = schema.init(this.api);
+        for (const fn of before) {
+          this.method(name).before(fn);
+        }
+        this.method(name).register(handler);
+        apiRouter[schema.options.method](schema.options.path, wrapApiCall(name));
+        debug('register api route: %s before=%s [%s] %s', name, before.length, schema.options.method, schema.options.path);
+      }
+
+      if (this.api.getOption('port')) {
+        const port = this.api.getOption('port');
+        debug('listen port %s', port)
+        app.listen(port);
+      }
+    });
+
+    tasks.push(() => {
+      debug('extends sysRouter init...')
+      app.use('/-docs', sysRouter);
+      app.use(apiRouter);
     });
 
   }

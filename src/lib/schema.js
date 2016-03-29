@@ -31,6 +31,7 @@ export default class Schema {
       params: {},
     };
     this.inited = false;
+    debug('new: %s %s', method, path);
   }
 
   title(title) {
