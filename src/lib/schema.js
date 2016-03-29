@@ -8,6 +8,7 @@
 
 import assert from 'assert';
 import {schema as debug} from './debug';
+import {MissingRequiredParameterErorr, ParameterTypeError} from './error';
 
 const HAS_BEEN_INITED_ERROR = 'has been inited';
 
@@ -74,7 +75,10 @@ export default class Schema {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(name && typeof name === 'string', '`name` must be string');
     assert(type && (typeof type === 'string' || typeof type === 'object'));
-    assert(!(name in this.options.params));
+    assert(!(name in this.options.params), `param ${name} is already exists`);
+    if (typeof type === 'string') type = {type, format: true};
+    if (!('format' in type)) type.format = true;
+    assert(/^[A-Z]/.test(type.type[0]), `type ${type.type} must be start with upper case`);
     this.options.params[name] = type;
     return this;
   }
@@ -113,10 +117,59 @@ export default class Schema {
     return this;
   }
 
-  init() {
+  init(parent) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     const name = this.name = `[${this.options.method}]${this.options.path}`;
     const before = [];
+
+    if (this.options.required.length > 0) {
+      before.push((params) => {
+        for (const name of this.options.required) {
+          if (!(name in params)) throw new MissingRequiredParameterErorr(`missing required parameter ${name}`, {name});
+        }
+        return params;
+      });
+    }
+
+    if (this.options.requiredOneOf.length > 0) {
+      before.push((params) => {
+        for (const names of this.options.requiredOneOf) {
+          let ok = false;
+          for (const name of names) {
+            ok = (name in params);
+            if (ok) break;
+          }
+          if (!ok) throw new MissingRequiredParameterErorr(`missing one of required parameters ${names}`, {name});
+        }
+        return params;
+      });
+    }
+
+    for (const name in this.options.params) {
+      const typeName = this.options.params[name].type;
+      const type = parent.getType(typeName);
+      assert(type && type.checker && type.formatter, `please register type ${typeName}`);
+    }
+
+    before.push((params) => {
+      const newParams = {};
+      for (const name in params) {
+        const value = params[name];
+        const options = this.options.params[name];
+        if (!options) {
+          debug('skip undefined param: %s', name);
+          continue;
+        }
+        const type = parent.getType(options.type);
+        if (!type.checker(value)) throw new ParameterTypeError(`parameter ${name} should be ${options.type}`, {name});
+        if (options.format) {
+          newParams[name] = type.formatter(value);
+        } else {
+          newParams[name] = value;
+        }
+      }
+      return newParams;
+    });
 
     this.inited = true;
     return {name, before, handler: this.options.handler};

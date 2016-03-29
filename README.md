@@ -40,11 +40,16 @@ $.api.use((req, res, next) => {
 
 // 注册自定义检查类型
 // 参数格式：(名称, 用于检查的函数, 参数说明)
-$.api.registerType('email', (v) => validator.isEmail(email), '邮箱');
-$.api.registerType('username', (v) => /^[a-z][a-z0-9_]{1,19}$/.test(v), '用户名');
-$.api.registerType('loginUserInfo', (v) => {
-  return v.id && v.email && v.name;
-}, '登录信息');
+$.api.registerType('UserName', {
+  formatter: (v) => /^[a-z][a-z0-9_]{1,19}$/.test(v),
+  description: '用户名',
+});
+$.api.registerType('LoginUserInfo', {
+  formatter: (v) => {
+    return v.id && v.email && v.name;
+  },
+  description: '登录信息',
+});
 
 // 注册 API
 $.api
