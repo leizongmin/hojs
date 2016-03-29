@@ -1,3 +1,8 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f7f7f7;
+}
 body, pre {
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 12px;
@@ -9,9 +14,12 @@ body, pre {
 .nav {
   flex: 1;
   margin-top: 20px;
+  padding: 8px;
+  background-color: #f7f7f7;
 }
 .schemas {
   flex: 3;
+  background-color: #fff;
 }
 .nav .fixed {
   position: fixed;
@@ -29,10 +37,11 @@ body, pre {
   color: #fff;
 }
 .schema {
-  border: 1px solid #aaa;
-  margin: 20px 0;
+  margin: 50px 0;
   padding: 8px;
-  background-color: #fffffe;
+}
+.schema:first-child {
+  margin-top: 20px;
 }
 .schema .title {
   margin-top: 0;
@@ -45,30 +54,34 @@ body, pre {
   background-color: #005BA2;
   color: #fff;
 }
-.schema ul {
-  margin: 4px;
-  padding: 0 12px;
+.schema .param-item {
+  display: flex;
 }
 .schema .param-type {
   color: #1c7ef2;
   font-weight: bold;
-  display: inline-block;
-  margin-right: 30px;
+  flex: 1;
 }
 .schema .param-name {
   color: #18181a;
   font-weight: bold;
-  display: inline-block;
-  margin-right: 30px;
+  flex: 1;
 }
 .schema .param-comment {
   color: #404040;
-  display: inline-block;
-  margin-right: 30px;
+  flex: 4;
+}
+.schema .block {
+  margin-top: 16px;
+}
+.schema .block-title {
+  margin-bottom: 6px;
+  background-color: #3474B5;
+  color: #fff;
+  padding: 2px 8px;
 }
 .schema .example {
-  border: 1px solid #ccc;
   padding: 4px 14px;
   margin: 0;
-  background-color: #fff;
+  background-color: #f7f7f7;
 }
