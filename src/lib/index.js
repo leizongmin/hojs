@@ -27,6 +27,7 @@ export default class Hojs extends ProjectCore {
   _extendsApi() {
 
     this.api = {};
+    this.api.$initTasks = [];
     this.api.$options = {};
     this.api.$schemas = [];
     this.api.$types = {};
@@ -136,18 +137,9 @@ export default class Hojs extends ProjectCore {
       strict: true,
     });
 
-    const tasks = [];
-    this.ready(() => {
-      debug('run tasks');
-      this.utils.runSeries(tasks, this, (err) => {
-        debug('ready: err=%s', err);
-        if (err) {
-          this.emit('error', err);
-        }
-      });
-    });
+    const initTasks = this.api.$initTasks = [];
 
-    tasks.push(() => {
+    initTasks.push(() => {
 
       const DOCS_PATH = resolvePath(__dirname, '../docs');
       const SRC_DOCS_PATH = resolvePath(__dirname, '../../src/docs');
@@ -174,7 +166,7 @@ export default class Hojs extends ProjectCore {
 
     });
 
-    tasks.push(() => {
+    initTasks.push(() => {
       debug('extends apiRouter init...');
 
       const handleOutput = this.api.getOption('handleOutput');
@@ -243,7 +235,7 @@ export default class Hojs extends ProjectCore {
       }
     });
 
-    tasks.push(() => {
+    initTasks.push(() => {
       debug('extends sysRouter init...')
       app.use('/-docs', sysRouter);
       app.use(apiRouter);
@@ -347,6 +339,25 @@ export default class Hojs extends ProjectCore {
       formatter: (v) => v.trim(),
       description: 'string is an URL',
       isDefault: true,
+    });
+
+  }
+
+  init(callback) {
+    debug('init');
+
+    super.init(err => {
+      if (err) return callback && callback(err);
+
+      this.utils.runSeries(this.api.$initTasks, this, (err) => {
+        debug('ready: err=%s', err);
+        if (err) {
+          this.emit('error', err);
+          return callback && callback(err);
+        }
+
+        callback && callback(err);
+      });
     });
 
   }
