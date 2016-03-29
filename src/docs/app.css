@@ -19,6 +19,7 @@ body, pre {
 }
 .schemas {
   flex: 3;
+  z-index: 1001;
 }
 .nav .fixed {
   position: fixed;
@@ -60,7 +61,13 @@ body, pre {
 .schema .param-type {
   color: #1c7ef2;
   font-weight: bold;
-  flex: 1;
+  flex: 2;
+}
+.schema .type-description {
+  color: #aaa;
+  display: inline-block;
+  font-weight: normal;
+  margin-left: 6px;
 }
 .schema .param-name {
   color: #18181a;
@@ -69,7 +76,7 @@ body, pre {
 }
 .schema .param-comment {
   color: #404040;
-  flex: 4;
+  flex: 3;
 }
 .schema .block {
   margin-top: 16px;
@@ -83,5 +90,11 @@ body, pre {
 .schema .example {
   padding: 4px 14px;
   margin: 0;
+  margin-top: -6px;
   background-color: #f7f7f7;
+}
+
+pre.prettyprint {
+  padding: 0;
+  border: none;
 }

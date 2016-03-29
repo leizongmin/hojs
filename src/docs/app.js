@@ -23,19 +23,21 @@ function jsonStringify(data, space) {
 function makeSchemaNav(schema) {
   return (
     <div className="nav-item" key={schema.id}>
-      <a href={`#${schema.id}`}>{schema.route} {schema.title}</a>
+      <a href={`#${schema.id}`}>{schema.title} {schema.route}</a>
     </div>
   );
 }
 
 function makeSchemaDocs(schema) {
 
+  const TYPE = DOCS_DATA.types;
+
   const params = Object.keys(schema.params).map(name => {
     const info = schema.params[name];
     return (
       <div className="param-item" key={name}>
         <span className="param-name">{name}</span>
-        <span className="param-type">{info.type}</span>
+        <span className="param-type">{info.type}<span className="type-description">{TYPE[info.type].description}</span></span>
         <span className="param-comment">{info.comment}</span>
       </div>
     );
@@ -55,14 +57,17 @@ function makeSchemaDocs(schema) {
     );
   }));
 
-  const examples = schema.examples.map(({input, output}, i) => {
+  const examples = schema.examples.map(({description, input, output}, i) => {
     return (
       <div className="example" key={i}>
-        <pre key={`input-${i}`}>input = {jsonStringify(input, 2)};</pre>
-        <pre key={`output-${i}`}>output = {jsonStringify(output, 2)};</pre>
+        <pre className="prettyprint javascript">{description ? `// ${description}` : ''}</pre>
+        <pre className="prettyprint javascript">input = {jsonStringify(input, 2)};</pre>
+        <pre className="prettyprint javascript">output = {jsonStringify(output, 2)};</pre>
       </div>
     );
   });
+
+  setTimeout(prettyPrint, 100);
 
   return (
     <div className="schema" key={schema.route} id={schema.id}>
