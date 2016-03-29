@@ -12,6 +12,7 @@ import multiparty from 'connect-multiparty';
 import bodyParser from 'body-parser';
 import ProjectCore from 'project-core';
 import Schema from './schema';
+import {core as debug} from './debug';
 
 
 export default class Hojs extends ProjectCore {
@@ -75,35 +76,85 @@ export default class Hojs extends ProjectCore {
     };
     this.api.output((err, ret, req, res, next) => {
       if (err) {
-        res.json({status: err.code || 2, error: err.data});
+        res.json({status: err.code || -1, error: err.toString()});
       } else {
-        res.json({status: 1, result: ret});
+        res.json({status: 0, result: ret});
       }
     });
 
     const app = this.api.$express.app = express();
-    const router = this.api.$express.router = express.Router();
+    const router = this.api.$express.router = express.Router({
+      caseSensitive: true,
+      mergeParams: true,
+      strict: true,
+    });
 
     this.extends({
       after: () => {
+
+        const handleOutput = this.api.getOption('handleOutput');
+        assert(typeof handleOutput === 'function', `api output handler must be function`);
+
+        const mergeParams = (...list) => {
+          const ret = {};
+          for (const item of list) {
+            if (item && typeof item === 'object') {
+              for (const i in item) {
+                ret[i] = item[i];
+              }
+            }
+          }
+          return ret;
+        };
+        router.use((req, res, next) => {
+          res.apiOutput = (err, ret) => {
+            debug('apiOutput: err=%j, ret=%j', (err && err.stack || err), ret);
+            handleOutput(err, ret, req, res, next);
+          };
+          debug('new api request: [%s] %s', req.method, req.url);
+          next();
+        });
 
         for (const item of this.api.$express.middlewares) {
           router.use(item);
         }
 
-        app.use((req, res, next) => {
-          res.apiOutput = function (err, ret) {
-            this.api.getOption('handleOutput')(err, ret, req, res, next);
-          };
+        router.use((err, req, res, next) => {
+          debug('api error: %j', err && err.stack || err);
+          handleOutput(err, null, req, res, next);
         });
+
         app.use(router);
 
-        for (const item of this.api.$schemas) {
-          
+        const wrapApiCall = (name) => {
+          return (req, res, next) => {
+            req.apiInput = mergeParams(req.query, req.body, req.params)
+            debug('api call: %s params=%j', name, req.apiInput);
+            let p = null;
+            try {
+              p = this.method(name).call(req.apiInput);
+            } catch (err) {
+              return res.apiOutput(err);
+            }
+            p.then(ret => res.apiOutput(null, ret));
+            p.catch(err => res.apiOutput(err));
+          };
+        };
+
+        for (const schema of this.api.$schemas) {
+          const {name, before, handler} = schema.init();
+          for (const fn of before) {
+            this.method(name).before(fn);
+          }
+          this.method(name).register(handler);
+          router[schema.options.method](schema.options.path, wrapApiCall(name));
+          debug('register api route: %s before=%s [%s] %s', name, before.length, schema.options.method, schema.options.path);
         }
 
         if (this.api.getOption('port')) {
-          app.listen(this.api.getOption('port'));
+          const port = this.api.getOption('port');
+          debug('listen port %s', port)
+          app.listen(port);
         }
       },
     });

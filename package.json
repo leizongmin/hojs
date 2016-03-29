@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -Rf target",
-    "watch": "npm run clean && babel src -d target --watch",
-    "dev": "export DEBUG='ho*' && export NODE_ENV=development && node babel_run ./src/web/app.js"
+    "watch": "npm run clean && babel src -d target --watch"
   },
   "repository": {
     "type": "git",
@@ -34,6 +33,7 @@
     "body-parser": "^1.15.0",
     "cli-color": "^1.1.0",
     "connect-multiparty": "^2.0.0",
+    "debug": "^2.2.0",
     "express": "^4.13.4",
     "project-core": "^0.1.1"
   }

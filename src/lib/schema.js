@@ -7,6 +7,7 @@
  */
 
 import assert from 'assert';
+import {schema as debug} from './debug';
 
 const HAS_BEEN_INITED_ERROR = 'has been inited';
 
@@ -63,7 +64,7 @@ export default class Schema {
   use(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const fn of list) {
-      assert(typeof fn === 'function', 'use `handle` must be function');
+      assert(typeof fn === 'function', 'use `handler` must be function');
       this.middlewares.push(fn);
     }
     return this;
@@ -107,14 +108,18 @@ export default class Schema {
 
   register(fn) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    assert(typeof fn === 'function', 'register `handle` must be function');
-    this.options.handle = fn;
+    assert(typeof fn === 'function', 'register `handler` must be function');
+    this.options.handler = fn;
     return this;
   }
 
   init() {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    const name = this.name = `[${this.options.method}]${this.options.path}`;
+    const before = [];
+
     this.inited = true;
+    return {name, before, handler: this.options.handler};
   }
 
 }
