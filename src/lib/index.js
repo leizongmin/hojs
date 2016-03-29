@@ -6,6 +6,7 @@
  * @author Zongmin Lei <leizongmin@gmail.com>
  */
 
+import {resolve as resolvePath} from 'path';
 import assert from 'assert';
 import express from 'express';
 import multiparty from 'connect-multiparty';
@@ -31,6 +32,8 @@ export default class Hojs extends ProjectCore {
     this.api.$types = {};
     this.api.$express = {};
     this.api.$express.app = null;
+    this.api.$express.apiRouter = null;
+    this.api.$express.sysRouter = null;
     this.api.$express.middlewares = [];
 
     for (const method of Schema.SUPPORT_METHOD) {
@@ -117,11 +120,49 @@ export default class Hojs extends ProjectCore {
       }
     });
 
+    this.api.outputDocs = (path) => {
+      this.api.setOption('docsPath', path);
+    };
+
     const app = this.api.$express.app = express();
-    const router = this.api.$express.router = express.Router({
+    const apiRouter = this.api.$express.apiRouter = express.Router({
       caseSensitive: true,
       mergeParams: true,
       strict: true,
+    });
+    const sysRouter = this.api.$express.sysRouter = express.Router({
+      caseSensitive: true,
+      mergeParams: true,
+      strict: true,
+    });
+
+    this.extends({
+      after: () => {
+
+        const DOCS_PATH = resolvePath(__dirname, '../docs');
+        const SRC_DOCS_PATH = resolvePath(__dirname, '../../src/docs');
+
+        const DOCS_DATA = {
+          types: this.api.$types,
+          schemas: this.api.$schemas.map(v => v.options),
+        };
+
+        sysRouter.get('/data.json', (req, res, next) => {
+          res.json(DOCS_DATA);
+        });
+        sysRouter.get('/data.js', (req, res, next) => {
+          res.header('content-type', 'application/javascript');
+          res.end(`DOCS_DATA = ${JSON.stringify(DOCS_DATA)}`);
+        });
+
+        sysRouter.get('/', (req, res, next) => {
+          res.sendFile(resolvePath(SRC_DOCS_PATH, 'index.html'));
+        });
+
+        sysRouter.use('/assets', express.static(DOCS_PATH));
+        sysRouter.use('/assets', express.static(SRC_DOCS_PATH));
+
+      },
     });
 
     this.extends({
@@ -141,7 +182,7 @@ export default class Hojs extends ProjectCore {
           }
           return ret;
         };
-        router.use((req, res, next) => {
+        apiRouter.use((req, res, next) => {
           res.apiOutput = (err, ret) => {
             debug('apiOutput: err=%j, ret=%j', (err && err.stack || err), ret);
             handleOutput(err, ret, req, res, next);
@@ -151,15 +192,13 @@ export default class Hojs extends ProjectCore {
         });
 
         for (const item of this.api.$express.middlewares) {
-          router.use(item);
+          apiRouter.use(item);
         }
 
-        router.use((err, req, res, next) => {
+        apiRouter.use((err, req, res, next) => {
           debug('api error: %j', err && err.stack || err);
           handleOutput(err, null, req, res, next);
         });
-
-        app.use(router);
 
         const wrapApiCall = (name) => {
           return (req, res, next) => {
@@ -182,7 +221,7 @@ export default class Hojs extends ProjectCore {
             this.method(name).before(fn);
           }
           this.method(name).register(handler);
-          router[schema.options.method](schema.options.path, wrapApiCall(name));
+          apiRouter[schema.options.method](schema.options.path, wrapApiCall(name));
           debug('register api route: %s before=%s [%s] %s', name, before.length, schema.options.method, schema.options.path);
         }
 
@@ -191,6 +230,13 @@ export default class Hojs extends ProjectCore {
           debug('listen port %s', port)
           app.listen(port);
         }
+      },
+    });
+
+    this.extends({
+      after: () => {
+        app.use('/-docs', sysRouter);
+        app.use(apiRouter);
       },
     });
 

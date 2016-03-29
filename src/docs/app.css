@@ -1,0 +1,74 @@
+body, pre {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 12px;
+  line-height: 1.3;
+}
+.container {
+  display: flex;
+}
+.nav {
+  flex: 1;
+  margin-top: 20px;
+}
+.schemas {
+  flex: 3;
+}
+.nav .fixed {
+  position: fixed;
+}
+.nav-item {
+
+}
+.nav-item a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+}
+.nav-item a:hover {
+  background-color: #005BA2;
+  color: #fff;
+}
+.schema {
+  border: 1px solid #aaa;
+  margin: 20px 0;
+  padding: 8px;
+  background-color: #fffffe;
+}
+.schema .title {
+  margin-top: 0;
+}
+.schema .title a {
+  text-decoration: none;
+  color: #000;
+}
+.schema .title a:hover {
+  background-color: #005BA2;
+  color: #fff;
+}
+.schema ul {
+  margin: 4px;
+  padding: 0 12px;
+}
+.schema .param-type {
+  color: #1c7ef2;
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 30px;
+}
+.schema .param-name {
+  color: #18181a;
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 30px;
+}
+.schema .param-comment {
+  color: #404040;
+  display: inline-block;
+  margin-right: 30px;
+}
+.schema .example {
+  border: 1px solid #ccc;
+  padding: 4px 14px;
+  margin: 0;
+  background-color: #fff;
+}
