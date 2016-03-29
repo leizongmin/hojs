@@ -19,7 +19,6 @@ body, pre {
 }
 .schemas {
   flex: 3;
-  background-color: #fff;
 }
 .nav .fixed {
   position: fixed;
@@ -39,6 +38,7 @@ body, pre {
 .schema {
   margin: 50px 0;
   padding: 8px;
+  background-color: #fff;
 }
 .schema:first-child {
   margin-top: 20px;
