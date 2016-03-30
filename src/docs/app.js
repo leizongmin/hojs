@@ -59,9 +59,12 @@ function makeSchemaDocs(schema) {
   }));
 
   const examples = schema.examples.map(({description, input, output}, i) => {
+    function makeLines(description) {
+      return description.trim().split('\n').map(line => `// ${line.trim()}`).join('\n');
+    }
     return (
       <div className="example" key={i}>
-        <pre className="prettyprint javascript">{description ? `// ${description}` : ''}</pre>
+        <pre className="prettyprint javascript">{description ? makeLines(description) : ''}</pre>
         <pre className="prettyprint javascript">input = {jsonStringify(input, 2)};</pre>
         <pre className="prettyprint javascript">output = {jsonStringify(output, 2)};</pre>
       </div>
