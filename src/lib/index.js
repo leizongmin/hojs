@@ -36,6 +36,14 @@ function getCallerSourceLine(dir) {
   return {relative: null, absolute: null};
 }
 
+function createRouter() {
+  return express.Router({
+    caseSensitive: true,
+    mergeParams: true,
+    strict: true,
+  });
+}
+
 
 export default class Hojs extends ProjectCore {
 
@@ -152,19 +160,12 @@ export default class Hojs extends ProjectCore {
     };
 
     const app = this.api.$express.app = express();
-    const apiRouter = this.api.$express.apiRouter = express.Router({
-      caseSensitive: true,
-      mergeParams: true,
-      strict: true,
-    });
-    const sysRouter = this.api.$express.sysRouter = express.Router({
-      caseSensitive: true,
-      mergeParams: true,
-      strict: true,
-    });
+    const apiRouter = this.api.$express.apiRouter = createRouter();
+    const sysRouter = this.api.$express.sysRouter = createRouter();
 
     const initTasks = this.api.$initTasks = [];
 
+    // 系统基本服务相关的HTTP接口
     initTasks.push(() => {
 
       const DOCS_PATH = resolvePath(__dirname, '../docs');
@@ -202,6 +203,7 @@ export default class Hojs extends ProjectCore {
 
     });
 
+    // 用户注册的API相关的HTTP接口
     initTasks.push(() => {
       debug('extends apiRouter init...');
 
@@ -271,6 +273,7 @@ export default class Hojs extends ProjectCore {
       }
     });
 
+    // 注册路由
     initTasks.push(() => {
       debug('extends sysRouter init...')
       app.use('/-docs', sysRouter);
