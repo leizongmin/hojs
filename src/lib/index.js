@@ -40,6 +40,7 @@ export default class Hojs extends ProjectCore {
 
   constructor(options) {
     super();
+    this.validator = validator;
     this.config.set('api.path', options.path || process.cwd());
     this._extendsApi();
   }
@@ -376,7 +377,7 @@ export default class Hojs extends ProjectCore {
       this.utils.runSeries(this.api.$initTasks, this, (err) => {
         debug('ready: err=%s', err);
         if (err) {
-          this.emit('error', err);
+          this.event.emit('error', err);
           return callback && callback(err);
         }
 
