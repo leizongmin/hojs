@@ -59,10 +59,21 @@ body, pre {
 
 }
 .schema .source-file {
-  
+
 }
 .schema .param-item {
   display: flex;
+  border-bottom: 1px solid #ddd;
+  padding: 4px 0;
+}
+.schema .param-name {
+  color: #18181a;
+  font-weight: bold;
+  flex: 1;
+}
+.schema .param-comment {
+  color: #404040;
+  flex: 5;
 }
 .schema .param-type {
   color: #1c7ef2;
@@ -74,15 +85,6 @@ body, pre {
   display: inline-block;
   font-weight: normal;
   margin-left: 6px;
-}
-.schema .param-name {
-  color: #18181a;
-  font-weight: bold;
-  flex: 1;
-}
-.schema .param-comment {
-  color: #404040;
-  flex: 3;
 }
 .schema .block {
   margin-top: 16px;
