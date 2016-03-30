@@ -90,6 +90,9 @@ body, pre {
 .schema .source-file {
 
 }
+.schema .description {
+  margin: 10px 0;
+}
 .schema .param-item {
   display: flex;
   border-bottom: 1px solid #ddd;

@@ -88,9 +88,9 @@ function makeSchemaDocs(schema) {
   return (
     <div className="schema" key={schema.route} id={schema.id}>
       <h2 className="title"><a href={`#${schema.id}`}>{schema.route} {schema.title}</a></h2>
+      <div className="description">{schema.description}</div>
       <div className="group">分组：{schema.group}</div>
       <div className="source-file">源文件：{schema.sourceFile.relative}</div>
-      <div className="description">{schema.description}</div>
       {params.length < 1 ? null :
       <div className="block">
         <div className="block-title">请求参数</div>
