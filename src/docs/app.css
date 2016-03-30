@@ -17,9 +17,20 @@ body, pre {
   padding: 8px;
   background-color: #f7f7f7;
 }
-.schemas {
+.main {
   flex: 3;
   z-index: 1001;
+}
+.main .section {
+  margin-top: 50px;
+  border-top: 2px solid #ddd;
+}
+.main .section:first-child {
+  margin-top: 0;
+  border-top: none;
+}
+.schemas {
+
 }
 .nav .fixed {
   position: fixed;
@@ -36,13 +47,27 @@ body, pre {
   background-color: #005BA2;
   color: #fff;
 }
+.type-item {
+  margin: 10px 0;
+  padding: 8px;
+  background-color: #fff;
+}
+.type-item .type-name {
+  margin-top: 0;
+}
+.type-item .type-define {
+  background-color: #f7f7f7;
+  padding: 4px 14px;
+  margin: 0;
+  margin-top: -6px;
+}
 .schema {
   margin: 50px 0;
   padding: 8px;
   background-color: #fff;
 }
-.schema:first-child {
-  margin-top: 20px;
+.schemas .schema:first-child {
+  margin-top: 0;
 }
 .schema .title {
   margin-top: 0;

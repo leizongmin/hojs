@@ -170,9 +170,19 @@ export default class Hojs extends ProjectCore {
       const SRC_DOCS_PATH = resolvePath(__dirname, '../../src/docs');
 
       const DOCS_DATA = {
-        types: this.api.$types,
+        types: {},
         schemas: this.api.$schemas.map(v => v.options),
       };
+      Object.keys(this.api.$types).map(n => {
+        const s = this.api.$types[n];
+        const v = {};
+        for (const i in s) {
+          v[i] = s[i];
+        }
+        v.checker = v.checker.toString();
+        v.formatter = v.formatter.toString();
+        DOCS_DATA.types[n] = v;
+      });
 
       sysRouter.get('/data.json', (req, res, next) => {
         res.json(DOCS_DATA);

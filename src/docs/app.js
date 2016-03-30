@@ -28,6 +28,18 @@ function makeSchemaNav(schema) {
   );
 }
 
+function makeTypeDocs(type) {
+  return (
+    <div className="type-item" key={type.name}>
+      <h3 className="type-name">{type.name} <small>{type.description}</small></h3>
+      <div className="type-define">
+        <pre className="prettyprint javascript">checker = {type.checker}</pre>
+        <pre className="prettyprint javascript">formatter = {type.formatter}</pre>
+      </div>
+    </div>
+  );
+}
+
 function makeSchemaDocs(schema) {
 
   const TYPE = DOCS_DATA.types;
@@ -108,15 +120,30 @@ class App extends React.Component {
       v.route = `${v.method.toUpperCase()} ${v.path}`;
       v.id = `[${v.method.toUpperCase()}]${v.path}`;
     });
-    const list = DOCS_DATA.schemas.map(makeSchemaDocs);
+    DOCS_DATA.typeList = Object.keys(DOCS_DATA.types).map(n => {
+      const ret = DOCS_DATA.types[n];
+      ret.name = n;
+      return ret;
+    }).filter(v => !v.isDefault);
     const nav = DOCS_DATA.schemas.map(makeSchemaNav);
+    const types = DOCS_DATA.typeList.map(makeTypeDocs);
+    const schemas = DOCS_DATA.schemas.map(makeSchemaDocs);
 
     return (
       <div className="container">
         <div className="nav">
           <div className="fixed">{nav}</div>
         </div>
-        <div className="schemas">{list}</div>
+        <div className="main">
+          <div className="section types">
+            <h1>自定义类型</h1>
+            {types}
+          </div>
+          <div className="section schemas">
+            <h1>API列表</h1>
+            {schemas}
+          </div>
+        </div>
       </div>
     );
   }
