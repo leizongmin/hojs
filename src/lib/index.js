@@ -17,10 +17,30 @@ import Schema from './schema';
 import {core as debug} from './debug';
 
 
+function getCallerSourceLine(dir) {
+  dir = resolvePath(dir);
+  const stack = (new Error()).stack.split('\n').slice(1);
+  for (let line of stack) {
+    line = line.trim();
+    if (line.replace(/\\/g, '/').indexOf(dir) !== -1) {
+      const s = line.match(/\((.*)\)\s*$/);
+      if (s) {
+        return {
+          relative: s[1].slice(dir.length + 1),
+          absolute: s[1],
+        };
+      }
+    }
+  }
+  return {relative: null, absolute: null};
+}
+
+
 export default class Hojs extends ProjectCore {
 
-  constructor() {
+  constructor(options) {
     super();
+    this.config.set('api.path', options.path || process.cwd());
     this._extendsApi();
   }
 
@@ -30,6 +50,7 @@ export default class Hojs extends ProjectCore {
     this.api.$initTasks = [];
     this.api.$options = {};
     this.api.$schemas = [];
+    this.api.$schemaMapping = {};
     this.api.$types = {};
     this.api.$express = {};
     this.api.$express.app = null;
@@ -39,8 +60,11 @@ export default class Hojs extends ProjectCore {
 
     for (const method of Schema.SUPPORT_METHOD) {
       this.api[method] = (path) => {
-        const s = new Schema(method, path);
+        const s = new Schema(method, path, getCallerSourceLine(this.config.get('api.path')));
+        const s2 = this.api.$schemaMapping[s.key];
+        assert(!s2, `try to register API ${s.key} at file ${s.options.sourceFile.absolute} but was already registered at file ${s2 && s2.options.sourceFile.absolute}`);
         this.api.$schemas.push(s);
+        this.api.$schemaMapping[s.key] = s;
         return s;
       };
     }
@@ -204,7 +228,7 @@ export default class Hojs extends ProjectCore {
 
       const wrapApiCall = (name) => {
         return (req, res, next) => {
-          req.apiInput = mergeParams(req.query, req.body, req.params)
+          req.apiInput = mergeParams(req.query, req.body, req.files, req.params)
           debug('api call: %s params=%j', name, req.apiInput);
           let p = null;
           try {

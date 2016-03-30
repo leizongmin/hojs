@@ -34,10 +34,11 @@ function makeSchemaDocs(schema) {
 
   const params = Object.keys(schema.params).map(name => {
     const info = schema.params[name];
+    const type = TYPE[info.type];
     return (
       <div className="param-item" key={name}>
         <span className="param-name">{name}</span>
-        <span className="param-type">{info.type}<span className="type-description">{TYPE[info.type].description}</span></span>
+        <span className="param-type">{info.type}<span className="type-description">{type.isDefault ? '' : type.description}</span></span>
         <span className="param-comment">{info.comment}</span>
       </div>
     );
@@ -73,6 +74,7 @@ function makeSchemaDocs(schema) {
     <div className="schema" key={schema.route} id={schema.id}>
       <h2 className="title"><a href={`#${schema.id}`}>{schema.route} {schema.title}</a></h2>
       <div className="group">分组：{schema.group}</div>
+      <div className="source-file">源文件：{schema.sourceFile.relative}</div>
       <div className="description">{schema.description}</div>
       {params.length < 1 ? null :
       <div className="block">

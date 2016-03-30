@@ -16,12 +16,13 @@ export default class Schema {
 
   static SUPPORT_METHOD = ['get', 'post', 'put', 'delete'];
 
-  constructor(method, path) {
+  constructor(method, path, sourceFile) {
     assert(method && typeof method === 'string', '`method` must be string');
     assert(Schema.SUPPORT_METHOD.indexOf(method.toLowerCase()) !== -1, '`method` must be one of ' + Schema.SUPPORT_METHOD);
     assert(path && typeof path === 'string', '`path` must be string');
     assert(path[0] === '/', '`path` must be start with "/"');
     this.options = {
+      sourceFile,
       method: method.toLowerCase(),
       path,
       examples: [],
@@ -30,8 +31,9 @@ export default class Schema {
       requiredOneOf: [],
       params: {},
     };
+    this.key = `${method.toUpperCase()} ${path}`;
     this.inited = false;
-    debug('new: %s %s', method, path);
+    debug('new: %s %s from %s', method, path, sourceFile);
   }
 
   title(title) {
