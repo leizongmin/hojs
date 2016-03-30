@@ -51,7 +51,7 @@ function makeSchemaDocs(schema) {
       <div className="param-item" key={name}>
         <span className="param-name">{name}</span>
         <span className="param-type">{info.type}<span className="type-description">{type.isDefault ? '' : type.description}</span></span>
-        <span className="param-comment">{info.comment}</span>
+        <span className="param-comment">{info.comment} ({'default' in info ? <span className="param-default">默认值:{jsonStringify(info.default)}</span> : '默认值:无'})</span>
       </div>
     );
   });

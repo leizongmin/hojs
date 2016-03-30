@@ -158,6 +158,8 @@ export default class Schema {
 
     before.push((params) => {
       const newParams = {};
+
+      // 类型检查与格式化，并且过滤没有定义的参数
       for (const name in params) {
         const value = params[name];
         const options = this.options.params[name];
@@ -173,6 +175,16 @@ export default class Schema {
           newParams[name] = value;
         }
       }
+
+      // 填充默认值
+      for (const name in this.options.params) {
+        const info = this.options.params[name];
+        if ('default' in info && !(name in newParams)) {
+          debug('use default for param %s: %j', name, info.default);
+          newParams[name] = info.default;
+        }
+      }
+
       return newParams;
     });
 

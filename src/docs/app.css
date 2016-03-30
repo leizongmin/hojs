@@ -109,6 +109,10 @@ body, pre {
   font-weight: bold;
   flex: 2;
 }
+.schema .param-default {
+  color: #1c7ef2;
+  font-weight: bold;
+}
 .schema .type-description {
   color: #aaa;
   display: inline-block;

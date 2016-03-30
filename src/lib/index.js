@@ -255,6 +255,7 @@ export default class Hojs extends ProjectCore {
         };
       };
 
+      // 开始注册API
       debug('register schemas: %s', this.api.$schemas.length);
       for (const schema of this.api.$schemas) {
         const {name, before, handler} = schema.init(this.api);
