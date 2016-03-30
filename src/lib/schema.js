@@ -74,15 +74,15 @@ export default class Schema {
     return this;
   }
 
-  param(name, type) {
+  param(name, info) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(name && typeof name === 'string', '`name` must be string');
-    assert(type && (typeof type === 'string' || typeof type === 'object'));
+    assert(info && (typeof info === 'string' || typeof info === 'object'));
     assert(!(name in this.options.params), `param ${name} is already exists`);
-    if (typeof type === 'string') type = {type, format: true};
-    if (!('format' in type)) type.format = true;
-    assert(/^[A-Z]/.test(type.type[0]), `type ${type.type} must be start with upper case`);
-    this.options.params[name] = type;
+    if (typeof info === 'string') info = {type: info, format: true};
+    if (!('format' in info)) info.format = true;
+    assert(/^[A-Z]/.test(info.type[0]), `type ${info.type} must be start with upper case`);
+    this.options.params[name] = info;
     return this;
   }
 
