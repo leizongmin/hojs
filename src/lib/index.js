@@ -14,6 +14,7 @@ import bodyParser from 'body-parser';
 import validator from 'validator';
 import ProjectCore from 'project-core';
 import Schema from './schema';
+import registerDefaultTypes from './default_types';
 import {core as debug} from './debug';
 
 
@@ -118,7 +119,7 @@ export default class Hojs extends ProjectCore {
       }
       return this.api;
     };
-    this._registerDefaultTypes();
+    registerDefaultTypes(this.api.registerType);
 
     this.api.output = (fn) => {
       assert(typeof fn === 'function', 'output handler must be function');
@@ -274,106 +275,6 @@ export default class Hojs extends ProjectCore {
       debug('extends sysRouter init...')
       app.use('/-docs', sysRouter);
       app.use(apiRouter);
-    });
-
-  }
-
-  _registerDefaultTypes() {
-
-    this.api.registerType('Boolean', {
-      checker: (v) => typeof v === 'boolean' || (typeof v === 'string' && validator.isBoolean(v)),
-      formatter: (v) => String(v).toLowerCase() === 'true' ? true : false,
-      description: 'boolean',
-      isDefault: true,
-    });
-    this.api.registerType('Date', {
-      checker: (v) => v instanceof Date || (typeof v === 'string' && validator.isDate(v)),
-      formatter: (v) => new Date(v),
-      description: 'Date',
-      isDefault: true,
-    });
-    this.api.registerType('String', {
-      checker: (v) => typeof v === 'string',
-      description: 'String',
-      isDefault: true,
-    });
-    this.api.registerType('Number', {
-      checker: (v) => !isNaN(v),
-      formatter: (v) => Number(v),
-      description: 'Number',
-      isDefault: true,
-    });
-    this.api.registerType('Integer', {
-      checker: (v) => validator.isInt(String(v)),
-      formatter: (v) => Number(v),
-      description: 'Integer',
-      isDefault: true,
-    });
-    this.api.registerType('Float', {
-      checker: (v) => validator.isFloat(String(v)),
-      formatter: (v) => Number(v),
-      description: 'Float',
-      isDefault: true,
-    });
-    this.api.registerType('Object', {
-      checker: (v) => v && typeof v === 'object',
-      description: 'Object',
-      isDefault: true,
-    });
-    this.api.registerType('Array', {
-      checker: (v) => Array.isArray(v),
-      description: 'Array',
-      isDefault: true,
-    });
-    this.api.registerType('JSON', {
-      checker: (v) => typeof v === 'string' && validator.isJSON(v),
-      formatter: (v) => v.trim(),
-      description: 'string is valid JSON',
-      isDefault: true,
-    });
-    this.api.registerType('MongoId', {
-      checker: (v) => validator.isMongoId(String(v)),
-      description: 'string is a valid hex-encoded representation of a MongoDB ObjectId',
-      isDefault: true,
-    });
-    this.api.registerType('Email', {
-      checker: (v) => typeof v === 'string' && validator.isEmail(v),
-      formatter: (v) => v.trim(),
-      description: 'string is an email',
-      isDefault: true,
-    });
-    this.api.registerType('Domain', {
-      checker: (v) => typeof v === 'string' && validator.isFQDN(v),
-      formatter: (v) => v.trim(),
-      description: 'string is a fully qualified domain name (e.g. domain.com)',
-      isDefault: true,
-    });
-    this.api.registerType('Alpha', {
-      checker: (v) => typeof v === 'string' && validator.isAlpha(v),
-      description: 'string contains only letters (a-zA-Z).',
-      isDefault: true,
-    });
-    this.api.registerType('AlphaNumeric', {
-      checker: (v) => typeof v === 'string' && validator.isAlphanumeric(v),
-      description: 'string contains only letters and numbers',
-      isDefault: true,
-    });
-    this.api.registerType('Ascii', {
-      checker: (v) => typeof v === 'string' && validator.isAscii(v),
-      description: 'string contains ASCII chars only',
-      isDefault: true,
-    });
-    this.api.registerType('Base64', {
-      checker: (v) => typeof v === 'string' && validator.isBase64(v),
-      formatter: (v) => v.trim(),
-      description: 'string is base64 encoded',
-      isDefault: true,
-    });
-    this.api.registerType('URL', {
-      checker: (v) => typeof v === 'string' && validator.isURL(v),
-      formatter: (v) => v.trim(),
-      description: 'string is an URL',
-      isDefault: true,
     });
 
   }
