@@ -125,6 +125,8 @@ export default class Schema {
     const name = this.name = `[${this.options.method}]${this.options.path}`;
     const before = [];
 
+    assert(this.options.handler, `please register a handler for API ${name}`);
+
     if (this.options.required.length > 0) {
       before.push((params) => {
         for (const name of this.options.required) {
