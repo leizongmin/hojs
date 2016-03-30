@@ -17,9 +17,24 @@ body, pre {
   padding: 8px;
   background-color: #f7f7f7;
 }
+.nav-group {
+  margin-bottom: 20px;
+}
+.nav-group .title {
+  margin: 0;
+  margin-bottom: 6px;
+  background-color: #3474B5;
+  color: #fff;
+  padding: 2px 8px;
+}
+.nav-group .list {
+
+}
 .main {
   flex: 3;
   z-index: 1001;
+  background-color: #f7f7f7;
+  padding-left: 12px;
 }
 .main .section {
   margin-top: 50px;
@@ -98,6 +113,9 @@ body, pre {
   border-bottom: 1px solid #ddd;
   padding: 4px 0;
 }
+.schema .param-item:last-child {
+  border-bottom: none;
+}
 .schema .param-name {
   color: #18181a;
   font-weight: bold;
@@ -141,4 +159,11 @@ body, pre {
 pre.prettyprint {
   padding: 0;
   border: none;
+}
+
+.sub-text {
+  color: #aaa;
+}
+small.sub-text {
+  color: #777;
 }
