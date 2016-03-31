@@ -22,7 +22,7 @@ function jsonStringify(data, space) {
 
 function makeSchemaNav(schema) {
   return (
-    <div className="nav-item" key={schema.id}>
+    <div className={['nav-item', schema.dev ? 'nav-warn' : null].join(' ')} key={schema.id}>
       <a href={`#${schema.id}`}>{schema.title} <span className="sub-text">{schema.route}</span></a>
     </div>
   );
@@ -133,6 +133,7 @@ function makeSchemaDocs(schema) {
       <div className="description">{schema.description}</div>
       <div className="group">分组：{schema.group}</div>
       <div className="source-file">源文件：{schema.sourceFile.relative}</div>
+      {schema.dev ? <div className="dev">正在开发中</div> : null}
       {params.length < 1 ? null :
       <div className="block">
         <div className="block-title">请求参数</div>

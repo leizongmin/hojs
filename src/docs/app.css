@@ -57,10 +57,16 @@ body, pre {
 .nav-item {
   margin-bottom: 4px;
 }
+.nav-warn {
+  
+}
 .nav-item a {
   text-decoration: none;
   color: #000;
   font-weight: bold;
+}
+.nav-warn a {
+  color: #DC400F;
 }
 .nav-item a:hover {
   background-color: #005BA2;
@@ -126,6 +132,10 @@ body, pre {
 }
 .schema .source-file {
 
+}
+.schema .dev {
+  color: #DC400F;
+  font-weight: bold;
 }
 .schema .description {
   margin: 10px 0;
