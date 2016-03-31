@@ -68,6 +68,8 @@ export default class Hojs extends ProjectCore {
 
   _extendsApi() {
 
+    this.utils.merge = mergeParams;
+
     this.api = {};
     this.api.$initTasks = [];
     this.api.$schemas = [];
