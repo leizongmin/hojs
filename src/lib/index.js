@@ -15,6 +15,7 @@ import validator from 'validator';
 import ProjectCore from 'project-core';
 import Schema from './schema';
 import registerDefaultTypes from './default_types';
+import registerDefaultErrors from './default_errors';
 import {core as debug} from './debug';
 
 
@@ -75,6 +76,7 @@ export default class Hojs extends ProjectCore {
     this.api.$schemas = [];
     this.api.$schemaMapping = {};
     this.api.$types = {};
+    this.api.$errors = {};
     this.api.$express = {};
     this.api.$express.app = null;
     this.api.$express.apiRouter = null;
@@ -149,7 +151,42 @@ export default class Hojs extends ProjectCore {
       }
       return this.api;
     };
+
     registerDefaultTypes(this.api.registerType);
+
+    this.api.registerError = (name, data = {}) => {
+      assert(typeof name === 'string', 'error name must be string');
+      assert(data && typeof data === 'object', 'second argument must be object');
+      assert(data.status, 'missing option `status`');
+      const info = {};
+      if (data.message) {
+        assert(typeof data.message === 'string' || typeof data.message === 'function', 'option `message` must be function or string');
+        info.message = data.message;
+        if (typeof info.message !== 'function') {
+          const msg = info.message;
+          info.message = () => msg;
+        }
+      } else {
+        info.message = (msg) => msg;
+      }
+      info.data = this.utils.merge(data, {type: name});
+      delete info.data.message;
+      info.Error = this.utils.customError(name, info.data);
+      debug('registerError: %s %j', name, data);
+      this.api.$errors[name] = info;
+
+      return this.api;
+    };
+
+    this.api.error = (name, msg, data) => {
+      assert(this.api.$errors[name], `unknown error type ${name}`);
+      const info = this.api.$errors[name];
+      msg = info.message(msg, data || {});
+      const err = new info.Error(msg, data);
+      return err;
+    };
+
+    registerDefaultErrors(this.api.registerError);
 
     this.api.output = (fn) => {
       assert(typeof fn === 'function', 'output handler must be function');
@@ -161,10 +198,10 @@ export default class Hojs extends ProjectCore {
       if (err) {
         const ret = {error: {}};
         if (err instanceof Error) {
-          ret.status = ret.status || err.code || -1;
+          ret.status = ret.status || err.status || -1;
           ret.message = err.message;
           for (const n in err) {
-            if (n === 'code' || n === 'message') continue;
+            if (n === 'status' || n === 'message') continue;
             ret.error[n] = err[n];
           }
         } else {

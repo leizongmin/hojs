@@ -8,7 +8,6 @@
 
 import assert from 'assert';
 import {schema as debug} from './debug';
-import {MissingRequiredParameterErorr, ParameterTypeError} from './error';
 
 const HAS_BEEN_INITED_ERROR = 'has been inited';
 
@@ -130,7 +129,9 @@ export default class Schema {
     if (this.options.required.length > 0) {
       before.push((params) => {
         for (const name of this.options.required) {
-          if (!(name in params)) throw new MissingRequiredParameterErorr(`missing required parameter ${name}`, {name});
+          if (!(name in params)) {
+            throw parent.error('missing_required_parameter', null, {name});
+          }
         }
         return params;
       });
@@ -144,7 +145,9 @@ export default class Schema {
             ok = (name in params);
             if (ok) break;
           }
-          if (!ok) throw new MissingRequiredParameterErorr(`missing one of required parameters ${names}`, {name});
+          if (!ok) {
+            throw parent.error('missing_required_parameter', `one of ${names.join(', ')}`, {name})
+          }
         }
         return params;
       });
@@ -168,7 +171,9 @@ export default class Schema {
           continue;
         }
         const type = parent.getType(options.type);
-        if (!type.checker(value)) throw new ParameterTypeError(`parameter ${name} should be valid ${options.type}`, {name});
+        if (!type.checker(value)) {
+          throw parent.error('parameter_error', `should be valid ${options.type}`, {name});
+        }
         if (options.format) {
           newParams[name] = type.formatter(value);
           debug('auto format param: %j => %j', value, newParams[name]);
