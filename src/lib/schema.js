@@ -168,7 +168,7 @@ export default class Schema {
           continue;
         }
         const type = parent.getType(options.type);
-        if (!type.checker(value)) throw new ParameterTypeError(`parameter ${name} should be ${options.type}`, {name});
+        if (!type.checker(value)) throw new ParameterTypeError(`parameter ${name} should be valid ${options.type}`, {name});
         if (options.format) {
           newParams[name] = type.formatter(value);
         } else {
