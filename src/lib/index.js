@@ -67,6 +67,12 @@ export default class Hojs extends ProjectCore {
     this.api.$express.apiRouter = null;
     this.api.$express.sysRouter = null;
     this.api.$express.middlewares = [];
+    this.api.$features = {
+      multipart: true,
+      urlencoded: true,
+      json: true,
+      redisSession: false,
+    };
 
     for (const method of Schema.SUPPORT_METHOD) {
       this.api[method] = (path) => {
@@ -80,22 +86,18 @@ export default class Hojs extends ProjectCore {
     }
 
     this.api.enable = (...list) => {
-      const enable = (name) => {
-        switch (name) {
-          case 'json':
-            this.api.$express.middlewares.push(bodyParser.json());
-            break;
-          case 'urlencoded':
-            this.api.$express.middlewares.push(bodyParser.urlencoded());
-            break;
-          case 'multipart':
-            this.api.$express.middlewares.push(multiparty());
-            break;
-          default:
-            throw new Error(`cannot enable unknown feature "${name}"`);
-        }
-      };
-      list.forEach(enable);
+      for (const name of list) {
+        assert(name in this.api.$features, `cannot enable unknown feature "${name}"`);
+        this.api.$features[name] = true;
+      }
+      return this.api;
+    };
+
+    this.api.disable = (...list) => {
+      for (const name of list) {
+        assert(name in this.api.$features, `cannot disable unknown feature "${name}"`);
+        this.api.$features[name] = false;
+      }
       return this.api;
     };
 
@@ -229,6 +231,20 @@ export default class Hojs extends ProjectCore {
         debug('new api request: [%s] %s', req.method, req.url);
         next();
       });
+
+      debug('init api features...');
+      if (this.api.$features.json) {
+        debug('enable feature: json');
+        apiRouter.use(bodyParser.json());
+      }
+      if (this.api.$features.urlencoded) {
+        debug('enable feature: urlencoded');
+        apiRouter.use(bodyParser.urlencoded());
+      }
+      if (this.api.$features.multipart) {
+        debug('enable feature: multipart');
+        apiRouter.use(multiparty());
+      }
 
       debug('init api global middlewares: %s', this.api.$express.middlewares.length);
       for (const item of this.api.$express.middlewares) {
