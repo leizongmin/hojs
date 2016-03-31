@@ -171,6 +171,7 @@ export default class Schema {
         if (!type.checker(value)) throw new ParameterTypeError(`parameter ${name} should be valid ${options.type}`, {name});
         if (options.format) {
           newParams[name] = type.formatter(value);
+          debug('auto format param: %j => %j', value, newParams[name]);
         } else {
           newParams[name] = value;
         }
