@@ -8,6 +8,6 @@
 
 import utils from 'lei-utils';
 
-export var MissingRequiredParameterErorr = utils.customError('MissingRequiredParameterErorr', {code: -2});
+export var MissingRequiredParameterErorr = utils.customError('MissingRequiredParameterErorr', {code: -2, type: 'missing_required_parameter'});
 
-export var ParameterTypeError = utils.customError('ParameterTypeError', {code: -3});
+export var ParameterTypeError = utils.customError('ParameterTypeError', {code: -3, type: 'parameter_error'});
