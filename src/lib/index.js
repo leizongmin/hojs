@@ -44,6 +44,18 @@ function createRouter() {
   });
 }
 
+function mergeParams(...list) {
+  const ret = {};
+  for (const item of list) {
+    if (item && typeof item === 'object') {
+      for (const i in item) {
+        ret[i] = item[i];
+      }
+    }
+  }
+  return ret;
+}
+
 
 export default class Hojs extends ProjectCore {
 
@@ -108,6 +120,12 @@ export default class Hojs extends ProjectCore {
 
     this.api.getOption = (name) => {
       return this.api.$options[name];
+    };
+
+    this.api.use = (...list) => {
+      for (const fn of list) {
+        this.api.$express.middlewares.push(this._getApiMiddleware(fn));
+      }
     };
 
     this.api.getType = (name) => {
@@ -212,17 +230,6 @@ export default class Hojs extends ProjectCore {
       const handleOutput = this.api.getOption('handleOutput');
       assert(typeof handleOutput === 'function', `api output handler must be function`);
 
-      const mergeParams = (...list) => {
-        const ret = {};
-        for (const item of list) {
-          if (item && typeof item === 'object') {
-            for (const i in item) {
-              ret[i] = item[i];
-            }
-          }
-        }
-        return ret;
-      };
       apiRouter.use((req, res, next) => {
         res.apiOutput = (err, ret) => {
           debug('apiOutput: err=%j, ret=%j', (err && err.stack || err), ret);
@@ -251,11 +258,6 @@ export default class Hojs extends ProjectCore {
         apiRouter.use(item);
       }
 
-      apiRouter.use((err, req, res, next) => {
-        debug('api error: %j', err && err.stack || err);
-        handleOutput(err, null, req, res, next);
-      });
-
       const wrapApiCall = (name) => {
         return (req, res, next) => {
           req.apiInput = mergeParams(req.query, req.body, req.files, req.params)
@@ -279,9 +281,20 @@ export default class Hojs extends ProjectCore {
           this.method(name).before(fn);
         }
         this.method(name).register(handler);
+        if (schema.options.middlewares.length > 0) {
+          const middlewares = schema.options.middlewares.map(fn => this._getApiMiddleware(fn));
+          apiRouter[schema.options.method](schema.options.path, ...middlewares);
+          debug('register api middlewares: %s before=%s [%s] %s', name, middlewares.length, schema.options.method, schema.options.path);
+        }
         apiRouter[schema.options.method](schema.options.path, wrapApiCall(name));
         debug('register api route: %s before=%s [%s] %s', name, before.length, schema.options.method, schema.options.path);
       }
+
+      // 捕捉出错信息
+      apiRouter.use((err, req, res, next) => {
+        debug('api error: %j', err && err.stack || err);
+        handleOutput(err, null, req, res, next);
+      });
 
       if (this.api.getOption('port')) {
         const port = this.api.getOption('port');
@@ -297,6 +310,17 @@ export default class Hojs extends ProjectCore {
       app.use(apiRouter);
     });
 
+  }
+
+  _getApiMiddleware(fn) {
+    const type = typeof fn;
+    if (type === 'string') {
+      throw new Error(`unknown middleware ${fn}`);
+    } else if (type === 'function') {
+      return fn;
+    } else {
+      throw new Error('middleware must be string or function');
+    }
   }
 
   init(callback) {

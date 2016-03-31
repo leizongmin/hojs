@@ -68,8 +68,8 @@ export default class Schema {
   use(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const fn of list) {
-      assert(typeof fn === 'function', 'use `handler` must be function');
-      this.middlewares.push(fn);
+      assert(typeof fn === 'function' || typeof fn === 'string', 'use `handler` must be function or string');
+      this.options.middlewares.push(fn);
     }
     return this;
   }
