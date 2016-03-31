@@ -231,6 +231,7 @@ export default class Hojs extends ProjectCore {
       assert(typeof handleOutput === 'function', `api output handler must be function`);
 
       apiRouter.use((req, res, next) => {
+        req.apiParams = {};
         res.apiOutput = (err, ret) => {
           debug('apiOutput: err=%j, ret=%j', (err && err.stack || err), ret);
           handleOutput(err, ret, req, res, next);
@@ -260,11 +261,11 @@ export default class Hojs extends ProjectCore {
 
       const wrapApiCall = (name) => {
         return (req, res, next) => {
-          req.apiInput = mergeParams(req.query, req.body, req.files, req.params)
-          debug('api call: %s params=%j', name, req.apiInput);
+          req.apiParams = mergeParams(req.query, req.body, req.files, req.params, req.apiParams);
+          debug('api call: %s params=%j', name, req.apiParams);
           let p = null;
           try {
-            p = this.method(name).call(req.apiInput);
+            p = this.method(name).call(req.apiParams);
           } catch (err) {
             return res.apiOutput(err);
           }

@@ -62,12 +62,17 @@ function makeSchemaDocs(schema) {
 
   const TYPE = DOCS_DATA.types;
 
-  const params = Object.keys(schema.params).map(name => {
-    const info = schema.params[name];
+  const params = Object.keys(schema.params)
+  .map(name => {
+    schema.params[name].name = name;
+    return schema.params[name];
+  })
+  .filter(info => !info.hide)
+  .map(info => {
     const type = TYPE[info.type];
     return (
-      <div className="param-item" key={name}>
-        <span className="param-name">{name}</span>
+      <div className="param-item" key={info.name}>
+        <span className="param-name">{info.name}</span>
         <span className="param-type">{info.type}<span className="type-description">{type.isDefault ? '' : type.description}</span></span>
         <span className="param-comment">{info.comment} ({'default' in info ? <span className="param-default">默认值:{jsonStringify(info.default)}</span> : '默认值:无'})</span>
       </div>
