@@ -58,7 +58,6 @@ export default class Hojs extends ProjectCore {
 
     this.api = {};
     this.api.$initTasks = [];
-    this.api.$options = {};
     this.api.$schemas = [];
     this.api.$schemaMapping = {};
     this.api.$types = {};
@@ -67,6 +66,7 @@ export default class Hojs extends ProjectCore {
     this.api.$express.apiRouter = null;
     this.api.$express.sysRouter = null;
     this.api.$express.middlewares = [];
+    this.api.$options = {};
     this.api.$features = {
       multipart: true,
       urlencoded: true,
