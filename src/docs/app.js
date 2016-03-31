@@ -50,6 +50,25 @@ function makeTypeDocs(type) {
   );
 }
 
+function makeErrorDocs(error) {
+  const props = Object.keys(error.data).filter(n => n !== 'description').map(n => {
+    return (
+      <div className="error-info">
+        <span className="name">{n}</span> = <span className="value">{error.data[n]}</span>
+       </div>
+     );
+  });
+  return (
+    <div className="error-item" key={error.name}>
+      <h3 className="error-name">
+        {error.name}
+        <small className="sub-text"> {error.data.description}</small>
+       </h3>
+       {props}
+    </div>
+  );
+}
+
 function makeGroupDocs(group, schemas) {
   return (
     <div key={group}>
@@ -143,12 +162,20 @@ class App extends React.Component {
       v.route = `${v.method.toUpperCase()} ${v.path}`;
       v.id = `[${v.method.toUpperCase()}]${v.path}`;
     });
+    
     DOCS_DATA.typeList = Object.keys(DOCS_DATA.types).map(n => {
       const ret = DOCS_DATA.types[n];
       ret.name = n;
       return ret;
     }).filter(v => !v.isDefault);
     const types = DOCS_DATA.typeList.map(makeTypeDocs);
+    
+    DOCS_DATA.errorList = Object.keys(DOCS_DATA.errors).map(n => {
+      const ret = DOCS_DATA.errors[n];
+      ret.name = n;
+      return ret;
+    });
+    const errors = DOCS_DATA.errorList.map(makeErrorDocs);
 
     const groupMap = {};
     for (const item of DOCS_DATA.schemas) {
@@ -171,6 +198,9 @@ class App extends React.Component {
             <div className="nav-group">
               <h3 className="title">全局</h3>
               <div className="nav-item">
+                <a href="#global:errors">错误类型</a>
+              </div>
+              <div className="nav-item">
                 <a href="#global:types">自定义类型</a>
               </div>
             </div>
@@ -178,6 +208,10 @@ class App extends React.Component {
           </div>
         </div>
         <div className="main">
+          <div className="section errors">
+            <h1 id="global:errors">错误类型</h1>
+            {errors}
+          </div>
           <div className="section types">
             <h1 id="global:types">自定义类型</h1>
             {types}

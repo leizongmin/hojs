@@ -80,6 +80,28 @@ body, pre {
   margin: 0;
   margin-top: -6px;
 }
+.error-item {
+  margin: 10px 0;
+  padding: 8px;
+  background-color: #fff;
+}
+.error-item .error-name {
+  margin-top: 0;
+}
+.error-item .error-info {
+  background-color: #f7f7f7;
+  padding: 4px 14px;
+  margin: 0;
+  margin-top: -6px;
+}
+.error-item .error-info .name {
+  color: #888;
+  font-weight: bold;
+}
+.error-item .error-info .value {
+  color: #005BA2;
+  font-weight: bold;  
+}
 .schema {
   margin: 50px 0;
   padding: 8px;

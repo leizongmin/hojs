@@ -169,6 +169,9 @@ export default class Hojs extends ProjectCore {
       } else {
         info.message = (msg) => msg;
       }
+      if (data.description) {
+        assert(typeof data.description, 'option `description` must be string');
+      }
       info.data = this.utils.merge(data, {type: name});
       delete info.data.message;
       info.Error = this.utils.customError(name, info.data);
@@ -232,17 +235,19 @@ export default class Hojs extends ProjectCore {
 
       const DOCS_DATA = {
         types: {},
+        errors: {},
         schemas: this.api.$schemas.map(v => v.options),
       };
       Object.keys(this.api.$types).map(n => {
-        const s = this.api.$types[n];
-        const v = {};
-        for (const i in s) {
-          v[i] = s[i];
-        }
-        v.checker = v.checker.toString();
-        v.formatter = v.formatter.toString();
-        DOCS_DATA.types[n] = v;
+        const t = this.utils.merge(this.api.$types[n]);
+        t.checker = t.checker.toString();
+        t.formatter = t.formatter.toString();
+        DOCS_DATA.types[n] = t;
+      });
+      Object.keys(this.api.$errors).map(n => {
+        const e = this.utils.merge(this.api.$errors[n]);
+        e.message = e.message.toString();
+        DOCS_DATA.errors[n] = e;
       });
 
       sysRouter.get('/data.json', (req, res, next) => {
