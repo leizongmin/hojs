@@ -82,6 +82,7 @@ export default class Hojs extends ProjectCore {
     this.api.$express.apiRouter = null;
     this.api.$express.sysRouter = null;
     this.api.$express.middlewares = [];
+    this.api.$middlewaresMapping = {};
     this.api.$options = {};
     this.api.$features = {
       multipart: true,
@@ -130,6 +131,14 @@ export default class Hojs extends ProjectCore {
       for (const fn of list) {
         this.api.$express.middlewares.push(this._getApiMiddleware(fn));
       }
+    };
+
+    this.api.registerMiddleware = (name, fn) => {
+      assert(typeof name === 'string', 'middleware name must be string');
+      assert(typeof fn === 'function', 'middleware handler must be function');
+      assert(fn.length === 3, 'middleware handler must have 3 arguments: function (req, res, next)');
+      assert(!this.api.$middlewaresMapping[name], `middleware ${name} is already exists`);
+      this.api.$middlewaresMapping[name] = fn;
     };
 
     this.api.getType = (name) => {
@@ -360,7 +369,9 @@ export default class Hojs extends ProjectCore {
   _getApiMiddleware(fn) {
     const type = typeof fn;
     if (type === 'string') {
-      throw new Error(`unknown middleware ${fn}`);
+      const handler = this.api.$middlewaresMapping[fn];
+      assert(typeof handler === 'function', `unknown middleware ${fn}`);
+      return handler;
     } else if (type === 'function') {
       return fn;
     } else {
