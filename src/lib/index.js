@@ -312,9 +312,13 @@ export default class Hojs extends ProjectCore {
         apiRouter.use(item);
       }
 
+      const mergeApiParams = (req, res, next) => {
+        req.apiParams = mergeParams(req.query, req.body, req.files, req.params, req.apiParams);
+        next();
+      };
+
       const wrapApiCall = (name) => {
         return (req, res, next) => {
-          req.apiParams = mergeParams(req.query, req.body, req.files, req.params, req.apiParams);
           debug('api call: %s params=%j', name, req.apiParams);
           let p = null;
           try {
@@ -330,19 +334,26 @@ export default class Hojs extends ProjectCore {
       // 开始注册API
       debug('register schemas: %s', this.api.$schemas.length);
       for (const schema of this.api.$schemas) {
+
         const {name, before, handler} = schema.init(this.api);
         for (const fn of before) {
           this.method(name).before(fn);
         }
         this.method(name).register(handler);
+
+        const register = apiRouter[schema.options.method].bind(apiRouter);
+        register(schema.options.path, mergeApiParams);
+
         if (schema.options.middlewares.length > 0) {
           const middlewares = schema.options.middlewares.map(fn => this._getApiMiddleware(fn));
-          apiRouter[schema.options.method](schema.options.path, ...middlewares);
+          register(schema.options.path, ...middlewares);
           debug('register api middlewares: %s before=%s [%s] %s', name, middlewares.length, schema.options.method, schema.options.path);
         }
-        apiRouter[schema.options.method](schema.options.path, wrapApiCall(name));
+
+        register(schema.options.path, wrapApiCall(name));
         debug('register api route: %s before=%s [%s] %s', name, before.length, schema.options.method, schema.options.path);
-      }
+
+    }
 
       // 捕捉出错信息
       apiRouter.use((err, req, res, next) => {
