@@ -57,6 +57,23 @@ function mergeParams(...list) {
   return ret;
 }
 
+function wrapAsyncMiddleware(fn) {
+  if (fn.length === 2) {
+    return function (req, res, next) {
+      let p = null;
+      try {
+        p = fn(req, res);
+      } catch (err) {
+        return next(err);
+      }
+      p.then(ret => next());
+      p.catch(err => next(err));
+    };
+  } else {
+    return fn;
+  }
+}
+
 
 export default class Hojs extends ProjectCore {
 
@@ -136,9 +153,9 @@ export default class Hojs extends ProjectCore {
     this.api.registerMiddleware = (name, fn) => {
       assert(typeof name === 'string', 'middleware name must be string');
       assert(typeof fn === 'function', 'middleware handler must be function');
-      assert(fn.length === 3, 'middleware handler must have 3 arguments: function (req, res, next)');
+      assert(fn.length === 2 || fn.length === 3, 'middleware handler must have 3 arguments: function (req, res, next), or 2 arguments: async function (req, res)');
       assert(!this.api.$middlewaresMapping[name], `middleware ${name} is already exists`);
-      this.api.$middlewaresMapping[name] = fn;
+      this.api.$middlewaresMapping[name] = wrapAsyncMiddleware(fn);
     };
 
     this.api.getType = (name) => {
@@ -384,7 +401,7 @@ export default class Hojs extends ProjectCore {
       assert(typeof handler === 'function', `unknown middleware ${fn}`);
       return handler;
     } else if (type === 'function') {
-      return fn;
+      return wrapAsyncMiddleware(fn);
     } else {
       throw new Error('middleware must be string or function');
     }
