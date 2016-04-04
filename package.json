@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -Rf target",
-    "watch": "npm run clean && babel src -d target --watch"
+    "watch": "npm run clean && babel src -d target --watch",
+    "compile": "npm run clean && babel src -d target",
+    "prepublish": "npm run compile"
   },
   "repository": {
     "type": "git",
