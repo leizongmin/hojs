@@ -55,7 +55,12 @@ export default class Hojs extends ProjectCore {
       multipart: true,
       urlencoded: true,
       json: true,
-      redisSession: false,
+      outputSession: false,
+      outputCookies: true,
+      outputHeaders: true,
+      inputSession: false,
+      inputCookies: false,
+      inputHeaders: false,
     };
 
     for (const method of Schema.SUPPORT_METHOD) {
@@ -83,6 +88,10 @@ export default class Hojs extends ProjectCore {
         this.api.$features[name] = false;
       }
       return this.api;
+    };
+
+    this.api.isEnable = (name) => {
+      return this.api.$features[name];
     };
 
     this.api.setOption = (name, value) => {
@@ -260,16 +269,15 @@ export default class Hojs extends ProjectCore {
         next();
       });
 
-      debug('init api features...');
-      if (this.api.$features.json) {
+      if (this.api.isEnable('json')) {
         debug('enable feature: json');
         apiRouter.use(bodyParser.json());
       }
-      if (this.api.$features.urlencoded) {
+      if (this.api.isEnable('urlencoded')) {
         debug('enable feature: urlencoded');
         apiRouter.use(bodyParser.urlencoded());
       }
-      if (this.api.$features.multipart) {
+      if (this.api.isEnable('multipart')) {
         debug('enable feature: multipart');
         apiRouter.use(multiparty());
       }
@@ -280,8 +288,71 @@ export default class Hojs extends ProjectCore {
       }
 
       const mergeApiParams = (req, res, next) => {
-        req.apiParams = mergeParams(req.query, req.body, req.files, req.params, req.apiParams);
+        req.apiParams = mergeParams(
+          req.query,
+          req.body,
+          req.files,
+          req.params,
+          this.api.isEnable('inputCookies') ? {$cookies: req.cookies || {}} : null,
+          this.api.isEnable('inputHeaders') ? {$headers: req.headers || {}} : null,
+          this.api.isEnable('inputSession') ? {$session: req.session || {}} : null,
+          req.apiParams
+        );
         next();
+      };
+
+      const hookOutput = (err, ret, req, res, next) => {
+        if (ret) {
+          try {
+
+            if (ret.$headers && this.api.enable('outputHeaders')) {
+              // example: $headers: {'content-type': 'text/html'}
+              for (const i in ret.$headers) {
+                res.setHeader(i, ret.$headers[i]);
+              }
+              delete ret.$headers;
+            }
+
+            if (this.api.enable('outputCookies')) {
+              if (ret.$cookies) {
+                // example: $cookies: {name: [value, options]}
+                for (const i in ret.$cookies) {
+                  assert(Array.isArray(ret.$cookies[i]), `$cookies.${i} must be array: [value, options]`);
+                  res.cookie(i, ...ret.$cookies[i]);
+                }
+                delete ret.$cookies;
+              }
+              if (ret.$removeCookies) {
+                // example: $removeCookies: ['name1', 'name2']
+                for (const n of ret.$removeCookies) {
+                  res.clearCookie(n);
+                }
+                delete ret.$removeCookies;
+              }
+            }
+
+            if (this.api.enable('outputSession')) {
+              if (ret.$session) {
+                // example: $session: {name: value}
+                for (const i in ret.$session) {
+                  req.session[i] = ret.$session[i];
+                }
+                delete ret.$session;
+              }
+              if (ret.$removeSession) {
+                // example: $removeSession: ['name1', 'name2']
+                for (const n of ret.$removeSession) {
+                  delete req.session[n];
+                }
+                delete ret.$removeSession;
+              }
+            }
+
+          } catch (err) {
+            return res.apiOutput(err, ret);
+          }
+        }
+        res.apiOutput(err, ret);
       };
 
       const wrapApiCall = (name) => {
@@ -293,8 +364,8 @@ export default class Hojs extends ProjectCore {
           } catch (err) {
             return res.apiOutput(err);
           }
-          p.then(ret => res.apiOutput(null, ret));
-          p.catch(err => res.apiOutput(err));
+          p.then(ret => hookOutput(null, ret, req, res, next));
+          p.catch(err => hookOutput(err, undefined, req, res, next));
         };
       };
 
