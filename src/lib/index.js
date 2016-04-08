@@ -305,7 +305,7 @@ export default class Hojs extends ProjectCore {
         if (ret) {
           try {
 
-            if (ret.$headers && this.api.enable('outputHeaders')) {
+            if (ret.$headers && this.api.isEnable('outputHeaders')) {
               // example: $headers: {'content-type': 'text/html'}
               for (const i in ret.$headers) {
                 res.setHeader(i, ret.$headers[i]);
@@ -313,7 +313,7 @@ export default class Hojs extends ProjectCore {
               delete ret.$headers;
             }
 
-            if (this.api.enable('outputCookies')) {
+            if (this.api.isEnable('outputCookies')) {
               if (ret.$cookies) {
                 // example: $cookies: {name: [value, options]}
                 for (const i in ret.$cookies) {
@@ -331,7 +331,7 @@ export default class Hojs extends ProjectCore {
               }
             }
 
-            if (this.api.enable('outputSession')) {
+            if (this.api.isEnable('outputSession')) {
               if (ret.$session) {
                 // example: $session: {name: value}
                 for (const i in ret.$session) {
