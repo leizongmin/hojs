@@ -49,6 +49,7 @@ export default class Hojs extends ProjectCore {
     this.api.$express.apiRouter = null;
     this.api.$express.sysRouter = null;
     this.api.$express.middlewares = [];
+    this.api.$hookOutputs = [];
     this.api.$middlewaresMapping = {};
     this.api.$options = {};
     this.api.$features = {
@@ -202,6 +203,12 @@ export default class Hojs extends ProjectCore {
       }
     });
 
+    this.api.hookOutput = (fn) => {
+      assert(typeof fn === 'function', 'output handler must be function');
+      assert(typeof fn({}) !== 'undefined', 'output handler must return a value');
+      this.api.$hookOutputs.push(fn);
+    };
+
     this.api.outputDocs = (path) => {
       this.api.setOption('docsPath', path);
     };
@@ -304,56 +311,66 @@ export default class Hojs extends ProjectCore {
       const hookOutput = (err, ret, req, res, next) => {
         if (ret) {
           try {
-
-            if (ret.$headers && this.api.isEnable('outputHeaders')) {
-              // example: $headers: {'content-type': 'text/html'}
-              for (const i in ret.$headers) {
-                res.setHeader(i, ret.$headers[i]);
-              }
-              delete ret.$headers;
+            for (const fn of this.api.$hookOutputs) {
+              ret = fn(ret);
             }
-
-            if (this.api.isEnable('outputCookies')) {
-              if (ret.$cookies) {
-                // example: $cookies: {name: [value, options]}
-                for (const i in ret.$cookies) {
-                  assert(Array.isArray(ret.$cookies[i]), `$cookies.${i} must be array: [value, options]`);
-                  res.cookie(i, ...ret.$cookies[i]);
-                }
-                delete ret.$cookies;
-              }
-              if (ret.$removeCookies) {
-                // example: $removeCookies: ['name1', 'name2']
-                for (const n of ret.$removeCookies) {
-                  res.clearCookie(n);
-                }
-                delete ret.$removeCookies;
-              }
-            }
-
-            if (this.api.isEnable('outputSession')) {
-              if (ret.$session) {
-                // example: $session: {name: value}
-                for (const i in ret.$session) {
-                  req.session[i] = ret.$session[i];
-                }
-                delete ret.$session;
-              }
-              if (ret.$removeSession) {
-                // example: $removeSession: ['name1', 'name2']
-                for (const n of ret.$removeSession) {
-                  delete req.session[n];
-                }
-                delete ret.$removeSession;
-              }
-            }
-
           } catch (err) {
             return res.apiOutput(err, ret);
           }
         }
         res.apiOutput(err, ret);
       };
+      if (this.api.isEnable('outputHeaders')) {
+        this.api.hookOutput((ret) => {
+          if (ret.$headers) {
+            // example: $headers: {'content-type': 'text/html'}
+            for (const i in ret.$headers) {
+              res.setHeader(i, ret.$headers[i]);
+            }
+            delete ret.$headers;
+          }
+          return ret;
+        });
+      }
+      if (this.api.isEnable('outputCookies')) {
+        this.api.hookOutput((ret) => {
+          if (ret.$cookies) {
+            // example: $cookies: {name: [value, options]}
+            for (const i in ret.$cookies) {
+              assert(Array.isArray(ret.$cookies[i]), `$cookies.${i} must be array: [value, options]`);
+              res.cookie(i, ...ret.$cookies[i]);
+            }
+            delete ret.$cookies;
+          }
+          if (ret.$removeCookies) {
+            // example: $removeCookies: ['name1', 'name2']
+            for (const n of ret.$removeCookies) {
+              res.clearCookie(n);
+            }
+            delete ret.$removeCookies;
+          }
+          return ret;
+        });
+      }
+      if (this.api.isEnable('outputSession')) {
+        this.api.hookOutput((ret) => {
+          if (ret.$session) {
+            // example: $session: {name: value}
+            for (const i in ret.$session) {
+              req.session[i] = ret.$session[i];
+            }
+            delete ret.$session;
+          }
+          if (ret.$removeSession) {
+            // example: $removeSession: ['name1', 'name2']
+            for (const n of ret.$removeSession) {
+              delete req.session[n];
+            }
+            delete ret.$removeSession;
+          }
+          return ret;
+        })
+      }
 
       const wrapApiCall = (name) => {
         return (req, res, next) => {
