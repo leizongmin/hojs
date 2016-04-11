@@ -53,7 +53,7 @@ function makeTypeDocs(type) {
 function makeErrorDocs(error) {
   const props = Object.keys(error.data).filter(n => n !== 'description').map(n => {
     return (
-      <div className="error-info">
+      <div className="error-info" key={n}>
         <span className="name">{n}</span> = <span className="value">{error.data[n]}</span>
        </div>
      );
@@ -163,14 +163,14 @@ class App extends React.Component {
       v.route = `${v.method.toUpperCase()} ${v.path}`;
       v.id = `[${v.method.toUpperCase()}]${v.path}`;
     });
-    
+
     DOCS_DATA.typeList = Object.keys(DOCS_DATA.types).map(n => {
       const ret = DOCS_DATA.types[n];
       ret.name = n;
       return ret;
     }).filter(v => !v.isDefault);
     const types = DOCS_DATA.typeList.map(makeTypeDocs);
-    
+
     DOCS_DATA.errorList = Object.keys(DOCS_DATA.errors).map(n => {
       const ret = DOCS_DATA.errors[n];
       ret.name = n;
