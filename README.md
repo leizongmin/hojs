@@ -2,6 +2,14 @@
 ## 基于 Express 的轻量级 RESTful API 服务器框架
 
 
+## TODO
+
+- [ ] 单元测试框架
+- [ ] 在线REST调试器
+- [ ] API文档生成（Markdown）
+- [ ] 内置组件：数据签名、会话管理、AccessToken
+
+
 ## 安装
 
 ```bash
