@@ -16,7 +16,7 @@ export default function () {
     return this.api.$types[name];
   };
 
-  this.api.registerType = (name, {checker, formatter, description = '', isDefault} = {}) => {
+  this.api.registerType = (name, {checker, formatter, paramsChecker, description = '', isDefault} = {}) => {
     formatter = formatter || ((v) => v);
     isDefault = !!isDefault;
     assert(name && typeof name === 'string', 'type name must be string');
@@ -25,9 +25,15 @@ export default function () {
     assert(formatter && typeof formatter === 'function', 'type formatter must be function');
     assert(typeof description === 'string', 'type description must be string');
     assert(!(name in this.api.$types), `type ${name} is already exists`);
-    this.api.$types[name] = {checker, formatter, description, isDefault};
+    if (paramsChecker) {
+      assert(typeof paramsChecker === 'function', 'paramsChecker must be function');
+    } else {
+      paramsChecker = null;
+    }
+    this.api.$types[name] = {checker, formatter, paramsChecker, description, isDefault};
     if (!isDefault) {
-      debug('register type: name=%s, checker=%s, formatter=%s, description=%s', name, checker, formatter, description);
+      debug('register type: name=%s, checker=%s, formatter=%s, paramsChecker=%s description=%s',
+        name, checker, formatter, paramsChecker, description);
     }
     return this.api;
   };

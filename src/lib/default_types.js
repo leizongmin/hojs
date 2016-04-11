@@ -6,6 +6,7 @@
  * @author Zongmin Lei <leizongmin@gmail.com>
  */
 
+import assert from 'assert';
 import validator from 'validator';
 
 export default function (registerType) {
@@ -37,8 +38,28 @@ export default function (registerType) {
   });
 
   registerType('Number', {
-    checker: (v) => !isNaN(v),
+    checker: (v, p) => {
+      const ok = !isNaN(v);
+      console.log('checker', ok, v, p);
+      if (ok && p) {
+        if ('min' in p && !(v >= p.min)) return false;
+        if ('max' in p && !(v <= p.max)) return false;
+      }
+      return ok;
+    },
     formatter: (v) => Number(v),
+    paramsChecker: (params) => {
+      if ('max' in params) {
+        assert(typeof params.max === 'number', `params.max expected a number but get ${params.max}(${typeof params.max})`);
+      }
+      if ('min' in params) {
+        assert(typeof params.min === 'number', `params.min expected a number but get ${params.min}(${typeof params.min})`);
+      }
+      if ('max' in params && 'min' in params) {
+        assert(params.min < params.max, `params.min must less than params.max`);
+      }
+      return true;
+    },
     description: 'number',
     isDefault: true,
   });

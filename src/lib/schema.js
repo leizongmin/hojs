@@ -72,7 +72,7 @@ export default class Schema {
     return this;
   }
 
-  param(name, info) {
+  param(name, info, params) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(name && typeof name === 'string', '`name` must be string');
     assert(info && (typeof info === 'string' || typeof info === 'object'));
@@ -80,6 +80,15 @@ export default class Schema {
     if (typeof info === 'string') info = {type: info, format: true};
     if (!('format' in info)) info.format = true;
     assert(/^[A-Z]/.test(info.type[0]), `type ${info.type} must be start with upper case`);
+    if (params) {
+      assert(typeof params === 'object', `type checker params must be object`);
+    } else {
+      params = null;
+    }
+    if (params) {
+      assert(params && !info.params, `please don't passed option "params" in the second parameter when you passed the thrid parameter`);
+    }
+    info.params = params || info.params;
     this.options.params[name] = info;
     return this;
   }
@@ -160,9 +169,18 @@ export default class Schema {
     }
 
     for (const name in this.options.params) {
-      const typeName = this.options.params[name].type;
+      const options = this.options.params[name]
+      const typeName = options.type;
       const type = parent.getType(typeName);
       assert(type && type.checker && type.formatter, `please register type ${typeName}`);
+      if (options.params) {
+        assert(type.paramsChecker(options.params), `test type params failed`);
+        try {
+          options._paramsJSON = JSON.stringify(options.params);
+        } catch (err) {
+          throw new Error(`cannot JSON.stringify(options.params) for param ${name}`);
+        }
+      }
     }
 
     before.push((params) => {
@@ -177,8 +195,12 @@ export default class Schema {
           continue;
         }
         const type = parent.getType(options.type);
-        if (!type.checker(value)) {
-          throw parent.error('parameter_error', `should be valid ${options.type}`, {name});
+        if (!type.checker(value, options.params)) {
+          let msg = `should be valid ${options.type}`;
+          if (options.params) {
+            msg = `${msg} with additional restrictions: ${options._paramsJSON}`;
+          }
+          throw parent.error('parameter_error', msg, {name});
         }
         if (options.format) {
           newParams[name] = type.formatter(value);
