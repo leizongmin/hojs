@@ -10,10 +10,9 @@ import assert from 'assert';
 import {schema as debug} from './debug';
 
 const HAS_BEEN_INITED_ERROR = 'has been inited';
+const SUPPORT_METHOD = ['get', 'post', 'put', 'delete']
 
 export default class Schema {
-
-  static SUPPORT_METHOD = ['get', 'post', 'put', 'delete'];
 
   constructor(method, path, sourceFile) {
     assert(method && typeof method === 'string', '`method` must be string');
@@ -111,7 +110,7 @@ export default class Schema {
     this.options.requiredOneOf.push(list);
     return this;
   }
-  
+
   dev() {
     this.options.dev = true;
     return this;
@@ -132,7 +131,7 @@ export default class Schema {
     if (!this.options.env) {
       assert(this.options.handler, `please register a handler for API ${name}`);
     }
-    
+
     if (this.options.required.length > 0) {
       before.push((params) => {
         for (const name of this.options.required) {
@@ -206,3 +205,5 @@ export default class Schema {
   }
 
 }
+
+Schema.SUPPORT_METHOD = SUPPORT_METHOD;

@@ -29,10 +29,10 @@
     "babel-cli": "^6.6.5",
     "babel-preset-es2015-node4": "^2.0.3",
     "babel-preset-react": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
     "mocha": "^2.3.4"
   },
   "dependencies": {
+    "babel-preset-stage-3": "^6.5.0",
     "body-parser": "^1.15.0",
     "connect-multiparty": "^2.0.0",
     "debug": "^2.2.0",
