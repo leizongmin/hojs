@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -Rf target",
-    "watch": "npm run clean && babel src -d target --watch",
-    "compile": "npm run clean && babel src -d target",
+    "watch": "npm run clean && babel src -d target --watch --source-maps=inline",
+    "compile": "npm run clean && babel src -d target --source-maps=inline",
     "prepublish": "npm run compile"
   },
   "repository": {
