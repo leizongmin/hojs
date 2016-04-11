@@ -38,6 +38,15 @@ export default function () {
       DOCS_DATA.errors[n] = e;
     });
 
+    const formatOutput = this.api.getOption('formatOutput');
+    for (const s of DOCS_DATA.schemas) {
+      if (s.examples) {
+        s.examples.forEach(v => {
+          v.output = formatOutput(null, v.output);
+        });
+      }
+    }
+
     sysRouter.get('/data.json', (req, res, next) => {
       res.json(DOCS_DATA);
     });
