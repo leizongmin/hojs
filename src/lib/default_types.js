@@ -20,46 +20,52 @@ export default function (registerType) {
   registerType('Date', {
     checker: (v) => v instanceof Date || (typeof v === 'string' && validator.isDate(v)),
     formatter: (v) => new Date(v),
-    description: 'Date',
+    description: 'date',
     isDefault: true,
   });
 
   registerType('String', {
     checker: (v) => typeof v === 'string',
-    description: 'String',
+    description: 'string',
     isDefault: true,
+  });
+
+  registerType('TrimString', {
+    checker: (v) => typeof v === 'string',
+    formatter: (v) => v.trim(),
+    description: 'auto trim string',
   });
 
   registerType('Number', {
     checker: (v) => !isNaN(v),
     formatter: (v) => Number(v),
-    description: 'Number',
+    description: 'number',
     isDefault: true,
   });
 
   registerType('Integer', {
     checker: (v) => validator.isInt(String(v)),
     formatter: (v) => Number(v),
-    description: 'Integer',
+    description: 'integer',
     isDefault: true,
   });
 
   registerType('Float', {
     checker: (v) => validator.isFloat(String(v)),
     formatter: (v) => Number(v),
-    description: 'Float',
+    description: 'float',
     isDefault: true,
   });
 
   registerType('Object', {
     checker: (v) => v && typeof v === 'object',
-    description: 'Object',
+    description: 'object',
     isDefault: true,
   });
 
   registerType('Array', {
     checker: (v) => Array.isArray(v),
-    description: 'Array',
+    description: 'array',
     isDefault: true,
   });
 
@@ -67,6 +73,12 @@ export default function (registerType) {
     checker: (v) => typeof v === 'string' && validator.isJSON(v),
     formatter: (v) => v.trim(),
     description: 'string is valid JSON',
+    isDefault: true,
+  });
+
+  registerType('Any', {
+    checker: (v) => true,
+    description: 'can be any type',
     isDefault: true,
   });
 
