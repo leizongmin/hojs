@@ -21,14 +21,34 @@ export default function () {
   return () => {
     debug('extends apiRouter init...');
 
-    const handleOutput = this.api.getOption('handleOutput');
-    assert(typeof handleOutput === 'function', `api output handler must be function`);
+    const formatOutput = this.api.getOption('formatOutput');
+    assert(typeof formatOutput === 'function', `api output formatter must be function`);
+    try {
+      const ret = formatOutput(new Error('test formatOutput'));
+    } catch (err) {
+      throw new Error(`test formatOutput(err) failed: ${err.stack}`);
+    }
+    try {
+      const ret = formatOutput(null, {ok: true});
+    } catch (err) {
+      throw new Error(`test formatOutput(null, data) failed: ${err.stack}`);
+    }
+
+    const processOutput = (err, ret, req, res, next) => {
+      let data = null;
+      try {
+        data = formatOutput(err, ret);
+      } catch (err) {
+        return next(err);
+      }
+      res.json(data);
+    };
 
     apiRouter.use((req, res, next) => {
       req.apiParams = {};
       res.apiOutput = (err, ret) => {
         debug('apiOutput: err=%j, ret=%j', (err && err.stack || err), ret);
-        handleOutput(err, ret, req, res, next);
+        processOutput(err, ret, req, res, next);
       };
       debug('new api request: [%s] %s', req.method, req.url);
       next();
@@ -171,7 +191,7 @@ export default function () {
     // 捕捉出错信息
     apiRouter.use((err, req, res, next) => {
       debug('api error: %j', err && err.stack || err);
-      handleOutput(err, null, req, res, next);
+      processOutput(err, null, req, res, next);
     });
 
     if (this.api.getOption('port')) {

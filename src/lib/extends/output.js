@@ -11,13 +11,13 @@ import {core as debug} from '../debug';
 
 export default function () {
 
-  this.api.output = (fn) => {
+  this.api.formatOutput = (fn) => {
     assert(typeof fn === 'function', 'output handler must be function');
-    assert(fn.length >= 4, 'output handler must have 4 or 5 arguments');
-    this.api.setOption('handleOutput', fn);
+    assert(fn.length === 2, 'output handler must have 2 arguments');
+    this.api.setOption('formatOutput', fn);
     return this.api;
   };
-  this.api.output((err, ret, req, res, next) => {
+  this.api.formatOutput((err, ret) => {
     if (err) {
       const ret = {error: {}};
       if (err instanceof Error) {
@@ -31,9 +31,9 @@ export default function () {
         ret.status = -1;
         ret.message = ret.toString();
       }
-      res.json(ret);
+      return ret;
     } else {
-      res.json({status: 0, result: ret});
+      return {status: 0, result: ret};
     }
   });
 
@@ -41,10 +41,6 @@ export default function () {
     assert(typeof fn === 'function', 'output handler must be function');
     assert(typeof fn({}) !== 'undefined', 'output handler must return a value');
     this.api.$hookOutputs.push(fn);
-  };
-
-  this.api.outputDocs = (path) => {
-    this.api.setOption('docsPath', path);
   };
 
 };
