@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -Rf target",
-    "watch": "npm run clean && babel src -d target --watch --source-maps=inline",
-    "compile": "npm run clean && babel src -d target --source-maps=inline",
+    "clean": "rm -Rf dist",
+    "watch": "npm run clean && babel src -d dist --watch --source-maps=inline",
+    "compile": "npm run clean && babel src -d dist --source-maps=inline",
     "prepublish": "npm run compile"
   },
   "repository": {
