@@ -1,15 +1,4 @@
-# ho.js
-## 基于 Express 的轻量级 RESTful API 服务器框架
-
-
-## TODO
-
-+ [ ] 单元测试框架，example的数据自动从单元测试中获取
-+ [ ] 在线REST调试器
-+ [ ] API文档生成（Markdown）
-+ [ ] 内置组件：数据签名、会话管理、AccessToken
-+ [ ] 使用文档、教程
-+ [ ] 基于ho.js的博客系统
+# 基于 Express 的轻量级 RESTful API 服务器框架
 
 
 ## 目标
@@ -20,6 +9,17 @@
 + 单元测试
 + 自动根据代码生成精准的API文档
 + 保证最大的灵活性，除基本框架之外，不限制用户使用何种数据库客户端或ORM
++ 支持ES7的async function
+
+
+## TODO
+
++ [ ] 单元测试框架，example的数据自动从单元测试中获取
++ [ ] 在线REST调试器
++ [ ] API文档生成（Markdown）
++ [ ] 内置组件：数据签名、会话管理、AccessToken
++ [ ] 使用文档、教程
++ [ ] 基于ho.js的博客系统
 
 
 ## 安装
