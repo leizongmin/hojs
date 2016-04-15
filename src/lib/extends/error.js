@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import registerDefaultErrors from '../default_errors';
+import registerDefaultErrors from '../default/errors';
 import {core as debug} from '../debug';
 
 export default function () {

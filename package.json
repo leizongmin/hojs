@@ -39,6 +39,7 @@
     "express": "^4.13.4",
     "lei-utils": "^2.1.0",
     "project-core": "0.1.2",
+    "supertest": "^1.2.0",
     "validator": "^5.1.0"
   }
 }

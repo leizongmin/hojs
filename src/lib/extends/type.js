@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import registerDefaultTypes from '../default_types';
+import registerDefaultTypes from '../default/types';
 import {core as debug} from '../debug';
 
 export default function () {
