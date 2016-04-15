@@ -60,7 +60,7 @@ export default function () {
     }
     if (this.api.isEnable('urlencoded')) {
       debug('enable feature: urlencoded');
-      apiRouter.use(bodyParser.urlencoded());
+      apiRouter.use(bodyParser.urlencoded({extended: false}));
     }
     if (this.api.isEnable('multipart')) {
       debug('enable feature: multipart');
