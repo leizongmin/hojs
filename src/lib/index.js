@@ -24,6 +24,7 @@ import extendsMiddleware from './extends/middleware';
 import extendsType from './extends/type';
 import extendsError from './extends/error';
 import extendsOutput from './extends/output';
+import extendsTest from './extends/test';
 
 import initDocs from './init/docs';
 import initApi from './init/api';
@@ -74,6 +75,7 @@ export default class Hojs extends ProjectCore {
     extendsType.call(this);
     extendsError.call(this);
     extendsOutput.call(this);
+    extendsTest.call(this);
 
     const app = this.api.$express.app = express();
     const apiRouter = this.api.$express.apiRouter = createRouter();

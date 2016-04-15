@@ -14,3 +14,4 @@ export function debug(name) {
 
 export var core = debug('core');
 export var schema = debug('schema');
+export var test = debug('test');
