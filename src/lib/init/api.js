@@ -22,18 +22,6 @@ export default function () {
     debug('extends apiRouter init...');
 
     const formatOutput = this.api.getOption('formatOutput');
-    assert(typeof formatOutput === 'function', `api output formatter must be function`);
-    try {
-      const ret = formatOutput(new Error('test formatOutput'));
-    } catch (err) {
-      throw new Error(`test formatOutput(err) failed: ${err.stack}`);
-    }
-    try {
-      const ret = formatOutput(null, {ok: true});
-    } catch (err) {
-      throw new Error(`test formatOutput(null, data) failed: ${err.stack}`);
-    }
-
     const processOutput = (err, ret, req, res, next) => {
       let data = null;
       try {

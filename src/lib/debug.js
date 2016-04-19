@@ -8,10 +8,10 @@
 
 import createDebug from 'debug';
 
-export function debug(name) {
+export function create(name) {
   return createDebug('hojs:' + name);
 };
 
-export var core = debug('core');
-export var schema = debug('schema');
-export var test = debug('test');
+export var core = create('core');
+export var schema = create('schema');
+export var test = create('test');

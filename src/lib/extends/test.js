@@ -17,13 +17,13 @@ export default function () {
 
   // test.get, this.post, ...
   for (const method of TestAgent.SUPPORT_METHOD) {
-    this.test[method] = (path) => {
+    this.test[method] = (path, rawSupertest) => {
 
-      const a = new TestAgent(method, path, getCallerSourceLine(this.config.get('api.path')));
+      const a = new TestAgent(method, path, getCallerSourceLine(this.config.get('api.path')), this);
       const s = this.api.$schemaMapping[a.key];
       assert(s, `try to request undefined API ${a.key} at file ${s.options.sourceFile.absolute}`);
 
-      return a.agent(this.api.$express.app);
+      return a.agent(this.api.$express.app, rawSupertest);
 
     };
   }
