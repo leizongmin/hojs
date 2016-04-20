@@ -203,7 +203,7 @@ export default class Schema {
           throw parent.error('parameter_error', msg, {name});
         }
         if (options.format) {
-          newParams[name] = type.formatter(value);
+          newParams[name] = type.formatter(value, options.params);
           debug('auto format param: %j => %j', value, newParams[name]);
         } else {
           newParams[name] = value;
@@ -212,10 +212,12 @@ export default class Schema {
 
       // 填充默认值
       for (const name in this.options.params) {
-        const info = this.options.params[name];
-        if ('default' in info && !(name in newParams)) {
-          debug('use default for param %s: %j', name, info.default);
-          newParams[name] = info.default;
+        const options = this.options.params[name];
+        const type = parent.getType(options.type);
+        if ('default' in options && !(name in newParams)) {
+          debug('use default for param %s: %j', name, options.default);
+          // TODO: 应该在注册时即检查default值是否合法，以及生成format后的值
+          newParams[name] = type.formatter(options.default, options.params);
         }
       }
 
