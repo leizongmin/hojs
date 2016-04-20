@@ -40,7 +40,6 @@ export default function (registerType) {
   registerType('Number', {
     checker: (v, p) => {
       const ok = !isNaN(v);
-      console.log('checker', ok, v, p);
       if (ok && p) {
         if ('min' in p && !(v >= p.min)) return false;
         if ('max' in p && !(v <= p.max)) return false;
