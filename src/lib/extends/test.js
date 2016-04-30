@@ -7,6 +7,7 @@
  */
 
 import assert from 'assert';
+import supertest from 'supertest';
 import {getCallerSourceLine} from '../utils';
 import {test as debug} from '../debug';
 import TestAgent from '../test_agent';
@@ -23,10 +24,33 @@ export default function () {
       const s = this.api.$schemaMapping[a.key];
       assert(s, `try to request undefined API ${a.key} at file ${s.options.sourceFile.absolute}`);
 
-      return a.agent(this.api.$express.app, rawSupertest);
+      a.initAgent(this.api.$express.app);
+      return a.agent(rawSupertest);
 
     };
   }
+
+  this.test.session = () => {
+
+    const session = {};
+    session.$$agent = supertest.agent(this.api.$express.app);
+
+    for (const method of TestAgent.SUPPORT_METHOD) {
+      session[method] = (path, rawSupertest) => {
+
+        const a = new TestAgent(method, path, getCallerSourceLine(this.config.get('api.path')), this);
+        const s = this.api.$schemaMapping[a.key];
+        assert(s, `try to request undefined API ${a.key} at file ${s.options.sourceFile.absolute}`);
+
+        a.setAgent(session.$$agent[method](path));
+        return a.agent(rawSupertest);
+
+      };
+    }
+
+    return session;
+
+  };
 
   this.test.suite = (name, init) => {
 

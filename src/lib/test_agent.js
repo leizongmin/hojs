@@ -44,12 +44,17 @@ export default class TestAgent {
     this.debug('new: %s %s from %s', method, path, sourceFile.absolute);
   }
 
-  agent(app, rawSupertest = false) {
+  setAgent(agent) {
+    this.options.agent = agent;
+  }
+
+  initAgent(app) {
     assert(app, `express app instance could not be empty`);
-    if (!this.options.agent) {
-      this.debug('create supertest agent');
-      this.options.agent = request(app)[this.options.method](this.options.path);
-    }
+    this.debug('create supertest agent');
+    this.setAgent(request(app)[this.options.method](this.options.path));
+  }
+
+  agent(rawSupertest = false) {
     debug('agent: rawSupertest=%s', rawSupertest);
     if (rawSupertest) {
       return this.options.agent;
