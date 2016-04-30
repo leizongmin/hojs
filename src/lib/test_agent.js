@@ -63,7 +63,7 @@ export default class TestAgent {
     if (this.options.method === 'get' || this.options.method === 'head') {
       this.options.agent.query(data);
     } else {
-      for (i in data) {
+      for (const i in data) {
         if (data[i] instanceof fs.ReadStream) {
           this.options.agent.attach(i, data[i]);
         } else {
@@ -76,32 +76,54 @@ export default class TestAgent {
 
   _extendsOutput() {
 
+    const noop = () => {};
+
     this.output = (callback) => {
-      this.options.agent.end((err, res) => {
-        if (err) return callback(err);
-        const formatOutputReverse = this.options.parent.api.getOption('formatOutputReverse');
-        const rets = formatOutputReverse(res.body);
-        callback(...rets);
+      callback = callback || noop;
+      return new Promise((resolve, reject) => {
+        this.options.agent.end((err, res) => {
+          if (err) {
+            callback(err);
+            reject(err);
+            return;
+          }
+          const formatOutputReverse = this.options.parent.api.getOption('formatOutputReverse');
+          const [err2, ret] = formatOutputReverse(res.body);
+          callback(err2, ret);
+          err2 ? reject(err2) : resolve(ret);
+        });
       });
     };
 
-    this.output.success = (done) => {
-      this.output((err, ret) => {
-        if (err) {
-          done(new AssertionError(`output excepted success but got an error ${inspect(err)}`));
-        } else {
-          done();
-        }
+    this.output.success = (callback) => {
+      callback = callback || noop;
+      return new Promise((resolve, reject) => {
+        this.output((err, ret) => {
+          if (err) {
+            const err2 = new AssertionError(`output expected success but got an error ${inspect(err)}`);
+            callback(err2);
+            reject(err2);
+          } else {
+            callback(null, ret);
+            resolve(ret);
+          }
+        });
       });
     };
 
-    this.output.error = (done) => {
-      this.output((err, ret) => {
-        if (err) {
-          done();
-        } else {
-          done(new AssertionError(`output excepted an error but got result ${inspect(ret)}`));
-        }
+    this.output.error = (callback) => {
+      callback = callback || noop;
+      return new Promise((resolve, reject) => {
+        this.output((err, ret) => {
+          if (err) {
+            callback(null, err);
+            resolve(err);
+          } else {
+            const err2 = new AssertionError(`output expected an error but got result ${inspect(ret)}`);
+            callback(err2);
+            reject(err2);
+          }
+        });
       });
     };
 
