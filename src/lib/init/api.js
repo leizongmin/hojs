@@ -145,7 +145,7 @@ export default function () {
         try {
           p = this.method(name).call(req.apiParams);
         } catch (err) {
-          return res.apiOutput(err);
+          return hookOutput(err, undefined, req, res, next);
         }
         p.then(ret => hookOutput(null, ret, req, res, next));
         p.catch(err => hookOutput(err, undefined, req, res, next));
