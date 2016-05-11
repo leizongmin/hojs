@@ -25,8 +25,8 @@ import extendsType from './extends/type';
 import extendsError from './extends/error';
 import extendsOutput from './extends/output';
 import extendsTest from './extends/test';
+import extendsDocs from './extends/docs';
 
-import initDocs from './init/docs';
 import initApi from './init/api';
 
 
@@ -52,7 +52,6 @@ export default class Hojs extends ProjectCore {
     this.api.$express = {};
     this.api.$express.app = null;
     this.api.$express.apiRouter = null;
-    this.api.$express.sysRouter = null;
     this.api.$express.middlewares = [];
     this.api.$hookOutputs = [];
     this.api.$middlewaresMapping = {};
@@ -76,17 +75,14 @@ export default class Hojs extends ProjectCore {
     extendsError.call(this);
     extendsOutput.call(this);
     extendsTest.call(this);
+    extendsDocs.call(this);
 
     const app = this.api.$express.app = express();
     const apiRouter = this.api.$express.apiRouter = createRouter();
-    const sysRouter = this.api.$express.sysRouter = createRouter();
 
     const initTasks = this.api.$initTasks = [];
-    initTasks.push(initDocs.call(this));
     initTasks.push(initApi.call(this));
     initTasks.push(() => {
-      debug('extends sysRouter init...')
-      app.use('/-docs', sysRouter);
       app.use(apiRouter);
     });
 
