@@ -31,10 +31,7 @@ $ npm install hojs --save
 
 ## 使用方法
 
-```javascript
-'user strict';
-
-```
+参考 [hobbs论坛系统](https://github.com/leizongmin/hobbs)
 
 
 ## License
