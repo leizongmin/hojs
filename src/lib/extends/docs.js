@@ -14,9 +14,10 @@ import {core as debug} from '../debug';
 
 export default function () {
 
-  this.api.makeDocs = () => {
+  this.api.docs = {};
 
-    const docsData = {
+  this.api.docs.data = () => {
+    const data = {
       types: {},
       errors: {},
       schemas: this.api.$schemas.map(v => v.options),
@@ -25,35 +26,33 @@ export default function () {
       const t = this.utils.merge(this.api.$types[n]);
       t.checker = t.checker.toString();
       t.formatter = t.formatter.toString();
-      docsData.types[n] = t;
+      data.types[n] = t;
     });
     Object.keys(this.api.$errors).map(n => {
       const e = this.utils.merge(this.api.$errors[n]);
       e.message = e.message.toString();
-      docsData.errors[n] = e;
+      data.errors[n] = e;
     });
-
     const formatOutput = this.api.getOption('formatOutput');
-    for (const s of docsData.schemas) {
+    for (const s of data.schemas) {
       if (s.examples) {
         s.examples.forEach(v => {
           v.output = formatOutput(null, v.output);
         });
       }
     }
+    return data;
+  };
 
-    return {
+  this.api.docs.save = (file) => {
+    assert(typeof file === 'string' && file.length > 0, `save(${file}) failed: filename must be string`);
+    fs.writeFileSync(file, this.utils.jsonStringify(this.api.docs.data(), 2));
+  };
 
-      data() {
-        return docsData;
-      },
-
-      save(file) {
-        fs.writeFileSync(file, JSON.stringify(docsData));
-      }
-
-    };
-
+  this.api.docs.saveOnExit = (file) => {
+    process.on('exit', () => {
+      this.api.docs.save(file);
+    });
   };
 
 };
