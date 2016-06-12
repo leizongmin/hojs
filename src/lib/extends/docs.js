@@ -7,19 +7,18 @@
  */
 
 import fs from 'fs';
+import path from 'path';
 import assert from 'assert';
 import {resolve as resolvePath} from 'path';
 import express from 'express';
-import {core as debug} from '../debug';
+import mkdirp from 'mkdirp';
+import generateMarkdown from '../plugin/generate_markdown';
+import {docs as debug} from '../debug';
 
 export default function () {
 
   this.api.docs = {};
-
-  this.api.docs.takeSample = () => {
-    this.api.$saveApiInputOutput = true;
-    return this.api.docs;
-  };
+  const plugins = [];
 
   this.api.docs.data = () => {
     const data = {
@@ -29,12 +28,14 @@ export default function () {
     };
     Object.keys(this.api.$types).map(n => {
       const t = this.utils.merge(this.api.$types[n]);
+      t.name = n;
       t.checker = t.checker.toString();
       t.formatter = t.formatter.toString();
       data.types[n] = t;
     });
     Object.keys(this.api.$errors).map(n => {
       const e = this.utils.merge(this.api.$errors[n]);
+      e.name = n;
       e.message = e.message.toString();
       data.errors[n] = e;
     });
@@ -49,15 +50,34 @@ export default function () {
     return data;
   };
 
-  this.api.docs.save = (file) => {
-    assert(typeof file === 'string' && file.length > 0, `save(${file}) failed: filename must be string`);
-    fs.writeFileSync(file, this.utils.jsonStringify(this.api.docs.data(), 2));
+  this.api.docs.takeSample = () => {
+    this.api.$saveApiInputOutput = true;
     return this.api.docs;
   };
 
-  this.api.docs.saveOnExit = (file) => {
+  this.api.docs.markdown = () => {
+    plugins.push(generateMarkdown);
+    return this.api.docs;
+  };
+
+  this.api.docs.save = (dir) => {
+
+    assert(typeof dir === 'string' && dir.length > 0, `save(${dir}) failed: dir must be string`);
+    mkdirp.sync(dir);
+
+    const data = this.api.docs.data();
+    fs.writeFileSync(path.resolve(dir, 'all.json'), this.utils.jsonStringify(data, 2));
+
+    for (const fn of plugins) {
+      fn(data, dir);
+    }
+
+    return this.api.docs;
+  };
+
+  this.api.docs.saveOnExit = (dir) => {
     process.on('exit', () => {
-      this.api.docs.save(file);
+      this.api.docs.save(dir);
     });
     return this.api.docs;
   };
