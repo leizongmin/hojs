@@ -149,10 +149,20 @@ ${name} | ${info.type} | ${info.format ? '是' : '否'} | ${required} | ${info.c
     return list.join('\n');
   }
 
+  function formatExampleInput(data) {
+    data = Object.assign({}, data);
+    for (const name in data) {
+      if (name[0] === '$') {
+        delete data[name];
+      }
+    }
+    return data;
+  }
+
   function examples(list) {
     return list.map(item => {
       return `
-input = ${utils.jsonStringify(item.input, 2)};
+input = ${utils.jsonStringify(formatExampleInput(item.input), 2)};
 output = ${utils.jsonStringify(item.output, 2)};
       `.trim();
     }).join('\n\n//------------------\n\n');
