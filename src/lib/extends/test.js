@@ -52,11 +52,11 @@ export default function () {
 
   };
 
-  this.test.suite = (name, init) => {
+  this.test.describe = (name, init) => {
 
-    assert(name, 'test suite name could not empty');
-    assert(typeof name === 'string', `test suite name must be string but got ${name}(${typeof name})`);
-    assert(typeof init === 'function', `test suite init scripts must be function but got ${name}(${typeof name})`);
+    assert(name, 'test describe name could not empty');
+    assert(typeof name === 'string', `test describe name must be string but got ${name}(${typeof name})`);
+    assert(typeof init === 'function', `test describe init scripts must be function but got ${name}(${typeof name})`);
 
     assert(typeof describe === 'function', `describe() is not a function, please be sure running this file in mocha`);
     assert(typeof before === 'function', `before() is not a function, please be sure running this file in mocha`);
@@ -65,23 +65,23 @@ export default function () {
     describe(name, () => {
 
       before(done => {
-        debug('test suite before: %s', name);
+        debug('test describe before: %s', name);
         this.ready(err => {
           if (err) {
-            debug('test suite not ready: %s', err);
+            debug('test describe not ready: %s', err);
           } else {
-            debug('test suite ready: %s', name);
+            debug('test describe ready: %s', name);
           }
           done(err);
         });
       });
 
       after(done => {
-        debug('test suite after: %s', name);
+        debug('test describe after: %s', name);
         done();
       });
 
-      debug('test suite init: %s', name);
+      debug('test describe init: %s', name);
       init();
 
     });
