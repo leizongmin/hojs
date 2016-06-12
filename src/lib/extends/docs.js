@@ -16,6 +16,11 @@ export default function () {
 
   this.api.docs = {};
 
+  this.api.docs.takeSample = () => {
+    this.api.$saveApiInputOutput = true;
+    return this.api.docs;
+  };
+
   this.api.docs.data = () => {
     const data = {
       types: {},
@@ -47,12 +52,14 @@ export default function () {
   this.api.docs.save = (file) => {
     assert(typeof file === 'string' && file.length > 0, `save(${file}) failed: filename must be string`);
     fs.writeFileSync(file, this.utils.jsonStringify(this.api.docs.data(), 2));
+    return this.api.docs;
   };
 
   this.api.docs.saveOnExit = (file) => {
     process.on('exit', () => {
       this.api.docs.save(file);
     });
+    return this.api.docs;
   };
 
 };

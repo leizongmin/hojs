@@ -17,12 +17,14 @@ export default function () {
   const app = this.api.$express.app;
   const apiRouter = this.api.$express.apiRouter;
   const sysRouter = this.api.$express.sysRouter;
+  this.api.$saveApiInputOutput = false;
 
   return () => {
     debug('extends apiRouter init...');
 
     const formatOutput = this.api.getOption('formatOutput');
     const processOutput = (err, ret, req, res, next) => {
+
       let data = null;
       try {
         data = formatOutput(err, ret);
@@ -30,6 +32,13 @@ export default function () {
         return next(err);
       }
       res.json(data);
+
+      if (this.api.$saveApiInputOutput && req.schema) {
+        req.schema._addExample({
+          input: req.apiParams,
+          output: data,
+        });
+      }
     };
 
     apiRouter.use((req, res, next) => {
@@ -163,6 +172,12 @@ export default function () {
       this.method(name).register(handler);
 
       const register = apiRouter[schema.options.method].bind(apiRouter);
+
+      register(schema.options.path, (req, res, next) => {
+        req.schema = schema;
+        next();
+      });
+
       register(schema.options.path, mergeApiParams);
 
       if (schema.options.middlewares.length > 0) {
@@ -173,8 +188,7 @@ export default function () {
 
       register(schema.options.path, wrapApiCall(name));
       debug('register api route: %s before=%s [%s] %s', name, before.length, schema.options.method, schema.options.path);
-
-  }
+    }
 
     // 捕捉出错信息
     apiRouter.use((err, req, res, next) => {

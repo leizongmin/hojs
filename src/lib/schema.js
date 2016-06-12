@@ -59,8 +59,12 @@ export default class Schema {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(example.input && typeof example.input === 'object', '`input` must be object');
     assert(example.output && typeof example.output === 'object', '`output` must be object');
-    this.options.examples.push(example);
+    this._addExample(example);
     return this;
+  }
+
+  _addExample(example) {
+    this.options.examples.push(example);
   }
 
   use(...list) {
@@ -134,7 +138,7 @@ export default class Schema {
 
   init(parent) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    const name = this.name = `[${this.options.method}]${this.options.path}`;
+    const name = this.name = `api ${this.options.method} ${this.options.path}`;
     const before = [];
 
     if (!this.options.env) {
