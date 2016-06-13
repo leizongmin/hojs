@@ -1,6 +1,6 @@
 {
   "name": "hojs",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "基于 Express 的轻量级 RESTful API 服务器框架",
   "main": "index.js",
   "scripts": {
