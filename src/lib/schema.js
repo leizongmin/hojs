@@ -90,7 +90,7 @@ export default class Schema {
       params = null;
     }
     if (params) {
-      assert(params && !info.params, `please don't passed option "params" in the second parameter when you passed the thrid parameter`);
+      assert(params && !info.params, `please don't pass option "params" in the second parameter when you pass the thrid parameter`);
     }
     info.params = params || info.params;
     this.options.params[name] = info;
