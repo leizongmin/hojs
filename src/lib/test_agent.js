@@ -26,7 +26,7 @@ function inspect(obj) {
 
 export default class TestAgent {
 
-  constructor(method, path, sourceFile, parent) {
+  constructor(method, path, key, sourceFile, parent) {
     assert(method && typeof method === 'string', '`method` must be string');
     assert(TestAgent.SUPPORT_METHOD.indexOf(method.toLowerCase()) !== -1, '`method` must be one of ' + TestAgent.SUPPORT_METHOD);
     assert(path && typeof path === 'string', '`path` must be string');
@@ -38,7 +38,7 @@ export default class TestAgent {
       path,
       agent: null,
     };
-    this.key = `${method.toUpperCase()} ${path}`;
+    this.key = `${method.toUpperCase()} ${key}`;
     this._extendsOutput();
     this.debug = createDebug(`agent:${this.key}`);
     this.debug('new: %s %s from %s', method, path, sourceFile.absolute);

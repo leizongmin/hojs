@@ -16,13 +16,23 @@ export default function () {
 
   this.test = {};
 
+  const findSchemaByPath = (path) => {
+    if (this.api.$schemaMapping[path]) return this.api.$schemaMapping[path];
+    for (const key in this.api.$schemaMapping) {
+      const s = this.api.$schemaMapping[key];
+      if (s.pathTest.test(path)) {
+        return s;
+      }
+    }
+  };
+
   // test.get, this.post, ...
   for (const method of TestAgent.SUPPORT_METHOD) {
     this.test[method] = (path, rawSupertest) => {
 
-      const a = new TestAgent(method, path, getCallerSourceLine(this.config.get('api.path')), this);
-      const s = this.api.$schemaMapping[a.key];
-      assert(s, `try to request undefined API ${a.key} at file ${s.options.sourceFile.absolute}`);
+      const s = findSchemaByPath(path);
+      assert(s, `try to request undefined API ${s.key}`);
+      const a = new TestAgent(method, path, s.key, getCallerSourceLine(this.config.get('api.path')), this);
 
       a.initAgent(this.api.$express.app);
       return a.agent(rawSupertest);
@@ -38,9 +48,9 @@ export default function () {
     for (const method of TestAgent.SUPPORT_METHOD) {
       session[method] = (path, rawSupertest) => {
 
-        const a = new TestAgent(method, path, getCallerSourceLine(this.config.get('api.path')), this);
-        const s = this.api.$schemaMapping[a.key];
-        assert(s, `try to request undefined API ${a.key} at file ${s.options.sourceFile.absolute}`);
+        const s = findSchemaByPath(path);
+        assert(s, `try to request undefined API ${s.key}`);
+        const a = new TestAgent(method, path, s.key, getCallerSourceLine(this.config.get('api.path')), this);
 
         a.setAgent(session.$$agent[method](path));
         return a.agent(rawSupertest);
