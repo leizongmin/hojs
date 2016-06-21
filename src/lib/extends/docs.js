@@ -21,11 +21,13 @@ export default function () {
   const plugins = [];
 
   this.api.docs.data = () => {
+
     const data = {
       types: {},
       errors: {},
       schemas: this.api.$schemas.map(v => v.options),
     };
+
     Object.keys(this.api.$types).map(n => {
       const t = this.utils.merge(this.api.$types[n]);
       t.name = n;
@@ -33,12 +35,14 @@ export default function () {
       t.formatter = t.formatter.toString();
       data.types[n] = t;
     });
+
     Object.keys(this.api.$errors).map(n => {
       const e = this.utils.merge(this.api.$errors[n]);
       e.name = n;
       e.message = e.message.toString();
       data.errors[n] = e;
     });
+
     const formatOutput = this.api.getOption('formatOutput');
     for (const s of data.schemas) {
       if (s.examples) {
@@ -47,6 +51,7 @@ export default function () {
         });
       }
     }
+
     return data;
   };
 

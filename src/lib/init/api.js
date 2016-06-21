@@ -95,6 +95,7 @@ export default function () {
       }
       res.apiOutput(err, ret);
     };
+
     if (this.api.isEnable('outputHeaders')) {
       this.api.hookOutput((ret, req, res) => {
         if (ret.$headers) {
@@ -107,6 +108,7 @@ export default function () {
         return ret;
       });
     }
+
     if (this.api.isEnable('outputCookies')) {
       this.api.hookOutput((ret, req, res) => {
         if (ret.$cookies) {
@@ -127,6 +129,7 @@ export default function () {
         return ret;
       });
     }
+
     if (this.api.isEnable('outputSession')) {
       this.api.hookOutput((ret, req, res) => {
         if (ret.$session) {
