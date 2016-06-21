@@ -91,6 +91,13 @@ export default function (registerType) {
 
   registerType('JSON', {
     checker: (v) => typeof v === 'string' && validator.isJSON(v),
+    formatter: (v) => JSON.parse(v),
+    description: 'JSON Object from JSON string',
+    isDefault: true,
+  });
+
+  registerType('JSONString', {
+    checker: (v) => typeof v === 'string' && validator.isJSON(v),
     formatter: (v) => v.trim(),
     description: 'string is valid JSON',
     isDefault: true,
@@ -102,7 +109,7 @@ export default function (registerType) {
     isDefault: true,
   });
 
-  registerType('MongoId', {
+  registerType('MongoIdString', {
     checker: (v) => validator.isMongoId(String(v)),
     description: 'string is a valid hex-encoded representation of a MongoDB ObjectId',
     isDefault: true,

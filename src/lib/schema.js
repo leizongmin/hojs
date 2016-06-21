@@ -176,7 +176,7 @@ export default class Schema {
       const options = this.options.params[name]
       const typeName = options.type;
       const type = parent.getType(typeName);
-      assert(type && type.checker && type.formatter, `please register type ${typeName}`);
+      assert(type && type.checker, `please register type ${typeName}`);
       if (options.params) {
         assert(type.paramsChecker(options.params), `test type params failed`);
         try {
@@ -192,25 +192,35 @@ export default class Schema {
 
       // 类型检查与格式化，并且过滤没有定义的参数
       for (const name in params) {
-        const value = params[name];
-        const options = this.options.params[name];
-        if (!options) {
-          debug('skip undefined param: %s', name);
-          continue;
-        }
-        const type = parent.getType(options.type);
-        if (!type.checker(value, options.params)) {
-          let msg = `should be valid ${options.type}`;
-          if (options.params) {
-            msg = `${msg} with additional restrictions: ${options._paramsJSON}`;
+        try {
+          let value = params[name];
+          const options = this.options.params[name];
+          if (!options) {
+            debug('skip undefined param: %s', name);
+            continue;
           }
-          throw parent.error('parameter_error', msg, {name});
-        }
-        if (options.format) {
-          newParams[name] = type.formatter(value, options.params);
-          debug('auto format param: %j => %j', value, newParams[name]);
-        } else {
-          newParams[name] = value;
+          const type = parent.getType(options.type);
+
+          if (type.parser) {
+            value = type.parser(value);
+          }
+
+          if (!type.checker(value, options.params)) {
+            let msg = `should be valid ${options.type}`;
+            if (options.params) {
+              msg = `${msg} with additional restrictions: ${options._paramsJSON}`;
+            }
+            throw parent.error('parameter_error', msg, {name});
+          }
+
+          if (options.format && type.formatter) {
+            newParams[name] = type.formatter(value, options.params);
+          } else {
+            newParams[name] = value;
+          }
+
+        } catch (err) {
+          throw parent.error('parameter_error', err.message, {name});
         }
       }
 
