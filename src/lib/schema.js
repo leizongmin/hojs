@@ -77,23 +77,34 @@ export default class Schema {
   }
 
   param(name, info, params) {
+
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+
     assert(name && typeof name === 'string', '`name` must be string');
-    assert(info && (typeof info === 'string' || typeof info === 'object'));
+    assert(name.indexOf(' ') === -1, '`name` cannot includes whitespace');
+    assert(name[0] !== '$', '`name` cannot start with $');
     assert(!(name in this.options.params), `param ${name} is already exists`);
+
+    assert(info && (typeof info === 'string' || typeof info === 'object'));
     if (typeof info === 'string') info = {type: info, format: true};
+
     if (!('format' in info)) info.format = true;
+
     assert(/^[A-Z]/.test(info.type[0]), `type ${info.type} must be start with upper case`);
+
     if (params) {
       assert(typeof params === 'object', `type checker params must be object`);
     } else {
       params = null;
     }
+
     if (params) {
       assert(params && !info.params, `please don't pass option "params" in the second parameter when you pass the thrid parameter`);
     }
+
     info.params = params || info.params;
     this.options.params[name] = info;
+
     return this;
   }
 
@@ -192,35 +203,42 @@ export default class Schema {
 
       // 类型检查与格式化，并且过滤没有定义的参数
       for (const name in params) {
-        try {
-          let value = params[name];
-          const options = this.options.params[name];
-          if (!options) {
-            debug('skip undefined param: %s', name);
-            continue;
-          }
-          const type = parent.getType(options.type);
+        if (name[0] == '$') {
 
-          if (type.parser) {
-            value = type.parser(value);
-          }
+          // 特例：以 $ 开头的参数不会做任何检查，也意味着这种参数是不可靠的
+          newParams[name] = params[name];
 
-          if (!type.checker(value, options.params)) {
-            let msg = `should be valid ${options.type}`;
-            if (options.params) {
-              msg = `${msg} with additional restrictions: ${options._paramsJSON}`;
+        } else {
+          try {
+            let value = params[name];
+            const options = this.options.params[name];
+            if (!options) {
+              debug('skip undefined param: %s', name);
+              continue;
             }
-            throw parent.error('parameter_error', msg, {name});
-          }
+            const type = parent.getType(options.type);
 
-          if (options.format && type.formatter) {
-            newParams[name] = type.formatter(value, options.params);
-          } else {
-            newParams[name] = value;
-          }
+            if (type.parser) {
+              value = type.parser(value);
+            }
 
-        } catch (err) {
-          throw parent.error('parameter_error', err.message, {name});
+            if (!type.checker(value, options.params)) {
+              let msg = `should be valid ${options.type}`;
+              if (options.params) {
+                msg = `${msg} with additional restrictions: ${options._paramsJSON}`;
+              }
+              throw parent.error('parameter_error', msg, {name});
+            }
+
+            if (options.format && type.formatter) {
+              newParams[name] = type.formatter(value, options.params);
+            } else {
+              newParams[name] = value;
+            }
+
+          } catch (err) {
+            throw parent.error('parameter_error', err.message, {name});
+          }
         }
       }
 
