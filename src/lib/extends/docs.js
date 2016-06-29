@@ -31,8 +31,9 @@ export default function () {
     Object.keys(this.api.$types).map(n => {
       const t = this.utils.merge(this.api.$types[n]);
       t.name = n;
-      t.checker = t.checker.toString();
-      t.formatter = t.formatter.toString();
+      t.parser = t.parser && t.parser.toString();
+      t.checker = t.checker && t.checker.toString();
+      t.formatter = t.formatter && t.formatter.toString();
       data.types[n] = t;
     });
 

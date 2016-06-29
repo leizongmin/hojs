@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * hojs plugin
+ * hojs plugin - generate-markdown
  *
  * @author Zongmin Lei <leizongmin@gmail.com>
  */
@@ -9,7 +9,8 @@
 import fs from 'fs';
 import path from 'path';
 import utils from 'lei-utils';
-import {plugin as debug} from '../debug';
+import ejs from 'ejs';
+import {plugin as debug} from '../../debug';
 
 export default function (data, dir) {
 
@@ -17,14 +18,18 @@ export default function (data, dir) {
     return path.resolve(dir, name + '.md');
   }
 
-  fs.writeFileSync(filePath('types'), typeDocs(data));
-  fs.writeFileSync(filePath('errors'), errorDocs(data));
+  fs.writeFileSync(filePath('types'), trimSpaces(typeDocs(data)));
+  fs.writeFileSync(filePath('errors'), trimSpaces(errorDocs(data)));
 
   const list = schemaDocs(data);
   for (const item of list) {
-    fs.writeFileSync(filePath(item.name), item.content);
+    fs.writeFileSync(filePath(item.name), trimSpaces(item.content));
   }
 
+}
+
+function trimSpaces(text) {
+  return text.replace(/\r\n/g, '\n').replace(/\n\n+/g, '\n\n').replace(/\n\s+\n/g, '\n\n');
 }
 
 function typeDocs(data) {
@@ -56,23 +61,39 @@ function typeDocs(data) {
   }
   list.push(`# 自定义类型`);
   for (const item of defaultTypes) {
-    list.push(`
+    let line = `
 ## ${item.name}
 
 ${item.description}
+    `;
+    if (item.parser) {
+      line += `
+解析器：
 
+\`\`\`javascript
+${item.parser}
+\`\`\`
+      `;
+    }
+    if (item.checker) {
+      line += `
 检查：
 
-\`\`\`
+\`\`\`javascript
 ${item.checker}
 \`\`\`
-
+      `;
+    }
+    if (item.formatter) {
+      line += `
 格式化：
 
-\`\`\`
+\`\`\`javascript
 ${item.formatter}
 \`\`\`
-    `.trim());
+      `;
+    }
+    list.push(line.trim());
   }
 
   return list.join('\n\n');
@@ -97,13 +118,13 @@ function errorDocs(data) {
 
 内容：
 
-\`\`\`
+\`\`\`javascript
 ${item.message}
 \`\`\`
 
 数据：
 
-\`\`\`
+\`\`\`javascript
 ${utils.jsonStringify(item.data, 2)}
 \`\`\`
     `.trim());
@@ -169,29 +190,40 @@ output = ${utils.jsonStringify(item.output, 2)};
   }
 
   for (const item of data.schemas) {
-    let str = `
+
+    let line = `
 ## ${item.title}
 
 源文件：\`${item.sourceFile.relative}\`
 
 请求地址：**${item.method.toUpperCase()}** **${item.path}**
+    `;
 
+    if (item.middlewares.length > 0) {
+      line += `
 中间件：
 
 ${middleware(item.middlewares)}
+      `;
+    }
+
+    line += `
+参数：
 
 ${paramsTable(item)}
     `;
+
     if (item.examples.length > 0) {
-      str += `
+      line += `
 使用示例：
 
-\`\`\`
+\`\`\`javascript
 ${examples(item.examples)}
 \`\`\`
       `;
     }
-    add(item.group, str.trim());
+
+    add(item.group, line.trim());
   }
 
   const list = [];
