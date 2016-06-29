@@ -9,7 +9,6 @@
 import fs from 'fs';
 import path from 'path';
 import utils from 'lei-utils';
-import ejs from 'ejs';
 import {plugin as debug} from '../../debug';
 
 export default function (data, dir) {

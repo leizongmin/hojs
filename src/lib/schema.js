@@ -76,7 +76,10 @@ export default class Schema {
   use(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const fn of list) {
-      assert(typeof fn === 'function' || typeof fn === 'string', 'use `handler` must be function or string');
+      if (typeof fn === 'function') {
+        throw new Error('schema.use() does not support unnamed middleware, please use api.registerMiddleware(name, fn) to register the middleware and call schema.use(name) to use it');
+      }
+      assert(typeof fn === 'string', 'middleware name must be string');
       this.options.middlewares.push(fn);
     }
     return this;
