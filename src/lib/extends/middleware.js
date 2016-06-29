@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import {wrapAsyncMiddleware} from '../utils';
+import {wrapAsyncMiddleware, getCallerSourceLine} from '../utils';
 import {core as debug} from '../debug';
 
 export default function () {
@@ -18,12 +18,19 @@ export default function () {
     }
   };
 
-  this.api.registerMiddleware = (name, fn) => {
+  this.api.registerMiddleware = (name, fn, description) => {
+
     assert(typeof name === 'string', 'middleware name must be string');
     assert(typeof fn === 'function', 'middleware handler must be function');
     assert(fn.length === 2 || fn.length === 3, 'middleware handler must have 3 arguments: function (req, res, next), or 2 arguments: async function (req, res)');
     assert(!this.api.$middlewaresMapping[name], `middleware ${name} is already exists`);
+
     this.api.$middlewaresMapping[name] = wrapAsyncMiddleware(fn);
+    this.api.$middlewaresMapping[name].options = {
+      origin: fn,
+      sourceFile: getCallerSourceLine(this.config.get('api.path')),
+      description: description || null,
+    };
   };
 
 };

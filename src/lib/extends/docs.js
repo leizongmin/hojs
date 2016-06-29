@@ -25,9 +25,11 @@ export default function () {
     const data = {
       types: {},
       errors: {},
+      middlewares: {},
       schemas: this.api.$schemas.map(v => v.options),
     };
 
+    // types
     Object.keys(this.api.$types).map(n => {
       const t = this.utils.merge(this.api.$types[n]);
       t.name = n;
@@ -37,11 +39,23 @@ export default function () {
       data.types[n] = t;
     });
 
+    // errors
     Object.keys(this.api.$errors).map(n => {
       const e = this.utils.merge(this.api.$errors[n]);
       e.name = n;
       e.message = e.message.toString();
       data.errors[n] = e;
+    });
+
+    // middlewares
+    Object.keys(this.api.$middlewaresMapping).map(n => {
+      const m = this.api.$middlewaresMapping[n];
+      data.middlewares[n] = {
+        name: n,
+        source: m.options.origin.toString(),
+        sourceFile: m.options.sourceFile.relative,
+        description: m.options.description,
+      };
     });
 
     const formatOutput = this.api.getOption('formatOutput');
@@ -50,6 +64,9 @@ export default function () {
         s.examples.forEach(v => {
           v.output = formatOutput(null, v.output);
         });
+      }
+      if (s.sourceFile) {
+        s.sourceFile = s.sourceFile.relative;
       }
     }
 

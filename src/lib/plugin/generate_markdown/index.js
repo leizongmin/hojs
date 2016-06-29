@@ -19,6 +19,7 @@ export default function (data, dir) {
 
   fs.writeFileSync(filePath('types'), trimSpaces(typeDocs(data)));
   fs.writeFileSync(filePath('errors'), trimSpaces(errorDocs(data)));
+  fs.writeFileSync(filePath('middlewares'), trimSpaces(middlewareDocs(data)));
 
   const list = schemaDocs(data);
   for (const item of list) {
@@ -132,6 +133,34 @@ ${utils.jsonStringify(item.data, 2)}
   return list.join('\n\n');
 }
 
+function middlewareDocs(data) {
+
+  const middlewares = [];
+  for (const name in data.middlewares) {
+    middlewares.push(data.middlewares[name]);
+  }
+
+  middlewares.sort((a, b) => {
+    return a.name > b.name;
+  });
+
+  const list = [];
+  list.push('# 中间件');
+  for (const item of middlewares) {
+    let line = `
+## ${item.description || item.name}
+
+名称：**${item.name}**
+
+源文件：\`${item.sourceFile}\`
+    `;
+    list.push(line.trim());
+
+  }
+
+  return list.join('\n\n');
+}
+
 function schemaDocs(data) {
 
   const group = {};
@@ -193,7 +222,7 @@ output = ${utils.jsonStringify(item.output, 2)};
     let line = `
 ## ${item.title}
 
-源文件：\`${item.sourceFile.relative}\`
+源文件：\`${item.sourceFile}\`
 
 请求地址：**${item.method.toUpperCase()}** **${item.path}**
     `;
