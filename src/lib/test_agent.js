@@ -13,9 +13,14 @@ import request from 'supertest';
 import utils from 'lei-utils';
 import {test as debug, create as createDebug} from './debug';
 
+/* 支持的HTTP请求方法 */
 const SUPPORT_METHOD = ['get', 'post', 'put', 'delete'];
 
+/* 输出结果断言错误 */
 const AssertionError = utils.customError('AssertionError', {type: 'api_output_error'});
+
+/* 空回调函数 */
+const noop = () => {};
 
 /**
  * 返回对象结构字符串
@@ -117,31 +122,30 @@ export default class TestAgent {
     return this;
   }
 
-  _extendsOutput() {
-
-    const noop = () => {};
-
-    /**
-     * 输出结果
-     *
-     * @param {Function} callback
-     */
-    this.output = (callback) => {
-      callback = callback || noop;
-      return new Promise((resolve, reject) => {
-        this.options.agent.end((err, res) => {
-          if (err) {
-            callback(err);
-            reject(err);
-            return;
-          }
-          const formatOutputReverse = this.options.parent.api.getOption('formatOutputReverse');
-          const [err2, ret] = formatOutputReverse(res.body);
-          callback(err2, ret);
-          err2 ? reject(err2) : resolve(ret);
-        });
+  /**
+   * 输出结果
+   *
+   * @param {Function} callback
+   */
+  output(callback) {
+    const self = this;
+    callback = callback || noop;
+    return new Promise((resolve, reject) => {
+      self.options.agent.end((err, res) => {
+        if (err) {
+          callback(err);
+          reject(err);
+          return;
+        }
+        const formatOutputReverse = self.options.parent.api.getOption('formatOutputReverse');
+        const [err2, ret] = formatOutputReverse(res.body);
+        callback(err2, ret);
+        err2 ? reject(err2) : resolve(ret);
       });
-    };
+    });
+  }
+
+  _extendsOutput() {
 
     /**
      * 期望输出成功结果
