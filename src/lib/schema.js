@@ -13,8 +13,18 @@ import {schema as debug} from './debug';
 const HAS_BEEN_INITED_ERROR = 'has been inited';
 const SUPPORT_METHOD = ['get', 'post', 'put', 'delete']
 
+/**
+ * API类
+ */
 export default class Schema {
 
+  /**
+   * 构造函数
+   *
+   * @param {String} method 请求方法
+   * @param {String} path 请求路径
+   * @param {Object} sourceFile 源文件路径描述对象
+   */
   constructor(method, path, sourceFile) {
 
     assert(method && typeof method === 'string', '`method` must be string');
@@ -40,6 +50,12 @@ export default class Schema {
     debug('new: %s %s from %s', method, path, sourceFile);
   }
 
+  /**
+   * API标题
+   *
+   * @param {String} title
+   * @return {Object}
+   */
   title(title) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(typeof title === 'string', '`title` must be string');
@@ -47,6 +63,12 @@ export default class Schema {
     return this;
   }
 
+  /**
+   * API描述
+   *
+   * @param {String} description
+   * @return {Object}
+   */
   description(description) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(typeof description === 'string', '`description` must be string');
@@ -54,6 +76,12 @@ export default class Schema {
     return this;
   }
 
+  /**
+   * API分组
+   *
+   * @param {String} group
+   * @return {Object}
+   */
   group(group) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(typeof group === 'string', '`group` must be string');
@@ -61,6 +89,14 @@ export default class Schema {
     return this;
   }
 
+  /**
+   * API使用例子
+   *
+   * @param {Object} example
+   *   - {Object} input 输入参数
+   *   - {Object} output 输出结果
+   * @return {Object}
+   */
   example(example) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(example.input && typeof example.input === 'object', '`input` must be object');
@@ -73,6 +109,12 @@ export default class Schema {
     this.options.examples.push(example);
   }
 
+  /**
+   * 引入中间件
+   *
+   * @param {String} name 中间件名称
+   * @return {Object}
+   */
   use(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const fn of list) {
@@ -85,6 +127,14 @@ export default class Schema {
     return this;
   }
 
+  /**
+   * 输入参数
+   *
+   * @param {String} name 参数名称
+   * @param {Object} info
+   * @param {Object} params
+   * @return {Object}
+   */
   param(name, info, params) {
 
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
@@ -117,15 +167,13 @@ export default class Schema {
     return this;
   }
 
-  params(params) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    assert(params && typeof params === 'object');
-    for (const name in params) {
-      this.param(name, params[name]);
-    }
-    return this;
-  }
-
+  /**
+   * 必填参数
+   *
+   * @param {String} name1 参数名称1
+   * @param {String} name2 参数名称2（可多个）
+   * @return {Object}
+   */
   required(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const item of list) {
@@ -135,6 +183,13 @@ export default class Schema {
     return this;
   }
 
+  /**
+   * 多选一必填参数
+   *
+   * @param {String} name1 参数名称1
+   * @param {String} name2 参数名称2（可多个）
+   * @return {Object}
+   */
   requiredOneOf(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const item of list) {
@@ -144,11 +199,12 @@ export default class Schema {
     return this;
   }
 
-  dev() {
-    this.options.dev = true;
-    return this;
-  }
-
+  /**
+   * 注册处理函数
+   *
+   * @param {Function} fn 函数格式：`async function (params) {}`
+   * @return {Object}
+   */
   register(fn) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     assert(typeof fn === 'function', 'register `handler` must be function');
@@ -271,4 +327,5 @@ export default class Schema {
 
 }
 
+/* 支持的HTTP请求方法 */
 Schema.SUPPORT_METHOD = SUPPORT_METHOD;

@@ -8,6 +8,12 @@
 
 import createDebug from 'debug';
 
+/**
+ * 创建一个调试输出函数
+ *
+ * @param {String} name
+ * @return {Function}
+ */
 export function create(name) {
   return createDebug('hojs:' + name);
 };
