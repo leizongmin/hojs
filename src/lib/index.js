@@ -18,14 +18,14 @@ import {
   wrapAsyncMiddleware,
 } from './utils';
 
-import extendsRegister from './extends/register';
-import extendsEnableAndOption from './extends/enable_and_option';
-import extendsMiddleware from './extends/middleware';
-import extendsType from './extends/type';
-import extendsError from './extends/error';
-import extendsOutput from './extends/output';
-import extendsTest from './extends/test';
-import extendsDocs from './extends/docs';
+import extendsRegister from './extend/register';
+import extendsEnableAndOption from './extend/enable_and_option';
+import extendsMiddleware from './extend/middleware';
+import extendsType from './extend/type';
+import extendsError from './extend/error';
+import extendsOutput from './extend/output';
+import extendsTest from './extend/test';
+import extendsDocs from './extend/docs';
 
 import initApi from './init/api';
 
