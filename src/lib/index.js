@@ -29,9 +29,17 @@ import extendsDocs from './extends/docs';
 
 import initApi from './init/api';
 
-
+/**
+ * ProjectCore类
+ */
 export default class Hojs extends ProjectCore {
 
+  /**
+   * 构造函数
+   *
+   * @param {Object} options
+   *   - {String} path API项目路径
+   */
   constructor(options) {
     super();
     this.validator = validator;
@@ -101,6 +109,11 @@ export default class Hojs extends ProjectCore {
     }
   }
 
+  /**
+   * 初始化
+   *
+   * @param {Function} callback
+   */
   init(callback) {
     debug('init');
 
