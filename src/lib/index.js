@@ -44,6 +44,7 @@ export default class Hojs extends ProjectCore {
     super();
     this.validator = validator;
     this.config.set('api.path', options.path || process.cwd());
+    this.inited = false;
     this._extendApi();
   }
 
@@ -125,6 +126,8 @@ export default class Hojs extends ProjectCore {
 
       this.utils.runSeries(this.api.$initTasks, this, (err) => {
         debug('ready: err=%s', err);
+        this.inited = true;
+
         if (err) {
           this.event.emit('error', err);
           return callback && callback(err);
@@ -134,6 +137,15 @@ export default class Hojs extends ProjectCore {
       });
     });
 
+  }
+
+  /**
+   * 检查是否已初始化，如果已初始化则抛出异常
+   *
+   * @param {String} msg 描述
+   */
+  _checkInited(msg) {
+    assert(this.inited === false, `系统已经初始化，不能再执行此操作${msg ? '：' + msg : ''}`);
   }
 
 }
