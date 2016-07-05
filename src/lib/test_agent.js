@@ -45,6 +45,7 @@ export default class TestAgent {
    *
    * @param {String} method HTTP请求方法
    * @param {String} path 请求路径
+   * @param {String} key 键名：`method path`
    * @param {Object} sourceFile 源文件路径描述对象
    * @param {Object} parent hojs实例
    */
@@ -60,7 +61,7 @@ export default class TestAgent {
       path,
       agent: null,
     };
-    this.key = `${method.toUpperCase()} ${key}`;
+    this.key = key;
     this._extendsOutput();
     this.debug = createDebug(`agent:${this.key}`);
     this.debug('new: %s %s from %s', method, path, sourceFile.absolute);
@@ -157,7 +158,7 @@ export default class TestAgent {
       return new Promise((resolve, reject) => {
         this.output((err, ret) => {
           if (err) {
-            const err2 = new AssertionError(`output expected success but got an error ${inspect(err)}`);
+            const err2 = new AssertionError(`${this.key} 期望API输出成功结果，但实际输出失败结果：${inspect(err)}`);
             callback(err2);
             reject(err2);
           } else {
@@ -181,7 +182,7 @@ export default class TestAgent {
             callback(null, err);
             resolve(err);
           } else {
-            const err2 = new AssertionError(`output expected an error but got result ${inspect(ret)}`);
+            const err2 = new AssertionError(`${this.key} 期望API输出失败结果，但实际输出成功结果：${inspect(ret)}`);
             callback(err2);
             reject(err2);
           }
