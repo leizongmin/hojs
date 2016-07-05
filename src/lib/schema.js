@@ -8,6 +8,7 @@
 
 import assert from 'assert';
 import pathToRegExp from 'path-to-regexp';
+import {getSchemaKey} from './utils';
 import {schema as debug} from './debug';
 
 const HAS_BEEN_INITED_ERROR = 'has been inited';
@@ -43,11 +44,22 @@ export default class Schema {
       params: {},
     };
 
-    this.key = `${method.toUpperCase()} ${path}`;
-    this.pathTest = pathToRegExp(path);
+    this.key = getSchemaKey(method, path);
+    this._pathTestRegExp = pathToRegExp(path);
     this.inited = false;
 
     debug('new: %s %s from %s', method, path, sourceFile);
+  }
+
+  /**
+   * 检查URL是否符合API规则
+   *
+   * @param {String} method
+   * @param {String} path
+   * @return {Boolean}
+   */
+  pathTest(method, path) {
+    return this.options.method === method.toLowerCase() && this._pathTestRegExp.test(path);
   }
 
   /**

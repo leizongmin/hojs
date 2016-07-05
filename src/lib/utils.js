@@ -87,3 +87,14 @@ export function wrapAsyncMiddleware(fn) {
     return fn;
   }
 }
+
+/**
+ * 获取API的Key
+ *
+ * @param {String} method
+ * @param {String} path
+ * @return {String}
+ */
+export function getSchemaKey(method, path) {
+  return `${method.toUpperCase()} ${path}`;
+}
