@@ -15,13 +15,21 @@ export default function () {
 
   this.api.override = {};
 
+  /**
+   * 注册API
+   *
+   * @param {String} method HTTP请求方法
+   * @param {String} path 请求路径
+   * @param {Boolean} strict 是否严格模式，严格模式下不允许重复注册相同的API，默认为`true`
+   * @return {Object}
+   */
   const register = (method, path, strict = true) => {
 
     const s = new Schema(method, path, getCallerSourceLine(this.config.get('api.path')));
     const s2 = this.api.$schemaMapping[s.key];
 
     if (strict) {
-      assert(!s2, `try to register API ${s.key} at file ${s.options.sourceFile.absolute} but was already registered at file ${s2 && s2.options.sourceFile.absolute}`);
+      assert(!s2, `尝试注册API：${s.key}（所在文件：${s.options.sourceFile.absolute}）失败，因为该API已在文件${s2 && s2.options.sourceFile.absolute}中注册过`);
     }
 
     if (s2) {

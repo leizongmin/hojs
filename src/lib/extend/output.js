@@ -13,21 +13,29 @@ export default function () {
 
   const IS_DEFAULT = Symbol('is default');
 
+  /**
+   * 设置格式化输出结果的函数
+   *
+   * @param {Function} fn 函数格式：`function (err, data) { return data; }`
+   * @return {Object}
+   */
   this.api.formatOutput = (fn) => {
 
-    assert(typeof fn === 'function', 'output handler must be function');
-    assert(fn.length === 2, 'output handler must have 2 arguments');
+    assert(typeof fn === 'function', 'formatOutput函数必须为函数类型');
+    assert(fn.length === 2, 'formatOutput函数必须有两个参数');
 
+    // 检查注册的formatOutput函数在失败情况下是否能正常工作
     try {
       const ret = fn(new Error('test formatOutput'));
     } catch (err) {
-      throw new Error(`test formatOutput(err) failed: ${err.stack}`);
+      throw new Error(`测试formatOutput(err)失败：${err.stack}`);
     }
 
+    // 检查注册的formatOutput函数在成功情况下是否能正常工作
     try {
       const ret = fn(null, {ok: true});
     } catch (err) {
-      throw new Error(`test formatOutput(null, data) failed: ${err.stack}`);
+      throw new Error(`测试formatOutput(null, data)失败：${err.stack}`);
     }
 
     this.api.setOption('formatOutput', fn);
@@ -35,6 +43,7 @@ export default function () {
     return this.api;
   };
 
+  /* 默认的格式化输出函数 */
   const defaultFormatOutput = (err, ret) => {
 
     if (err) {
@@ -57,28 +66,37 @@ export default function () {
     }
   };
 
+  // 注册默认的formatOutput
   defaultFormatOutput[IS_DEFAULT] = true;
   this.api.formatOutput(defaultFormatOutput);
 
+  /**
+   * 设置反转格式化输出结果的函数（当自定义了`formatOutput`时必须注册对应的`formatOutputReverse`，且自定义了`formatOutput`必须先注册）
+   *
+   * @param {Function} fn 函数格式：`function (data) { return [err, data]; }`
+   * @return {Object}
+   */
   this.api.formatOutputReverse = (fn) => {
 
-    assert(typeof fn === 'function', 'reverse output handler must be function');
-    assert(fn.length === 1, 'reverse output handler must have 1 arguments');
+    assert(typeof fn === 'function', 'formatOutputReverse函数必须是函数类型');
+    assert(fn.length === 1, 'formatOutputReverse函数必须有1个参数');
 
     const formatOutput = this.api.getOption('formatOutput');
 
+    // 检查注册的formatOutputReverse函数在失败情况下是否能正常工作
     try {
       const ret = fn(formatOutput(new Error('test formatOutput')));
     } catch (err) {
-      throw new Error(`test formatOutputReverse(err) failed: ${err.stack}`);
+      throw new Error(`测试formatOutputReverse(err)失败：${err.stack}`);
     }
 
+    // 检查注册的formatOutputReverse函数在成功情况下是否能正常工作
     try {
       const ret = fn(formatOutput(null, {ok: true}));
-      assert(Array.isArray(ret) && ret.length === 2, `must return an array and only includes 2 items`);
-      assert(ret[0] === null, `if not error, the first item must be null`);
+      assert(Array.isArray(ret) && ret.length === 2, `formatOutputReverse(null, data)必须返回一个包含2个元素的数组`);
+      assert(ret[0] === null, `formatOutputReverse(null, data)如果没有出错，返回数组结果的第一个元素值必须为null`);
     } catch (err) {
-      throw new Error(`test formatOutputReverse(null, data) failed: ${err.stack}`);
+      throw new Error(`测试formatOutputReverse(null, data)失败：${err.stack}`);
     }
 
     this.api.setOption('formatOutputReverse', fn);
@@ -86,6 +104,7 @@ export default function () {
     return this.api;
   };
 
+  /* 默认的反转格式化输出函数 */
   const defaultFormatOutputReverse = (data) => {
     if (data.status === 0) {
       return [null, data.result];
@@ -94,12 +113,18 @@ export default function () {
     }
   };
 
+  // 注册默认的formatOutputReverse
   defaultFormatOutputReverse[IS_DEFAULT] = true;
   this.api.formatOutputReverse(defaultFormatOutputReverse);
 
+  /**
+   * 注册处理输出结果的钩子
+   *
+   * @param {Function} fn 函数格式：`function (data) { return data; }`
+   */
   this.api.hookOutput = (fn) => {
-    assert(typeof fn === 'function', 'output handler must be function');
-    assert(typeof fn({}) !== 'undefined', 'output handler must return a value');
+    assert(typeof fn === 'function', '钩子函数必须是函数类型');
+    assert(typeof fn({}) !== 'undefined', '钩子函数必须返回一个对象');
     debug('hookOutput: %s', fn);
     this.api.$hookOutputs.push(fn);
   };
