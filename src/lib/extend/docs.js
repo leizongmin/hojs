@@ -20,6 +20,11 @@ export default function () {
   this.api.docs = {};
   const plugins = [];
 
+  /**
+   * 获取文档数据
+   *
+   * @return {Object}
+   */
   this.api.docs.data = () => {
 
     const data = {
@@ -60,11 +65,13 @@ export default function () {
 
     const formatOutput = this.api.getOption('formatOutput');
     for (const s of data.schemas) {
+      // 格式化输出结果
       if (s.examples) {
         s.examples.forEach(v => {
           v.output = formatOutput(null, v.output);
         });
       }
+      // 不返回绝对文件名
       if (s.sourceFile) {
         s.sourceFile = s.sourceFile.relative;
       }
@@ -73,19 +80,35 @@ export default function () {
     return data;
   };
 
+  /**
+   * 开始采集输入输出样例
+   *
+   * @return {Object}
+   */
   this.api.docs.takeSample = () => {
     this.api.$saveApiInputOutput = true;
     return this.api.docs;
   };
 
+  /**
+   * 生成Markdown文档
+   *
+   * @return {Object}
+   */
   this.api.docs.markdown = () => {
     plugins.push(generateMarkdown);
     return this.api.docs;
   };
 
+  /**
+   * 存储文档
+   *
+   * @param {String} dir 存储目录
+   * @return {Object}
+   */
   this.api.docs.save = (dir) => {
 
-    assert(typeof dir === 'string' && dir.length > 0, `save(${dir}) failed: dir must be string`);
+    assert(typeof dir === 'string' && dir.length > 0, `文档存储目录"${dir}"格式不正确：必须是字符串类型`);
     mkdirp.sync(dir);
 
     const data = this.api.docs.data();
@@ -98,6 +121,12 @@ export default function () {
     return this.api.docs;
   };
 
+  /**
+   * 当进程退出时存储文档
+   *
+   * @param {String} dir 存储目录
+   * @return {Object}
+   */
   this.api.docs.saveOnExit = (dir) => {
     process.on('exit', () => {
       this.api.docs.save(dir);

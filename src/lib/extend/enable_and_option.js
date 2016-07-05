@@ -21,7 +21,7 @@ export default function () {
   this.api.enable = (...list) => {
     this._checkInited(`enable(${list})`);
     for (const name of list) {
-      assert(name in this.api.$features, `cannot enable unknown feature "${name}"`);
+      assert(name in this.api.$features, `无法启用未知的功能"${name}"`);
       this.api.$features[name] = true;
     }
     return this.api;
@@ -37,7 +37,7 @@ export default function () {
   this.api.disable = (...list) => {
     this._checkInited(`disable(${list})`);
     for (const name of list) {
-      assert(name in this.api.$features, `cannot disable unknown feature "${name}"`);
+      assert(name in this.api.$features, `无法禁用未知的功能"${name}"`);
       this.api.$features[name] = false;
     }
     return this.api;

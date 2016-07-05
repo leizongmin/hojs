@@ -12,6 +12,16 @@ import {core as debug} from '../debug';
 
 export default function () {
 
+  /**
+   * 注册错误类型
+   *
+   * @param {String} name 名称（一般为英文字母）
+   * @param {Object} data 数据
+   *   - {String|Number} status 错误代码
+   *   - {String} message 错误描述
+   *   - {String} description 错误详细信息（用于生成文档）
+   * @return {Object}
+   */
   this.api.registerError = (name, data = {}) => {
 
     assert(typeof name === 'string', 'error name must be string');
@@ -45,6 +55,14 @@ export default function () {
     return this.api;
   };
 
+  /**
+   * 创建指定错误类型
+   *
+   * @param {String} name 名称
+   * @param {String} msg 描述
+   * @param {Object} data 附加数据
+   * @return {Object}
+   */
   this.api.error = (name, msg, data) => {
 
     assert(this.api.$errors[name], `unknown error type ${name}`);
@@ -57,6 +75,7 @@ export default function () {
     return err;
   };
 
+  // 注册默认的错误类型
   registerDefaultErrors(this.api.registerError);
 
 };
