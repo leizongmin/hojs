@@ -44,10 +44,13 @@ export default class Hojs extends ProjectCore {
     super();
     this.validator = validator;
     this.config.set('api.path', options.path || process.cwd());
-    this._extendsApi();
+    this._extendApi();
   }
 
-  _extendsApi() {
+  /**
+   * 初始化
+   */
+  _extendApi() {
 
     this.utils.merge = mergeParams;
 
