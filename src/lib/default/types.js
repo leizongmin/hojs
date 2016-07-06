@@ -14,30 +14,31 @@ export default function (registerType) {
   registerType('Boolean', {
     checker: (v) => typeof v === 'boolean' || (typeof v === 'string' && validator.isBoolean(v)),
     formatter: (v) => String(v).toLowerCase() === 'true' ? true : false,
-    description: 'boolean',
+    description: '布尔值',
     isDefault: true,
   });
 
   registerType('Date', {
     checker: (v) => v instanceof Date || (typeof v === 'string' && validator.isDate(v)),
     formatter: (v) => new Date(v),
-    description: 'date',
+    description: '日期',
     isDefault: true,
   });
 
   registerType('String', {
     checker: (v) => typeof v === 'string',
-    description: 'string',
+    description: '字符串',
     isDefault: true,
   });
 
   registerType('TrimString', {
     checker: (v) => typeof v === 'string',
     formatter: (v) => v.trim(),
-    description: 'auto trim string',
+    description: '自动去首尾空格的字符串',
   });
 
   registerType('Number', {
+    parser: (v) => Number(v),
     checker: (v, p) => {
       const ok = !isNaN(v);
       if (ok && p) {
@@ -46,118 +47,117 @@ export default function (registerType) {
       }
       return ok;
     },
-    formatter: (v) => Number(v),
     paramsChecker: (params) => {
       if ('max' in params) {
-        assert(typeof params.max === 'number', `params.max expected a number but get ${params.max}(${typeof params.max})`);
+        assert(typeof params.max === 'number', `params.max必须为数值类型，但实际输入为${params.max}(${typeof params.max})`);
       }
       if ('min' in params) {
-        assert(typeof params.min === 'number', `params.min expected a number but get ${params.min}(${typeof params.min})`);
+        assert(typeof params.min === 'number', `params.min必须为数值类型，但实际输入为${params.min}(${typeof params.min})`);
       }
       if ('max' in params && 'min' in params) {
-        assert(params.min < params.max, `params.min must less than params.max`);
+        assert(params.min < params.max, `params.min必须小于params.max`);
       }
       return true;
     },
-    description: 'number',
+    description: '数值',
     isDefault: true,
   });
 
   registerType('Integer', {
     checker: (v) => validator.isInt(String(v)),
     formatter: (v) => Number(v),
-    description: 'integer',
+    description: '整数',
     isDefault: true,
   });
 
   registerType('Float', {
     checker: (v) => validator.isFloat(String(v)),
     formatter: (v) => Number(v),
-    description: 'float',
+    description: '浮点数',
     isDefault: true,
   });
 
   registerType('Object', {
     checker: (v) => v && typeof v === 'object',
-    description: 'object',
+    description: '对象',
     isDefault: true,
   });
 
   registerType('Array', {
     checker: (v) => Array.isArray(v),
-    description: 'array',
+    description: '数组',
     isDefault: true,
   });
 
   registerType('JSON', {
     checker: (v) => typeof v === 'string' && validator.isJSON(v),
     formatter: (v) => JSON.parse(v),
-    description: 'JSON Object from JSON string',
+    description: '来源于JSON字符串的对象',
     isDefault: true,
   });
 
   registerType('JSONString', {
     checker: (v) => typeof v === 'string' && validator.isJSON(v),
     formatter: (v) => v.trim(),
-    description: 'string is valid JSON',
+    description: 'JSON字符串',
     isDefault: true,
   });
 
   registerType('Any', {
     checker: (v) => true,
-    description: 'can be any type',
+    description: '任意类型',
     isDefault: true,
   });
 
   registerType('MongoIdString', {
     checker: (v) => validator.isMongoId(String(v)),
-    description: 'string is a valid hex-encoded representation of a MongoDB ObjectId',
+    description: 'MongoDB ObjectId 字符串',
     isDefault: true,
   });
 
   registerType('Email', {
     checker: (v) => typeof v === 'string' && validator.isEmail(v),
     formatter: (v) => v.trim(),
-    description: 'string is an email',
+    description: '邮箱地址',
     isDefault: true,
   });
 
   registerType('Domain', {
     checker: (v) => typeof v === 'string' && validator.isFQDN(v),
     formatter: (v) => v.trim(),
-    description: 'string is a fully qualified domain name (e.g. domain.com)',
+    description: '域名（比如：domain.com）',
     isDefault: true,
   });
 
   registerType('Alpha', {
     checker: (v) => typeof v === 'string' && validator.isAlpha(v),
-    description: 'string contains only letters (a-zA-Z).',
+    description: '字母字符串（a-zA-Z）',
     isDefault: true,
   });
 
   registerType('AlphaNumeric', {
     checker: (v) => typeof v === 'string' && validator.isAlphanumeric(v),
-    description: 'string contains only letters and numbers',
+    description: '字母和数字字符串（a-zA-Z0-9）',
     isDefault: true,
   });
 
   registerType('Ascii', {
     checker: (v) => typeof v === 'string' && validator.isAscii(v),
-    description: 'string contains ASCII chars only',
+    description: 'ASCII字符串',
     isDefault: true,
   });
 
   registerType('Base64', {
     checker: (v) => typeof v === 'string' && validator.isBase64(v),
     formatter: (v) => v.trim(),
-    description: 'string is base64 encoded',
+    description: 'base64字符串',
     isDefault: true,
   });
 
   registerType('URL', {
     checker: (v) => typeof v === 'string' && validator.isURL(v),
     formatter: (v) => v.trim(),
-    description: 'string is an URL',
+    description: 'URL字符串',
     isDefault: true,
   });
 
