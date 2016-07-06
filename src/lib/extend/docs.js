@@ -86,7 +86,7 @@ export default function () {
    * @return {Object}
    */
   this.api.docs.takeSample = () => {
-    this.api.$saveApiInputOutput = true;
+    this.api.$flag.saveApiInputOutput = true;
     return this.api.docs;
   };
 

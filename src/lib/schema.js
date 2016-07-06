@@ -129,12 +129,12 @@ export default class Schema {
    */
   use(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    for (const fn of list) {
-      if (typeof fn === 'function') {
+    for (const name of list) {
+      if (typeof name === 'function') {
         throw new Error('schema.use() does not support unnamed middleware, please use api.registerMiddleware(name, fn) to register the middleware and call schema.use(name) to use it');
       }
-      assert(typeof fn === 'string', 'middleware name must be string');
-      this.options.middlewares.push(fn);
+      assert(typeof name === 'string', 'middleware name must be string');
+      this.options.middlewares.push(name);
     }
     return this;
   }

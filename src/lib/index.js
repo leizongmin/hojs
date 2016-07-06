@@ -15,19 +15,18 @@ import {core as debug} from './debug';
 import {
   createRouter,
   mergeParams,
-  wrapAsyncMiddleware,
 } from './utils';
 
-import extendsRegister from './extend/register';
-import extendsEnableAndOption from './extend/enable_and_option';
-import extendsMiddleware from './extend/middleware';
-import extendsType from './extend/type';
-import extendsError from './extend/error';
-import extendsOutput from './extend/output';
-import extendsTest from './extend/test';
-import extendsDocs from './extend/docs';
+import extendRegister from './extend/register';
+import extendEnableAndOption from './extend/enable_and_option';
+import extendMiddleware from './extend/middleware';
+import extendType from './extend/type';
+import extendError from './extend/error';
+import extendOutput from './extend/output';
+import extendTest from './extend/test';
+import extendDocs from './extend/docs';
 
-import initApi from './init/api';
+import ExpressEngine from './engine/express';
 
 /**
  * ProjectCore类
@@ -61,11 +60,8 @@ export default class Hojs extends ProjectCore {
     this.api.$schemaMapping = {};
     this.api.$types = {};
     this.api.$errors = {};
-    this.api.$express = {};
-    this.api.$express.app = null;
-    this.api.$express.apiRouter = null;
-    this.api.$express.middlewares = [];
     this.api.$hookOutputs = [];
+    this.api.$middlewares = [];
     this.api.$middlewaresMapping = {};
     this.api.$options = {};
     this.api.$features = {
@@ -79,38 +75,48 @@ export default class Hojs extends ProjectCore {
       inputCookies: false,
       inputHeaders: false,
     };
+    this.api.$flag = {
+      saveApiInputOutput: false,
+    };
 
-    extendsRegister.call(this);
-    extendsEnableAndOption.call(this);
-    extendsMiddleware.call(this);
-    extendsType.call(this);
-    extendsError.call(this);
-    extendsOutput.call(this);
-    extendsTest.call(this);
-    extendsDocs.call(this);
+    // ServerEngine
+    this.server = new ExpressEngine(this);
 
-    const app = this.api.$express.app = express();
-    const apiRouter = this.api.$express.apiRouter = createRouter();
+    extendRegister.call(this);
+    extendEnableAndOption.call(this);
+    extendMiddleware.call(this);
+    extendType.call(this);
+    extendError.call(this);
+    extendOutput.call(this);
+    extendTest.call(this);
+    extendDocs.call(this);
 
-    const initTasks = this.api.$initTasks = [];
-    initTasks.push(initApi.call(this));
-    initTasks.push(() => {
-      app.use(apiRouter);
+    // 初始化schema
+    this.api.$initTasks.push(() => {
+      for (const schema of this.api.$schemas) {
+        const {name, before, handler} = schema.init(this.api);
+        for (const fn of before) {
+          this.method(name).before(fn);
+        }
+        this.method(name).register(handler);
+      }
     });
 
-  }
+    // 初始化Web引擎
+    this.api.$initTasks.push((done) => {
+      this.server.init(done);
+    });
 
-  _getApiMiddleware(fn) {
-    const type = typeof fn;
-    if (type === 'string') {
-      const handler = this.api.$middlewaresMapping[fn];
-      assert(typeof handler === 'function', `unknown middleware ${fn}`);
-      return handler;
-    } else if (type === 'function') {
-      return wrapAsyncMiddleware(fn);
-    } else {
-      throw new Error('middleware must be string or function');
-    }
+    // 监听端口
+    this.api.$initTasks.push((done) => {
+      const port = this.api.getOption('port');
+      if (port) {
+        this.server.listen(null, port, done);
+      } else {
+        done();
+      }
+    });
+
   }
 
   /**

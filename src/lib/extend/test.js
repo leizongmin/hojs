@@ -47,7 +47,7 @@ export default function () {
       assert(s, `尝试请求未注册的API：${method} ${path}`);
       const a = new TestAgent(method, path, s.key, getCallerSourceLine(this.config.get('api.path')), this);
 
-      a.initAgent(this.api.$express.app);
+      a.initAgent(this.server.getServerInstance());
       return a.agent(rawSupertest);
 
     };
@@ -61,7 +61,7 @@ export default function () {
   this.test.session = () => {
 
     const session = {};
-    session.$$agent = supertest.agent(this.api.$express.app);
+    session.$$agent = supertest.agent(this.server.getServerInstance());
 
     for (const method of TestAgent.SUPPORT_METHOD) {
       session[method] = (path, rawSupertest) => {

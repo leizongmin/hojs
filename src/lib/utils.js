@@ -7,7 +7,6 @@
  */
 
 import {resolve as resolvePath} from 'path';
-import express from 'express';
 
 /**
  * 获取调用当前函数的源码地址
@@ -34,19 +33,6 @@ export function getCallerSourceLine(dir) {
 }
 
 /**
- * 创建一个Express Router
- *
- * @return {Object}
- */
-export function createRouter() {
-  return express.Router({
-    caseSensitive: true,
-    mergeParams: true,
-    strict: true,
-  });
-}
-
-/**
  * 合并参数
  *
  * @param {Object} a
@@ -63,29 +49,6 @@ export function mergeParams(...list) {
     }
   }
   return ret;
-}
-
-/**
- * 包装中间件，使其支持async/await
- *
- * @param {Function} fn
- * @return {Function}
- */
-export function wrapAsyncMiddleware(fn) {
-  if (fn.length === 2) {
-    return function (req, res, next) {
-      let p = null;
-      try {
-        p = fn(req, res);
-      } catch (err) {
-        return next(err);
-      }
-      p.then(ret => next());
-      p.catch(err => next(err));
-    };
-  } else {
-    return fn;
-  }
 }
 
 /**
