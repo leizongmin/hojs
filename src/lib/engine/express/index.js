@@ -43,7 +43,7 @@ export default class ExpressEngine {
     this.$express.app = express();
     this.$express.apiRouter = createRouter();
     this.$express.app.use(this.$express.apiRouter);
-    this.$server = http.createServer(this.$express.app);
+    this.$server = http.createServer(this.getMiddleware());
   }
 
   /**
@@ -277,6 +277,15 @@ export default class ExpressEngine {
    */
   getServerInstance() {
     return this.$server;
+  }
+
+  /**
+   * 返回connect中间件（方便嵌入到其他基于connect的应用）
+   *
+   * @return {Function}
+   */
+  getMiddleware() {
+    return this.$express.app;
   }
 
   /**
