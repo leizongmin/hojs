@@ -1,4 +1,4 @@
-# 基于 Express 的轻量级 RESTful API 服务器框架
+# 轻量级 RESTful API 服务器框架
 
 
 ## 目标
@@ -20,6 +20,7 @@
 + [ ] 内置组件：数据签名、会话管理、AccessToken
 + [ ] 使用文档、教程
 + [x] 基于ho.js的论坛系统
++ [ ] 支持Express和Koa引擎
 
 
 ## 安装
