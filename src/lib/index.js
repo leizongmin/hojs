@@ -107,16 +107,6 @@ export default class Hojs extends ProjectCore {
       this.server.init(done);
     });
 
-    // 监听端口
-    this.api.$initTasks.push((done) => {
-      const port = this.api.getOption('port');
-      if (port) {
-        this.server.listen(null, port, done);
-      } else {
-        done();
-      }
-    });
-
   }
 
   /**
