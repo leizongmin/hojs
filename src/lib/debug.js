@@ -23,4 +23,3 @@ export var schema = create('schema');
 export var test = create('test');
 export var docs = create('docs');
 export var plugin = create('plugin');
-export var express = create('express');

@@ -1,6 +1,6 @@
 {
   "name": "hojs",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "轻量级 RESTful API 服务器框架",
   "main": "index.js",
   "scripts": {
@@ -33,10 +33,7 @@
     "mocha": "^2.3.4"
   },
   "dependencies": {
-    "body-parser": "^1.15.0",
-    "connect-multiparty": "^2.0.0",
     "debug": "^2.2.0",
-    "express": "^4.13.4",
     "lei-utils": "^2.1.0",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "^1.5.3",

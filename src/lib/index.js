@@ -7,15 +7,11 @@
  */
 
 import assert from 'assert';
-import express from 'express';
 import validator from 'validator';
 import ProjectCore from 'project-core';
 
 import {core as debug} from './debug';
-import {
-  createRouter,
-  mergeParams,
-} from './utils';
+import {mergeParams} from './utils';
 
 import extendRegister from './extend/register';
 import extendEnableAndOption from './extend/enable_and_option';
@@ -26,7 +22,6 @@ import extendOutput from './extend/output';
 import extendTest from './extend/test';
 import extendDocs from './extend/docs';
 
-import ExpressEngine from './engine/express';
 
 /**
  * ProjectCore类
@@ -38,12 +33,35 @@ export default class Hojs extends ProjectCore {
    *
    * @param {Object} options
    *   - {String} path API项目路径
+   *   - {String|Function} engine Web引擎，如果为字符串，则加载`express-${name}`
    */
   constructor(options) {
     super();
+
+    this.inited = false;
     this.validator = validator;
     this.config.set('api.path', options.path || process.cwd());
-    this.inited = false;
+
+    options.engine = options.engine || 'express';
+    const engineType = typeof options.engine;
+    assert(engineType === 'string' || engineType === 'function', `engine参数必须为字符串或函数类型`);
+
+    // 检查engine是否正确
+    if (engineType === 'string') {
+      try {
+        this.ServerEngine = require(`hojs-${options.engine}`);
+      } catch (err) {
+        console.error(err.stack);
+        throw new Error(`无法加载引擎${options.engine}，请检查是否正确安装了 hojs-${options.engine} 模块`);
+      }
+      assert(typeof this.ServerEngine === 'function', `hojs-${options.engine} 不是一个有效的引擎`);
+    } else {
+      this.ServerEngine = options.engine;
+    }
+
+    // 创建engine
+    this.server = new this.ServerEngine(this);
+
     this._extendApi();
   }
 
@@ -78,9 +96,6 @@ export default class Hojs extends ProjectCore {
     this.api.$flag = {
       saveApiInputOutput: false,
     };
-
-    // ServerEngine
-    this.server = new ExpressEngine(this);
 
     extendRegister.call(this);
     extendEnableAndOption.call(this);
