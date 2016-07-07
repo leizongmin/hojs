@@ -110,9 +110,11 @@ export default function () {
     assert(typeof dir === 'string' && dir.length > 0, `文档存储目录"${dir}"格式不正确：必须是字符串类型`);
     mkdirp.sync(dir);
 
+    // 保存 all.json
     const data = this.api.docs.data();
     fs.writeFileSync(path.resolve(dir, 'all.json'), this.utils.jsonStringify(data, 2));
 
+    // 根据插件生成文档
     for (const fn of plugins) {
       fn(data, dir);
     }
