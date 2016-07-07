@@ -28,10 +28,10 @@ export default class Schema {
    */
   constructor(method, path, sourceFile) {
 
-    assert(method && typeof method === 'string', '`method` must be string');
-    assert(Schema.SUPPORT_METHOD.indexOf(method.toLowerCase()) !== -1, '`method` must be one of ' + Schema.SUPPORT_METHOD);
-    assert(path && typeof path === 'string', '`path` must be string');
-    assert(path[0] === '/', '`path` must be start with "/"');
+    assert(method && typeof method === 'string', '`method`必须是字符串类型');
+    assert(Schema.SUPPORT_METHOD.indexOf(method.toLowerCase()) !== -1, '`method`必须是以下请求方法中的一个：' + Schema.SUPPORT_METHOD);
+    assert(path && typeof path === 'string', '`path`必须是字符串类型');
+    assert(path[0] === '/', '`path`必须以"/"开头');
 
     this.options = {
       sourceFile,
@@ -70,7 +70,7 @@ export default class Schema {
    */
   title(title) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    assert(typeof title === 'string', '`title` must be string');
+    assert(typeof title === 'string', '`title`必须是字符串类型');
     this.options.title = title;
     return this;
   }
@@ -83,7 +83,7 @@ export default class Schema {
    */
   description(description) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    assert(typeof description === 'string', '`description` must be string');
+    assert(typeof description === 'string', '`description`必须是字符串类型');
     this.options.description = description;
     return this;
   }
@@ -96,7 +96,7 @@ export default class Schema {
    */
   group(group) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    assert(typeof group === 'string', '`group` must be string');
+    assert(typeof group === 'string', '`group`必须是字符串类型');
     this.options.group = group;
     return this;
   }
@@ -111,8 +111,8 @@ export default class Schema {
    */
   example(example) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    assert(example.input && typeof example.input === 'object', '`input` must be object');
-    assert(example.output && typeof example.output === 'object', '`output` must be object');
+    assert(example.input && typeof example.input === 'object', '`input`必须是一个对象');
+    assert(example.output && typeof example.output === 'object', '`output`必须是一个对象');
     this._addExample(example);
     return this;
   }
@@ -130,10 +130,7 @@ export default class Schema {
   use(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const name of list) {
-      if (typeof name === 'function') {
-        throw new Error('schema.use() does not support unnamed middleware, please use api.registerMiddleware(name, fn) to register the middleware and call schema.use(name) to use it');
-      }
-      assert(typeof name === 'string', 'middleware name must be string');
+      assert(typeof name === 'string', '中间件名称必须是字符串类型');
       this.options.middlewares.push(name);
     }
     return this;
@@ -151,26 +148,26 @@ export default class Schema {
 
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
 
-    assert(name && typeof name === 'string', '`name` must be string');
-    assert(name.indexOf(' ') === -1, '`name` cannot includes whitespace');
-    assert(name[0] !== '$', '`name` cannot start with $');
-    assert(!(name in this.options.params), `param ${name} is already exists`);
+    assert(name && typeof name === 'string', '`name`必须是字符串类型');
+    assert(name.indexOf(' ') === -1, '`name`不能包含空格');
+    assert(name[0] !== '$', '`name`不能以"$"开头');
+    assert(!(name in this.options.params), `参数 ${name} 已存在`);
 
     assert(info && (typeof info === 'string' || typeof info === 'object'));
     if (typeof info === 'string') info = {type: info, format: true};
 
     if (!('format' in info)) info.format = true;
 
-    assert(/^[A-Z]/.test(info.type[0]), `type ${info.type} must be start with upper case`);
+    assert(/^[A-Z]/.test(info.type[0]), `type必须以大写字母开头：${info.type}`);
 
     if (params) {
-      assert(typeof params === 'object', `type checker params must be object`);
+      assert(typeof params === 'object', `params必须是一个对象`);
     } else {
       params = null;
     }
 
     if (params) {
-      assert(params && !info.params, `please don't pass option "params" in the second parameter when you pass the thrid parameter`);
+      assert(params && !info.params, '如果通过第三个参数指定了`params`，请勿在第二参数中指定`info.params`');
     }
 
     info.params = params || info.params;
@@ -189,7 +186,7 @@ export default class Schema {
   required(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const item of list) {
-      assert(typeof item === 'string', 'required `name` must be string');
+      assert(typeof item === 'string', '`name`必须是字符串类型');
       this.options.required.push(item);
     }
     return this;
@@ -205,7 +202,7 @@ export default class Schema {
   requiredOneOf(...list) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
     for (const item of list) {
-      assert(typeof item === 'string', 'required `name` must be string');
+      assert(typeof item === 'string', '`name`必须是字符串类型');
     }
     this.options.requiredOneOf.push(list);
     return this;
@@ -219,7 +216,7 @@ export default class Schema {
    */
   register(fn) {
     assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    assert(typeof fn === 'function', 'register `handler` must be function');
+    assert(typeof fn === 'function', '处理函数必须是一个函数类型');
     this.options.handler = fn;
     return this;
   }
@@ -230,7 +227,7 @@ export default class Schema {
     const before = [];
 
     if (!this.options.env) {
-      assert(this.options.handler, `please register a handler for API ${name}`);
+      assert(this.options.handler, `请为 API ${name} 注册一个处理函数`);
     }
 
     if (this.options.required.length > 0) {
