@@ -10,7 +10,6 @@ import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
 import {resolve as resolvePath} from 'path';
-import express from 'express';
 import mkdirp from 'mkdirp';
 import generateMarkdown from '../plugin/generate_markdown';
 import {docs as debug} from '../debug';
