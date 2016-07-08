@@ -14,6 +14,7 @@ import {core as debug} from './debug';
 import {mergeParams} from './utils';
 
 import extendRegister from './extend/register';
+import extendHook from './extend/hook';
 import extendEnableAndOption from './extend/enable_and_option';
 import extendMiddleware from './extend/middleware';
 import extendType from './extend/type';
@@ -80,6 +81,7 @@ export default class Hojs extends ProjectCore {
     this.api.$errors = {};
     this.api.$hookOutputs = [];
     this.api.$middlewares = [];
+    this.api.$hooks = {};
     this.api.$middlewaresMapping = {};
     this.api.$options = {};
     this.api.$features = {
