@@ -16,7 +16,7 @@ const $ = new Hojs({
 
 // 注册API
 $.api
-.get('/')
+.get('/send')
 .param('msg', {
   type: 'TrimString',
   default: '没有提交参数',
