@@ -141,6 +141,10 @@ export default class Schema {
    *
    * @param {String} name 参数名称
    * @param {Object} info
+   *   - {String} type 参数类型
+   *   - {Boolean} format 是否格式化，默认true
+   *   - {Mixed} default 默认值，默认无
+   *   - {String} comment 备注信息（用于文档生成）
    * @param {Object} params
    * @return {Object}
    */

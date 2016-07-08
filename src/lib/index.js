@@ -127,6 +127,15 @@ export default class Hojs extends ProjectCore {
   }
 
   /**
+   * 检查是否已初始化，如果已初始化则抛出异常
+   *
+   * @param {String} msg 描述
+   */
+  _checkInited(msg) {
+    assert(this.inited === false, `系统已经初始化，不能再执行此操作${msg ? '：' + msg : ''}`);
+  }
+
+  /**
    * 初始化
    *
    * @param {Function} callback
@@ -153,12 +162,33 @@ export default class Hojs extends ProjectCore {
   }
 
   /**
-   * 检查是否已初始化，如果已初始化则抛出异常
+   * 监听端口
    *
-   * @param {String} msg 描述
+   * @param {String} host
+   * @param {Number} port
+   * @param {Function} callback
+   * @return {Object}
    */
-  _checkInited(msg) {
-    assert(this.inited === false, `系统已经初始化，不能再执行此操作${msg ? '：' + msg : ''}`);
+  listen(host, port, callback) {
+    this.server.listen(host, port, callback);
+    return this;
+  }
+
+  /**
+   * 初始化并监听端口
+   *
+   * @param {String} host
+   * @param {Number} port
+   * @param {Function} callback
+   * @return {Object}
+   */
+  initAndListen(host, port, callback) {
+    this.init(err => {
+      if (err) return callback(err);
+
+      this.listen(host, port, callback);
+    });
+    return this;
   }
 
 }
