@@ -63,6 +63,19 @@ export default class Hojs extends ProjectCore {
     // 创建engine
     this.server = new this.ServerEngine(this);
 
+    // 检查engine是否被正确实现
+    // constructor(parent)
+    // init(callback)
+    // listen(host, port, callback)
+    // getServerInstance() -> http.Server
+    // getMiddleware() -> app
+    // use(fn)
+    assert(typeof this.server.init, `engine没有实现init(callback)方法`);
+    assert(typeof this.server.listen, `engine没有实现listen(host, port, callback)方法`);
+    assert(typeof this.server.getServerInstance, `engine没有实现getServerInstance()方法`);
+    assert(typeof this.server.getMiddleware, `engine没有实现getMiddleware()方法`);
+    assert(typeof this.server.use, `engine没有实现use(fn)方法`);
+
     this._extendApi();
   }
 
