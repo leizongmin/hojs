@@ -19,7 +19,7 @@ export default function (data, dir) {
 
   fs.writeFileSync(filePath('types'), trimSpaces(typeDocs(data)));
   fs.writeFileSync(filePath('errors'), trimSpaces(errorDocs(data)));
-  fs.writeFileSync(filePath('middlewares'), trimSpaces(middlewareDocs(data)));
+  fs.writeFileSync(filePath('hooks'), trimSpaces(hookDocs(data)));
 
   const list = schemaDocs(data);
   for (const item of list) {
@@ -133,20 +133,20 @@ ${utils.jsonStringify(item.data, 2)}
   return list.join('\n\n');
 }
 
-function middlewareDocs(data) {
+function hookDocs(data) {
 
-  const middlewares = [];
-  for (const name in data.middlewares) {
-    middlewares.push(data.middlewares[name]);
+  const hooks = [];
+  for (const name in data.hooks) {
+    hooks.push(data.hooks[name]);
   }
 
-  middlewares.sort((a, b) => {
+  hooks.sort((a, b) => {
     return a.name > b.name;
   });
 
   const list = [];
-  list.push('# 中间件');
-  for (const item of middlewares) {
+  list.push('# 钩子');
+  for (const item of hooks) {
     let line = `
 ## ${item.description || item.name}
 
@@ -170,7 +170,7 @@ function schemaDocs(data) {
     group[name].push(content.trim());
   }
 
-  function middleware(list) {
+  function hook(list) {
     return list.map(name => `+ **${name}**`).join('\n');
   }
 
@@ -227,11 +227,19 @@ output = ${utils.jsonStringify(item.output, 2)};
 请求地址：**${item.method.toUpperCase()}** **${item.path}**
     `;
 
-    if (item.middlewares.length > 0) {
+    if (item.beforeHooks.length > 0) {
       line += `
-中间件：
+执行之前钩子：
 
-${middleware(item.middlewares)}
+${hook(item.beforeHooks)}
+      `;
+    }
+
+    if (item.afterHooks.length > 0) {
+      line += `
+执行之后钩子：
+
+${hook(item.afterHooks)}
       `;
     }
 

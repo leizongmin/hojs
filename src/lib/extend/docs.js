@@ -29,7 +29,7 @@ export default function () {
     const data = {
       types: {},
       errors: {},
-      middlewares: {},
+      hooks: {},
       schemas: this.api.$schemas.map(v => v.options),
     };
 
@@ -51,14 +51,14 @@ export default function () {
       data.errors[n] = e;
     });
 
-    // middlewares
-    Object.keys(this.api.$middlewaresMapping).map(n => {
-      const m = this.api.$middlewaresMapping[n];
-      data.middlewares[n] = {
+    // hooks
+    Object.keys(this.api.$hooks).map(n => {
+      const fn = this.api.$hooks[n];
+      data.hooks[n] = {
         name: n,
-        source: m.options.origin.toString(),
-        sourceFile: m.options.sourceFile.relative,
-        description: m.options.description,
+        source: fn.toString(),
+        sourceFile: fn.options.sourceFile.relative,
+        description: fn.options.description,
       };
     });
 

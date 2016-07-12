@@ -18,14 +18,19 @@ export default function () {
    *
    * @param {String} name
    * @param {Function} handler
+   * @param {Function} description
    */
-  this.api.registerHook = (name, handler) => {
+  this.api.registerHook = (name, handler, description) => {
 
-    assert(typeof name === 'stirng', `钩子名称必须为字符串类型`);
+    assert(typeof name === 'string', `钩子名称必须为字符串类型`);
     assert(typeof handler === 'function', `钩子处理函数必须为函数类型`);
 
     assert(!this.api.$hooks[name], `钩子"${name}"已存在`);
 
+    handler.options = {
+      sourceFile: getCallerSourceLine(this.config.get('api.path')),
+      description,
+    };
     this.api.$hooks[name] = handler;
 
     return this.api;

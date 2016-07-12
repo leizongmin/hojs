@@ -99,6 +99,7 @@ export default class Hojs extends ProjectCore {
       saveApiInputOutput: false,
     };
 
+    extendHook.call(this);
     extendRegister.call(this);
     extendEnableAndOption.call(this);
     extendMiddleware.call(this);
@@ -111,9 +112,12 @@ export default class Hojs extends ProjectCore {
     // 初始化schema
     this.api.$initTasks.push(() => {
       for (const schema of this.api.$schemas) {
-        const {name, before, handler} = schema.init(this.api);
+        const {name, handler, before, after} = schema.init(this.api);
         for (const fn of before) {
           this.method(name).before(fn);
+        }
+        for (const fn of after) {
+          this.method(name).after(fn);
         }
         this.method(name).register(handler);
       }

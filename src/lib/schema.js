@@ -11,7 +11,6 @@ import pathToRegExp from 'path-to-regexp';
 import {getSchemaKey} from './utils';
 import {schema as debug} from './debug';
 
-const HAS_BEEN_INITED_ERROR = 'has been inited';
 const SUPPORT_METHOD = ['get', 'post', 'put', 'delete']
 
 /**
@@ -38,7 +37,8 @@ export default class Schema {
       method: method.toLowerCase(),
       path,
       examples: [],
-      middlewares: [],
+      beforeHooks: [],
+      afterHooks: [],
       required: [],
       requiredOneOf: [],
       params: {},
@@ -49,6 +49,15 @@ export default class Schema {
     this.inited = false;
 
     debug('new: %s %s from %s', method, path, sourceFile);
+  }
+
+  /**
+   * 检查是否已经完成初始化，如果是则报错
+   */
+  _checkInited() {
+    if (this.inited) {
+      throw new Error(`${this.key}已经完成初始化，不能再进行更改`);
+    }
   }
 
   /**
@@ -69,7 +78,7 @@ export default class Schema {
    * @return {Object}
    */
   title(title) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     assert(typeof title === 'string', '`title`必须是字符串类型');
     this.options.title = title;
     return this;
@@ -82,7 +91,7 @@ export default class Schema {
    * @return {Object}
    */
   description(description) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     assert(typeof description === 'string', '`description`必须是字符串类型');
     this.options.description = description;
     return this;
@@ -95,7 +104,7 @@ export default class Schema {
    * @return {Object}
    */
   group(group) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     assert(typeof group === 'string', '`group`必须是字符串类型');
     this.options.group = group;
     return this;
@@ -110,7 +119,7 @@ export default class Schema {
    * @return {Object}
    */
   example(example) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     assert(example.input && typeof example.input === 'object', '`input`必须是一个对象');
     assert(example.output && typeof example.output === 'object', '`output`必须是一个对象');
     this._addExample(example);
@@ -119,21 +128,6 @@ export default class Schema {
 
   _addExample(example) {
     this.options.examples.push(example);
-  }
-
-  /**
-   * 引入中间件
-   *
-   * @param {String} name 中间件名称
-   * @return {Object}
-   */
-  use(...list) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
-    for (const name of list) {
-      assert(typeof name === 'string', '中间件名称必须是字符串类型');
-      this.options.middlewares.push(name);
-    }
-    return this;
   }
 
   /**
@@ -150,7 +144,7 @@ export default class Schema {
    */
   param(name, info, params) {
 
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
 
     assert(name && typeof name === 'string', '`name`必须是字符串类型');
     assert(name.indexOf(' ') === -1, '`name`不能包含空格');
@@ -188,7 +182,7 @@ export default class Schema {
    * @return {Object}
    */
   required(...list) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     for (const item of list) {
       assert(typeof item === 'string', '`name`必须是字符串类型');
       this.options.required.push(item);
@@ -204,11 +198,41 @@ export default class Schema {
    * @return {Object}
    */
   requiredOneOf(...list) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     for (const item of list) {
       assert(typeof item === 'string', '`name`必须是字符串类型');
     }
     this.options.requiredOneOf.push(list);
+    return this;
+  }
+
+  /**
+   * 注册执行之前的钩子
+   *
+   * @param {String} name
+   * @return {Object}
+   */
+  before(...list) {
+    this._checkInited();
+    for (const name of list) {
+      assert(typeof name === 'string', '钩子名称必须是字符串类型');
+      this.options.beforeHooks.push(name);
+    }
+    return this;
+  }
+
+  /**
+   * 注册执行之后的钩子
+   *
+   * @param {String} name
+   * @return {Object}
+   */
+  after(...list) {
+    this._checkInited();
+    for (const name of list) {
+      assert(typeof name === 'string', '钩子名称必须是字符串类型');
+      this.options.afterHooks.push(name);
+    }
     return this;
   }
 
@@ -219,48 +243,22 @@ export default class Schema {
    * @return {Object}
    */
   register(fn) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     assert(typeof fn === 'function', '处理函数必须是一个函数类型');
     this.options.handler = fn;
     return this;
   }
 
   init(parent) {
-    assert(this.inited === false, HAS_BEEN_INITED_ERROR);
+    this._checkInited();
     const name = this.name = `api ${this.options.method} ${this.options.path}`;
-    const before = [];
+    const checkParamHooks = [];
 
     if (!this.options.env) {
       assert(this.options.handler, `请为 API ${name} 注册一个处理函数`);
     }
 
-    if (this.options.required.length > 0) {
-      before.push((params) => {
-        for (const name of this.options.required) {
-          if (!(name in params)) {
-            throw parent.error('missing_required_parameter', null, {name});
-          }
-        }
-        return params;
-      });
-    }
-
-    if (this.options.requiredOneOf.length > 0) {
-      before.push((params) => {
-        for (const names of this.options.requiredOneOf) {
-          let ok = false;
-          for (const name of names) {
-            ok = (name in params);
-            if (ok) break;
-          }
-          if (!ok) {
-            throw parent.error('missing_required_parameter', `one of ${names.join(', ')}`, {name})
-          }
-        }
-        return params;
-      });
-    }
-
+    // 初始化时参数类型检查
     for (const name in this.options.params) {
       const options = this.options.params[name]
       const typeName = options.type;
@@ -276,7 +274,52 @@ export default class Schema {
       }
     }
 
-    before.push((params) => {
+    // 初始化时检查before钩子是否正确
+    const beforeHooks = [];
+    for (const name of this.options.beforeHooks) {
+      assert(parent.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
+      beforeHooks.push(parent.$hooks[name]);
+    }
+
+    // 初始化时检查after钩子是否正确
+    const afterHooks = [];
+    for (const name of this.options.afterHooks) {
+      assert(parent.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
+      afterHooks.push(parent.$hooks[name]);
+    }
+
+
+    // 必填参数检查
+    if (this.options.required.length > 0) {
+      checkParamHooks.push((params) => {
+        for (const name of this.options.required) {
+          if (!(name in params)) {
+            throw parent.error('missing_required_parameter', null, {name});
+          }
+        }
+        return params;
+      });
+    }
+
+    // 可选参数检查
+    if (this.options.requiredOneOf.length > 0) {
+      checkParamHooks.push((params) => {
+        for (const names of this.options.requiredOneOf) {
+          let ok = false;
+          for (const name of names) {
+            ok = (name in params);
+            if (ok) break;
+          }
+          if (!ok) {
+            throw parent.error('missing_required_parameter', `one of ${names.join(', ')}`, {name})
+          }
+        }
+        return params;
+      });
+    }
+
+    // 参数值检查
+    checkParamHooks.push((params) => {
       const newParams = {};
 
       // 类型检查与格式化，并且过滤没有定义的参数
@@ -335,7 +378,12 @@ export default class Schema {
     });
 
     this.inited = true;
-    return {name, before, handler: this.options.handler};
+    return {
+      name,
+      handler: this.options.handler,
+      before: beforeHooks.concat(checkParamHooks),
+      after: afterHooks,
+    };
   }
 
 }
