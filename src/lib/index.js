@@ -15,7 +15,7 @@ import {mergeParams} from './utils';
 
 import extendRegister from './extend/register';
 import extendHook from './extend/hook';
-import extendEnableAndOption from './extend/enable_and_option';
+import extendOption from './extend/option';
 import extendMiddleware from './extend/middleware';
 import extendType from './extend/type';
 import extendError from './extend/error';
@@ -97,24 +97,13 @@ export default class Hojs extends ProjectCore {
     this.api.$hooks = {};
     this.api.$middlewaresMapping = {};
     this.api.$options = {};
-    this.api.$features = {
-      multipart: true,
-      urlencoded: true,
-      json: true,
-      outputSession: false,
-      outputCookies: true,
-      outputHeaders: true,
-      inputSession: false,
-      inputCookies: false,
-      inputHeaders: false,
-    };
     this.api.$flag = {
       saveApiInputOutput: false,
     };
 
     extendHook.call(this);
     extendRegister.call(this);
-    extendEnableAndOption.call(this);
+    extendOption.call(this);
     extendMiddleware.call(this);
     extendType.call(this);
     extendError.call(this);
