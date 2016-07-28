@@ -15,7 +15,6 @@ import {mergeParams} from './utils';
 
 import extendRegister from './extend/register';
 import extendOption from './extend/option';
-import extendMiddleware from './extend/middleware';
 import extendOutput from './extend/output';
 import extendTest from './extend/test';
 import extendDocs from './extend/docs';
@@ -95,17 +94,13 @@ export default class Hojs extends ProjectCore {
     this.api.$schemas = [];
     this.api.$schemaMapping = {};
     this.api.$hookOutputs = [];
-    this.api.$middlewares = [];
-    this.api.$middlewaresMapping = {};
     this.api.$options = {};
     this.api.$flag = {
       saveApiInputOutput: false,
     };
 
-
     extendRegister.call(this);
     extendOption.call(this);
-    extendMiddleware.call(this);
 
     // 钩子管理
     this.hook = new HookManager(this);
