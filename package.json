@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -Rf dist",
-    "watch": "npm run clean && babel src -d dist --watch --source-maps=inline",
-    "compile": "npm run clean && babel src -d dist --source-maps=inline",
+    "watch": "npm run clean && babel src -d dist --watch --source-maps=true",
+    "compile": "npm run clean && babel src -d dist --source-maps=true",
     "prepublish": "npm run compile"
   },
   "repository": {
