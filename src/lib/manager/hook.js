@@ -7,11 +7,10 @@
  */
 
 import assert from 'assert';
-import Schema from '../schema';
 import {getCallerSourceLine} from '../utils';
-import {core as debug} from '../debug';
+import Manager from './manager';
 
-export default function () {
+export default class HookManager extends Manager{
 
   /**
    * 注册 API 钩子
@@ -20,20 +19,21 @@ export default function () {
    * @param {Function} handler
    * @param {Function} description
    */
-  this.api.registerHook = (name, handler, description) => {
+  register(name, handler, description) {
 
     assert(typeof name === 'string', `钩子名称必须为字符串类型`);
     assert(typeof handler === 'function', `钩子处理函数必须为函数类型`);
 
-    assert(!this.api.$hooks[name], `钩子"${name}"已存在`);
+    assert(!this.get(name), `钩子"${name}"已存在`);
 
     handler.options = {
-      sourceFile: getCallerSourceLine(this.config.get('api.path')),
+      name,
       description,
+      sourceFile: getCallerSourceLine(this.parent.config.get('api.path')),
     };
-    this.api.$hooks[name] = handler;
+    this.map.set(name, handler);
 
-    return this.api;
-  };
+    return this;
+  }
 
 };

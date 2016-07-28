@@ -48,10 +48,9 @@ export default function () {
     });
 
     // hooks
-    Object.keys(this.api.$hooks).map(n => {
-      const fn = this.api.$hooks[n];
-      data.hooks[n] = {
-        name: n,
+    this.hook.forEach(fn => {
+      data.hooks[fn.options.name] = {
+        name: fn.options.name,
         source: fn.toString(),
         sourceFile: fn.options.sourceFile.relative,
         description: fn.options.description,

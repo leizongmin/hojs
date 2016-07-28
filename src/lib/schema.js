@@ -277,15 +277,15 @@ export default class Schema {
     // 初始化时检查before钩子是否正确
     const beforeHooks = [];
     for (const name of this.options.beforeHooks) {
-      assert(parent.api.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
-      beforeHooks.push(parent.api.$hooks[name]);
+      assert(parent.hook.get(name), `初始化${this.key}时出错：钩子"${name}"不存在`);
+      beforeHooks.push(parent.hook.get(name));
     }
 
     // 初始化时检查after钩子是否正确
     const afterHooks = [];
     for (const name of this.options.afterHooks) {
-      assert(parent.api.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
-      afterHooks.push(parent.api.$hooks[name]);
+      assert(parent.hook.get(name), `初始化${this.key}时出错：钩子"${name}"不存在`);
+      afterHooks.push(parent.hook.get(name));
     }
 
 

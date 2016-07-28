@@ -8,13 +8,9 @@
 
 import assert from 'assert';
 import {core as debug} from '../debug';
+import Manager from './manager';
 
-export default class ErrorManager {
-
-  constructor(parent) {
-    this.parent = parent;
-    this.map = new Map();
-  }
+export default class ErrorManager extends Manager{
 
   /**
    * 注册错误类型
@@ -74,25 +70,6 @@ export default class ErrorManager {
 
     msg = info.message(msg, data || {});
     return new info.Error(msg, data);
-  }
-
-  /**
-   * 遍历注册的错误类型
-   *
-   * @param {Function} iter
-   */
-  forEach(iter) {
-    return this.map.forEach(iter);
-  }
-
-  /**
-   * 取指定的错误类型
-   *
-   * @param {String} name
-   * @returns {Object}
-   */
-  get(name) {
-    return this.map.get(name);
   }
 
 }

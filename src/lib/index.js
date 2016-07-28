@@ -14,13 +14,13 @@ import {core as debug} from './debug';
 import {mergeParams} from './utils';
 
 import extendRegister from './extend/register';
-import extendHook from './extend/hook';
 import extendOption from './extend/option';
 import extendMiddleware from './extend/middleware';
 import extendOutput from './extend/output';
 import extendTest from './extend/test';
 import extendDocs from './extend/docs';
 
+import HookManager from './manager/hook';
 import ErrorManager from './manager/error';
 import TypeManager from './manager/type';
 
@@ -96,17 +96,19 @@ export default class Hojs extends ProjectCore {
     this.api.$schemaMapping = {};
     this.api.$hookOutputs = [];
     this.api.$middlewares = [];
-    this.api.$hooks = {};
     this.api.$middlewaresMapping = {};
     this.api.$options = {};
     this.api.$flag = {
       saveApiInputOutput: false,
     };
 
-    extendHook.call(this);
+
     extendRegister.call(this);
     extendOption.call(this);
     extendMiddleware.call(this);
+
+    // 钩子管理
+    this.hook = new HookManager(this);
 
     // 参数类型管理
     this.type = new TypeManager(this);

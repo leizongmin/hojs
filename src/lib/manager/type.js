@@ -8,32 +8,9 @@
 
 import assert from 'assert';
 import {core as debug} from '../debug';
+import Manager from './manager';
 
-export default class TypeManager {
-
-  constructor(parent) {
-    this.parent = parent;
-    this.map = new Map();
-  }
-
-  /**
-   * 获取参数类型
-   *
-   * @param {String} name
-   * @return {Object}
-   */
-  get(name) {
-    return this.map.get(name);
-  };
-
-  /**
-   * 遍历注册的错误类型
-   *
-   * @param {Function} iter
-   */
-  forEach(iter) {
-    return this.map.forEach(iter);
-  }
+export default class TypeManager extends Manager {
 
   /**
    * 注册参数类型
