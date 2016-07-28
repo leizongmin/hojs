@@ -18,10 +18,10 @@ import extendHook from './extend/hook';
 import extendOption from './extend/option';
 import extendMiddleware from './extend/middleware';
 import extendType from './extend/type';
-import extendError from './extend/error';
 import extendOutput from './extend/output';
 import extendTest from './extend/test';
 import extendDocs from './extend/docs';
+import ErrorManager from './error';
 
 
 /**
@@ -106,7 +106,9 @@ export default class Hojs extends ProjectCore {
     extendOption.call(this);
     extendMiddleware.call(this);
     extendType.call(this);
-    extendError.call(this);
+
+    this.error = new ErrorManager(this);
+
     extendOutput.call(this);
     extendTest.call(this);
     extendDocs.call(this);
@@ -114,7 +116,7 @@ export default class Hojs extends ProjectCore {
     // 初始化schema
     this.api.$initTasks.push(() => {
       for (const schema of this.api.$schemas) {
-        const {name, handler, before, after} = schema.init(this.api);
+        const {name, handler, before, after} = schema.init(this);
         for (const fn of before) {
           this.method(name).before(fn);
         }

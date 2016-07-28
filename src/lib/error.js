@@ -7,10 +7,14 @@
  */
 
 import assert from 'assert';
-import registerDefaultErrors from '../default/errors';
-import {core as debug} from '../debug';
+import {core as debug} from './debug';
 
-export default function () {
+export default class ErrorManager {
+
+  constructor(parent) {
+    this.parent = parent;
+    this.map = new Map();
+  }
 
   /**
    * 注册错误类型
@@ -22,7 +26,7 @@ export default function () {
    *   - {String} description 错误详细信息（用于生成文档）
    * @return {Object}
    */
-  this.api.registerError = (name, data = {}) => {
+  register(name, data = {}) {
 
     assert(typeof name === 'string', 'error name must be string');
     assert(data && typeof data === 'object', 'second argument must be object');
@@ -45,15 +49,15 @@ export default function () {
       assert(typeof data.description, 'option `description` must be string');
     }
 
-    info.data = this.utils.merge(data, {type: name});
+    info.data = this.parent.utils.merge(data, {type: name});
     delete info.data.message;
-    info.Error = this.utils.customError(name, info.data);
+    info.Error = this.parent.utils.customError(name, info.data);
 
-    debug('registerError: %s %j', name, data);
-    this.api.$errors[name] = info;
+    debug('register: %s %j', name, data);
+    this.map.set(name, this.parent.utils.merge(info, {name}));
 
-    return this.api;
-  };
+    return this;
+  }
 
   /**
    * 创建指定错误类型
@@ -63,19 +67,32 @@ export default function () {
    * @param {Object} data 附加数据
    * @return {Object}
    */
-  this.api.error = (name, msg, data) => {
+  new(name, msg, data) {
 
-    assert(this.api.$errors[name], `unknown error type ${name}`);
+    const info = this.map.get(name);
+    assert(info, `unknown error type ${name}`);
 
-    const info = this.api.$errors[name];
     msg = info.message(msg, data || {});
+    return new info.Error(msg, data);
+  }
 
-    const err = new info.Error(msg, data);
+  /**
+   * 遍历注册的错误类型
+   *
+   * @param {Function} iter
+   */
+  forEach(iter) {
+    return this.map.forEach(iter);
+  }
 
-    return err;
-  };
+  /**
+   * 取指定的错误类型
+   *
+   * @param {String} name
+   * @returns {Object}
+   */
+  get(name) {
+    return this.map.get(name);
+  }
 
-  // 注册默认的错误类型
-  registerDefaultErrors(this.api.registerError);
-
-};
+}

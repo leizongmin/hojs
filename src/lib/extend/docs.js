@@ -44,11 +44,8 @@ export default function () {
     });
 
     // errors
-    Object.keys(this.api.$errors).map(n => {
-      const e = this.utils.merge(this.api.$errors[n]);
-      e.name = n;
-      e.message = e.message.toString();
-      data.errors[n] = e;
+    this.error.forEach(e => {
+      data.errors[e.name] = this.utils.merge(e, {message: e.message.toString()});
     });
 
     // hooks

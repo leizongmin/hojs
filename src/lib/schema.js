@@ -262,7 +262,7 @@ export default class Schema {
     for (const name in this.options.params) {
       const options = this.options.params[name]
       const typeName = options.type;
-      const type = parent.getType(typeName);
+      const type = parent.api.getType(typeName);
       assert(type && type.checker, `please register type ${typeName}`);
       if (options.params) {
         assert(type.paramsChecker(options.params), `test type params failed`);
@@ -277,15 +277,15 @@ export default class Schema {
     // 初始化时检查before钩子是否正确
     const beforeHooks = [];
     for (const name of this.options.beforeHooks) {
-      assert(parent.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
-      beforeHooks.push(parent.$hooks[name]);
+      assert(parent.api.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
+      beforeHooks.push(parent.api.$hooks[name]);
     }
 
     // 初始化时检查after钩子是否正确
     const afterHooks = [];
     for (const name of this.options.afterHooks) {
-      assert(parent.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
-      afterHooks.push(parent.$hooks[name]);
+      assert(parent.api.$hooks[name], `初始化${this.key}时出错：钩子"${name}"不存在`);
+      afterHooks.push(parent.api.$hooks[name]);
     }
 
 
@@ -294,7 +294,7 @@ export default class Schema {
       checkParamHooks.push((params) => {
         for (const name of this.options.required) {
           if (!(name in params)) {
-            throw parent.error('missing_required_parameter', null, {name});
+            throw parent.error.new('missing_required_parameter', null, {name});
           }
         }
         return params;
@@ -311,7 +311,7 @@ export default class Schema {
             if (ok) break;
           }
           if (!ok) {
-            throw parent.error('missing_required_parameter', `one of ${names.join(', ')}`, {name})
+            throw parent.error.new('missing_required_parameter', `one of ${names.join(', ')}`, {name})
           }
         }
         return params;
@@ -337,7 +337,7 @@ export default class Schema {
               debug('skip undefined param: %s', name);
               continue;
             }
-            const type = parent.getType(options.type);
+            const type = parent.api.getType(options.type);
 
             if (type.parser) {
               value = type.parser(value);
@@ -348,7 +348,7 @@ export default class Schema {
               if (options.params) {
                 msg = `${msg} with additional restrictions: ${options._paramsJSON}`;
               }
-              throw parent.error('parameter_error', msg, {name});
+              throw parent.error.new('parameter_error', msg, {name});
             }
 
             if (options.format && type.formatter) {
@@ -358,7 +358,7 @@ export default class Schema {
             }
 
           } catch (err) {
-            throw parent.error('parameter_error', err.message, {name});
+            throw parent.error.new('parameter_error', err.message, {name});
           }
         }
       }
@@ -366,7 +366,7 @@ export default class Schema {
       // 填充默认值
       for (const name in this.options.params) {
         const options = this.options.params[name];
-        const type = parent.getType(options.type);
+        const type = parent.api.getType(options.type);
         if ('default' in options && !(name in newParams)) {
           debug('use default for param %s: %j', name, options.default);
           // TODO: 应该在注册时即检查default值是否合法，以及生成format后的值
