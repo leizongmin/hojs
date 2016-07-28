@@ -21,8 +21,8 @@ import extendOutput from './extend/output';
 import extendTest from './extend/test';
 import extendDocs from './extend/docs';
 
-import ErrorManager from './error';
-import TypeManager from './type';
+import ErrorManager from './manager/error';
+import TypeManager from './manager/type';
 
 import registerDefaultErrors from './default/errors';
 import registerDefaultTypes from './default/types';

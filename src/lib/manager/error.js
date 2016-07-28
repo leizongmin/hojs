@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import {core as debug} from './debug';
+import {core as debug} from '../debug';
 
 export default class ErrorManager {
 
