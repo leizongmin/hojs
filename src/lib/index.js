@@ -21,7 +21,10 @@ import extendType from './extend/type';
 import extendOutput from './extend/output';
 import extendTest from './extend/test';
 import extendDocs from './extend/docs';
+
 import ErrorManager from './error';
+
+import registerDefaultErrors from './default/errors';
 
 
 /**
@@ -107,7 +110,9 @@ export default class Hojs extends ProjectCore {
     extendMiddleware.call(this);
     extendType.call(this);
 
+    // 错误类型管理
     this.error = new ErrorManager(this);
+    registerDefaultErrors(this.error);
 
     extendOutput.call(this);
     extendTest.call(this);
