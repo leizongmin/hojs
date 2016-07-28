@@ -29,7 +29,7 @@
     "babel-cli": "^6.6.5",
     "babel-preset-es2015-node4": "^2.0.3",
     "babel-preset-stage-3": "^6.5.0",
-    "mocha": "^2.3.4"
+    "mocha": "^2.5.3"
   },
   "dependencies": {
     "debug": "^2.2.0",
