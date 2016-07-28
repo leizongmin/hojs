@@ -17,14 +17,15 @@ import extendRegister from './extend/register';
 import extendHook from './extend/hook';
 import extendOption from './extend/option';
 import extendMiddleware from './extend/middleware';
-import extendType from './extend/type';
 import extendOutput from './extend/output';
 import extendTest from './extend/test';
 import extendDocs from './extend/docs';
 
 import ErrorManager from './error';
+import TypeManager from './type';
 
 import registerDefaultErrors from './default/errors';
+import registerDefaultTypes from './default/types';
 
 
 /**
@@ -93,8 +94,6 @@ export default class Hojs extends ProjectCore {
     this.api.$initTasks = [];
     this.api.$schemas = [];
     this.api.$schemaMapping = {};
-    this.api.$types = {};
-    this.api.$errors = {};
     this.api.$hookOutputs = [];
     this.api.$middlewares = [];
     this.api.$hooks = {};
@@ -108,7 +107,10 @@ export default class Hojs extends ProjectCore {
     extendRegister.call(this);
     extendOption.call(this);
     extendMiddleware.call(this);
-    extendType.call(this);
+
+    // 参数类型管理
+    this.type = new TypeManager(this);
+    registerDefaultTypes(this.type);
 
     // 错误类型管理
     this.error = new ErrorManager(this);

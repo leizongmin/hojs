@@ -262,7 +262,7 @@ export default class Schema {
     for (const name in this.options.params) {
       const options = this.options.params[name]
       const typeName = options.type;
-      const type = parent.api.getType(typeName);
+      const type = parent.type.get(typeName);
       assert(type && type.checker, `please register type ${typeName}`);
       if (options.params) {
         assert(type.paramsChecker(options.params), `test type params failed`);
@@ -337,7 +337,7 @@ export default class Schema {
               debug('skip undefined param: %s', name);
               continue;
             }
-            const type = parent.api.getType(options.type);
+            const type = parent.type.get(options.type);
 
             if (type.parser) {
               value = type.parser(value);
@@ -366,7 +366,7 @@ export default class Schema {
       // 填充默认值
       for (const name in this.options.params) {
         const options = this.options.params[name];
-        const type = parent.api.getType(options.type);
+        const type = parent.type.get(options.type);
         if ('default' in options && !(name in newParams)) {
           debug('use default for param %s: %j', name, options.default);
           // TODO: 应该在注册时即检查default值是否合法，以及生成format后的值

@@ -34,13 +34,12 @@ export default function () {
     };
 
     // types
-    Object.keys(this.api.$types).map(n => {
-      const t = this.utils.merge(this.api.$types[n]);
-      t.name = n;
+    this.type.forEach(t => {
+      t = this.utils.merge(t);
       t.parser = t.parser && t.parser.toString();
       t.checker = t.checker && t.checker.toString();
       t.formatter = t.formatter && t.formatter.toString();
-      data.types[n] = t;
+      data.types[t.name] = t;
     });
 
     // errors
