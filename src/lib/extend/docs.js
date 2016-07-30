@@ -42,7 +42,7 @@ export default function () {
 
     // errors
     this.error.forEach(e => {
-      data.errors[e.name] = this.utils.merge(e, {message: e.message.toString()});
+      data.errors[e.name] = this.utils.merge(e, { message: e.message.toString() });
     });
 
     // hooks

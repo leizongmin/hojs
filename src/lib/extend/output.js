@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import {core as debug} from '../debug';
+import { core as debug } from '../debug';
 
 export default function () {
 
@@ -33,7 +33,7 @@ export default function () {
 
     // 检查注册的formatOutput函数在成功情况下是否能正常工作
     try {
-      fn(null, {ok: true});
+      fn(null, { ok: true });
     } catch (err) {
       throw new Error(`测试formatOutput(null, data)失败：${ err.stack }`);
     }
@@ -47,7 +47,7 @@ export default function () {
   const defaultFormatOutput = (err, ret) => {
 
     if (err) {
-      const ret = {error: {}};
+      const ret = { error: {}};
       if (err instanceof Error) {
         ret.status = ret.status || err.status || -1;
         ret.message = err.message;
@@ -61,9 +61,9 @@ export default function () {
         ret.message = ret.toString();
       }
       return ret;
-    } else {
-      return {status: 0, result: ret};
     }
+
+    return { status: 0, result: ret };
   };
 
   // 注册默认的formatOutput
@@ -92,7 +92,7 @@ export default function () {
 
     // 检查注册的formatOutputReverse函数在成功情况下是否能正常工作
     try {
-      const ret = fn(formatOutput(null, {ok: true}));
+      const ret = fn(formatOutput(null, { ok: true }));
       assert(Array.isArray(ret) && ret.length === 2, `formatOutputReverse(null, data)必须返回一个包含2个元素的数组`);
       assert(ret[0] === null, `formatOutputReverse(null, data)如果没有出错，返回数组结果的第一个元素值必须为null`);
     } catch (err) {
@@ -107,10 +107,9 @@ export default function () {
   /* 默认的反转格式化输出函数 */
   const defaultFormatOutputReverse = (data) => {
     if (data.status === 0) {
-      return [null, data.result];
-    } else {
-      return [data];
+      return [ null, data.result ];
     }
+    return [ data ];
   };
 
   // 注册默认的formatOutputReverse

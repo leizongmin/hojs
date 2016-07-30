@@ -10,8 +10,8 @@ import assert from 'assert';
 import validator from 'validator';
 import ProjectCore from 'project-core';
 
-import {core as debug} from './debug';
-import {mergeParams} from './utils';
+import { core as debug } from './debug';
+import { mergeParams } from './utils';
 
 import extendRegister from './extend/register';
 import extendOption from './extend/option';
@@ -120,7 +120,7 @@ export default class Hojs extends ProjectCore {
     // 初始化schema
     this.api.$initTasks.push(() => {
       for (const schema of this.api.$schemas) {
-        const {name, handler, before, after} = schema.init(this);
+        const { name, handler, before, after } = schema.init(this);
         for (const fn of before) {
           this.method(name).before(fn);
         }

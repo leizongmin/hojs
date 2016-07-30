@@ -6,7 +6,7 @@
  * @author Zongmin Lei <leizongmin@gmail.com>
  */
 
-import {resolve as resolvePath} from 'path';
+import { resolve as resolvePath } from 'path';
 
 /**
  * 获取调用当前函数的源码地址
@@ -29,7 +29,7 @@ export function getCallerSourceLine(dir) {
       }
     }
   }
-  return {relative: null, absolute: null};
+  return { relative: null, absolute: null };
 }
 
 /**

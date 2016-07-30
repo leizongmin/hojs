@@ -8,8 +8,8 @@
 
 import assert from 'assert';
 import Schema from '../schema';
-import {getCallerSourceLine} from '../utils';
-import {core as debug} from '../debug';
+import { getCallerSourceLine } from '../utils';
+import { core as debug } from '../debug';
 
 export default function () {
 

@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import {core as debug} from '../debug';
+import { core as debug } from '../debug';
 import Manager from './manager';
 
 export default class TypeManager extends Manager {
@@ -35,8 +35,8 @@ export default class TypeManager extends Manager {
    */
   register(name, options = {}) {
 
-    let {formatter, parser, paramsChecker, isDefault} = options;
-    const {checker, description = ''} = options;
+    let { formatter, parser, paramsChecker, isDefault } = options;
+    const { checker, description = '' } = options;
     isDefault = !!isDefault;
 
     assert(name && typeof name === 'string', '参数名称必须是字符串类型');
@@ -65,7 +65,7 @@ export default class TypeManager extends Manager {
       paramsChecker = null;
     }
 
-    this.map.set(name, {name, checker, formatter, parser, paramsChecker, description, isDefault});
+    this.map.set(name, { name, checker, formatter, parser, paramsChecker, description, isDefault });
 
     if (!isDefault) {
       debug('register type: name=%s, checker=%s, formatter=%s, paramsChecker=%s description=%s',

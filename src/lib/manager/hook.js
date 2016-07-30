@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import {getCallerSourceLine} from '../utils';
+import { getCallerSourceLine } from '../utils';
 import Manager from './manager';
 
 export default class HookManager extends Manager{

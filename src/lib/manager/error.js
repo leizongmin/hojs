@@ -7,7 +7,7 @@
  */
 
 import assert from 'assert';
-import {core as debug} from '../debug';
+import { core as debug } from '../debug';
 import Manager from './manager';
 
 export default class ErrorManager extends Manager{
@@ -45,12 +45,12 @@ export default class ErrorManager extends Manager{
       assert(typeof data.description, 'option `description` must be string');
     }
 
-    info.data = this.parent.utils.merge(data, {type: name});
+    info.data = this.parent.utils.merge(data, { type: name });
     delete info.data.message;
     info.Error = this.parent.utils.customError(name, info.data);
 
     debug('register: %s %j', name, data);
-    this.map.set(name, this.parent.utils.merge(info, {name}));
+    this.map.set(name, this.parent.utils.merge(info, { name }));
 
     return this;
   }

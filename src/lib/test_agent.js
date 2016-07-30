@@ -11,13 +11,13 @@ import util from 'util';
 import assert from 'assert';
 import request from 'supertest';
 import utils from 'lei-utils';
-import {test as debug, create as createDebug} from './debug';
+import { test as debug, create as createDebug } from './debug';
 
 /* 支持的HTTP请求方法 */
-const SUPPORT_METHOD = ['get', 'post', 'put', 'delete'];
+const SUPPORT_METHOD = [ 'get', 'post', 'put', 'delete' ];
 
 /* 输出结果断言错误 */
-const AssertionError = utils.customError('AssertionError', {type: 'api_output_error'});
+const AssertionError = utils.customError('AssertionError', { type: 'api_output_error' });
 
 /* 空回调函数 */
 const noop = () => {};
@@ -96,9 +96,8 @@ export default class TestAgent {
     debug('agent: rawSupertest=%s', rawSupertest);
     if (rawSupertest) {
       return this.options.agent;
-    } else {
-      return this;
     }
+    return this;
   }
 
   /**
@@ -139,7 +138,7 @@ export default class TestAgent {
           return;
         }
         const formatOutputReverse = self.options.parent.api.getOption('formatOutputReverse');
-        const [err2, ret] = formatOutputReverse(res.body);
+        const [ err2, ret ] = formatOutputReverse(res.body);
         cb(err2, ret);
         err2 ? reject(err2) : resolve(ret);
       });

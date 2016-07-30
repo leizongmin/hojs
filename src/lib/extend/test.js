@@ -8,8 +8,8 @@
 
 import assert from 'assert';
 import supertest from 'supertest';
-import {getCallerSourceLine, getSchemaKey} from '../utils';
-import {test as debug} from '../debug';
+import { getCallerSourceLine, getSchemaKey } from '../utils';
+import { test as debug } from '../debug';
 import TestAgent from '../test_agent';
 
 export default function () {

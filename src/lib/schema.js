@@ -8,10 +8,10 @@
 
 import assert from 'assert';
 import pathToRegExp from 'path-to-regexp';
-import {getSchemaKey} from './utils';
-import {schema as debug} from './debug';
+import { getSchemaKey } from './utils';
+import { schema as debug } from './debug';
 
-const SUPPORT_METHOD = ['get', 'post', 'put', 'delete'];
+const SUPPORT_METHOD = [ 'get', 'post', 'put', 'delete' ];
 
 /**
  * API类
@@ -155,7 +155,7 @@ export default class Schema {
     assert(!(name in this.options.params), `参数 ${ name } 已存在`);
 
     assert(opts && (typeof opts === 'string' || typeof opts === 'object'));
-    if (typeof opts === 'string') opts = {type: opts, format: true};
+    if (typeof opts === 'string') opts = { type: opts, format: true };
 
     if (!('format' in opts)) opts.format = true;
 
@@ -297,7 +297,7 @@ export default class Schema {
       checkParamHooks.push((params) => {
         for (const name of this.options.required) {
           if (!(name in params)) {
-            throw parent.error.new('missing_required_parameter', null, {name});
+            throw parent.error.new('missing_required_parameter', null, { name });
           }
         }
         return params;
@@ -310,11 +310,11 @@ export default class Schema {
         for (const names of this.options.requiredOneOf) {
           let ok = false;
           for (const name of names) {
-            ok = (name in params);
+            ok = typeof params[name] !== 'undefined';
             if (ok) break;
           }
           if (!ok) {
-            throw parent.error.new('missing_required_parameter', `one of ${ names.join(', ') }`, {name});
+            throw parent.error.new('missing_required_parameter', `one of ${ names.join(', ') }`, { name });
           }
         }
         return params;
@@ -327,7 +327,7 @@ export default class Schema {
 
       // 类型检查与格式化，并且过滤没有定义的参数
       for (const name in params) {
-        if (name[0] == '$') {
+        if (name[0] === '$') {
 
           // 特例：以 $ 开头的参数不会做任何检查，也意味着这种参数是不可靠的
           newParams[name] = params[name];
@@ -351,7 +351,7 @@ export default class Schema {
               if (options.params) {
                 msg = `${ msg } with additional restrictions: ${ options._paramsJSON }`;
               }
-              throw parent.error.new('parameter_error', msg, {name});
+              throw parent.error.new('parameter_error', msg, { name });
             }
 
             if (options.format && type.formatter) {
@@ -361,7 +361,7 @@ export default class Schema {
             }
 
           } catch (err) {
-            throw parent.error.new('parameter_error', err.message, {name});
+            throw parent.error.new('parameter_error', err.message, { name });
           }
         }
       }
