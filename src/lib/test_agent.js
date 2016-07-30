@@ -63,7 +63,7 @@ export default class TestAgent {
     };
     this.key = key;
     this._extendsOutput();
-    this.debug = createDebug(`agent:${this.key}`);
+    this.debug = createDebug(`agent:${ this.key }`);
     this.debug('new: %s %s from %s', method, path, sourceFile.absolute);
   }
 
@@ -130,17 +130,17 @@ export default class TestAgent {
    */
   output(callback) {
     const self = this;
-    callback = callback || noop;
+    const cb = callback || noop;
     return new Promise((resolve, reject) => {
       self.options.agent.end((err, res) => {
         if (err) {
-          callback(err);
+          cb(err);
           reject(err);
           return;
         }
         const formatOutputReverse = self.options.parent.api.getOption('formatOutputReverse');
         const [err2, ret] = formatOutputReverse(res.body);
-        callback(err2, ret);
+        cb(err2, ret);
         err2 ? reject(err2) : resolve(ret);
       });
     });
@@ -154,15 +154,15 @@ export default class TestAgent {
      * @param {Function} callback
      */
     this.output.success = (callback) => {
-      callback = callback || noop;
+      const cb = callback || noop;
       return new Promise((resolve, reject) => {
         this.output((err, ret) => {
           if (err) {
-            const err2 = new AssertionError(`${this.key} 期望API输出成功结果，但实际输出失败结果：${inspect(err)}`);
-            callback(err2);
+            const err2 = new AssertionError(`${ this.key } 期望API输出成功结果，但实际输出失败结果：${ inspect(err) }`);
+            cb(err2);
             reject(err2);
           } else {
-            callback(null, ret);
+            cb(null, ret);
             resolve(ret);
           }
         });
@@ -175,15 +175,15 @@ export default class TestAgent {
      * @param {Function} callback
      */
     this.output.error = (callback) => {
-      callback = callback || noop;
+      const cb = callback || noop;
       return new Promise((resolve, reject) => {
         this.output((err, ret) => {
           if (err) {
-            callback(null, err);
+            cb(null, err);
             resolve(err);
           } else {
-            const err2 = new AssertionError(`${this.key} 期望API输出失败结果，但实际输出成功结果：${inspect(ret)}`);
-            callback(err2);
+            const err2 = new AssertionError(`${ this.key } 期望API输出失败结果，但实际输出成功结果：${ inspect(ret) }`);
+            cb(err2);
             reject(err2);
           }
         });

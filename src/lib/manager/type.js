@@ -33,13 +33,15 @@ export default class TypeManager extends Manager {
    *   - {Boolean} isDefault 是否为默认参数
    * @return {Object}
    */
-  register(name, {checker, formatter, parser, paramsChecker, description = '', isDefault} = {}) {
+  register(name, options = {}) {
 
+    let {formatter, parser, paramsChecker, isDefault} = options;
+    const {checker, description = ''} = options;
     isDefault = !!isDefault;
 
     assert(name && typeof name === 'string', '参数名称必须是字符串类型');
-    assert(/^[A-Z]/.test(name[0]), `参数名称必须以大写字母开头：${name}`);
-    assert(!this.get(name), `该参数已被注册：${name}`);
+    assert(/^[A-Z]/.test(name[0]), `参数名称必须以大写字母开头：${ name }`);
+    assert(!this.get(name), `该参数已被注册：${ name }`);
 
     assert(typeof description === 'string', '参数描述必须是字符串类型');
 

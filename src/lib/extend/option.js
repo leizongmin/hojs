@@ -6,9 +6,6 @@
  * @author Zongmin Lei <leizongmin@gmail.com>
  */
 
-import assert from 'assert';
-import {core as debug} from '../debug';
-
 export default function () {
 
   /**
@@ -33,4 +30,4 @@ export default function () {
     return this.api.$options[name];
   };
 
-};
+}

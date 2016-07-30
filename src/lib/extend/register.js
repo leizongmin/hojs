@@ -15,6 +15,18 @@ export default function () {
 
   this.api.override = {};
 
+  const removeSchemas = (key) => {
+
+    for (let i = 0; i < this.api.$schemas.length; i++) {
+      const s = this.api.$schemas[i];
+      if (s.key === key) {
+        this.api.$schemas.splice(i, 1);
+        i += 1;
+      }
+    }
+
+  };
+
   /**
    * 注册API
    *
@@ -29,7 +41,7 @@ export default function () {
     const s2 = this.api.$schemaMapping[s.key];
 
     if (strict) {
-      assert(!s2, `尝试注册API：${s.key}（所在文件：${s.options.sourceFile.absolute}）失败，因为该API已在文件${s2 && s2.options.sourceFile.absolute}中注册过`);
+      assert(!s2, `尝试注册API：${ s.key }（所在文件：${ s.options.sourceFile.absolute }）失败，因为该API已在文件${ s2 && s2.options.sourceFile.absolute }中注册过`);
     }
 
     if (s2) {
@@ -43,18 +55,6 @@ export default function () {
 
   };
 
-  const removeSchemas = (key) => {
-
-    for (let i = 0; i < this.api.$schemas.length; i++) {
-      const s = this.api.$schemas[i];
-      if (s.key === key) {
-        this.api.$schemas.splice(i, 1);
-        i--;
-      }
-    }
-
-  };
-
   for (const method of Schema.SUPPORT_METHOD) {
     this.api[method] = (path) => {
       return register(method, path, true);
@@ -64,4 +64,4 @@ export default function () {
     };
   }
 
-};
+}

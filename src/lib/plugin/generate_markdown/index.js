@@ -9,7 +9,6 @@
 import fs from 'fs';
 import path from 'path';
 import utils from 'lei-utils';
-import {plugin as debug} from '../../debug';
 
 export default function (data, dir) {
 
@@ -56,22 +55,22 @@ function typeDocs(data) {
   list.push(`# 默认类型`);
   for (const item of defaultTypes) {
     list.push(`
-## ${item.name}
+## ${ item.name }
     `.trim());
   }
   list.push(`# 自定义类型`);
   for (const item of defaultTypes) {
     let line = `
-## ${item.name}
+## ${ item.name }
 
-${item.description}
+${ item.description }
     `;
     if (item.parser) {
       line += `
 解析器：
 
 \`\`\`javascript
-${item.parser}
+${ item.parser }
 \`\`\`
       `;
     }
@@ -80,7 +79,7 @@ ${item.parser}
 检查：
 
 \`\`\`javascript
-${item.checker}
+${ item.checker }
 \`\`\`
       `;
     }
@@ -89,7 +88,7 @@ ${item.checker}
 格式化：
 
 \`\`\`javascript
-${item.formatter}
+${ item.formatter }
 \`\`\`
       `;
     }
@@ -114,18 +113,18 @@ function errorDocs(data) {
   list.push('# 错误类型');
   for (const item of errors) {
     list.push(`
-## ${item.name}
+## ${ item.name }
 
 内容：
 
 \`\`\`javascript
-${item.message}
+${ item.message }
 \`\`\`
 
 数据：
 
 \`\`\`javascript
-${utils.jsonStringify(item.data, 2)}
+${ utils.jsonStringify(item.data, 2) }
 \`\`\`
     `.trim());
   }
@@ -147,12 +146,12 @@ function hookDocs(data) {
   const list = [];
   list.push('# 钩子');
   for (const item of hooks) {
-    let line = `
-## ${item.description || item.name}
+    const line = `
+## ${ item.description || item.name }
 
-名称：**${item.name}**
+名称：**${ item.name }**
 
-源文件：\`${item.sourceFile}\`
+源文件：\`${ item.sourceFile }\`
     `;
     list.push(line.trim());
 
@@ -171,7 +170,7 @@ function schemaDocs(data) {
   }
 
   function hook(list) {
-    return list.map(name => `+ **${name}**`).join('\n');
+    return list.map(name => `+ **${ name }**`).join('\n');
   }
 
   function paramsTable(item) {
@@ -186,33 +185,33 @@ function schemaDocs(data) {
       } else {
         for (const names of item.requiredOneOf) {
           if (names.indexOf(name) !== -1) {
-            required = `${names.join(', ')} 其中一个`
+            required = `${ names.join(', ') } 其中一个`;
             break;
           }
         }
       }
       list.push(`
-${name} | ${info.type} | ${info.format ? '是' : '否'} | ${required} | ${info.comment}
+${ name } | ${ info.type } | ${ info.format ? '是' : '否' } | ${ required } | ${ info.comment }
       `.trim());
     }
     return list.join('\n');
   }
 
   function formatExampleInput(data) {
-    data = Object.assign({}, data);
-    for (const name in data) {
+    const ret = Object.assign({}, data);
+    for (const name in ret) {
       if (name[0] === '$') {
-        delete data[name];
+        delete ret[name];
       }
     }
-    return data;
+    return ret;
   }
 
   function examples(list) {
     return list.map(item => {
       return `
-input = ${utils.jsonStringify(formatExampleInput(item.input), 2)};
-output = ${utils.jsonStringify(item.output, 2)};
+input = ${ utils.jsonStringify(formatExampleInput(item.input), 2) };
+output = ${ utils.jsonStringify(item.output, 2) };
       `.trim();
     }).join('\n\n//------------------\n\n');
   }
@@ -220,18 +219,18 @@ output = ${utils.jsonStringify(item.output, 2)};
   for (const item of data.schemas) {
 
     let line = `
-## ${item.title}
+## ${ item.title }
 
-源文件：\`${item.sourceFile}\`
+源文件：\`${ item.sourceFile }\`
 
-请求地址：**${item.method.toUpperCase()}** **${item.path}**
+请求地址：**${ item.method.toUpperCase() }** **${ item.path }**
     `;
 
     if (item.beforeHooks.length > 0) {
       line += `
 执行之前钩子：
 
-${hook(item.beforeHooks)}
+${ hook(item.beforeHooks) }
       `;
     }
 
@@ -239,14 +238,14 @@ ${hook(item.beforeHooks)}
       line += `
 执行之后钩子：
 
-${hook(item.afterHooks)}
+${ hook(item.afterHooks) }
       `;
     }
 
     line += `
 参数：
 
-${paramsTable(item)}
+${ paramsTable(item) }
     `;
 
     if (item.examples.length > 0) {
@@ -254,7 +253,7 @@ ${paramsTable(item)}
 使用示例：
 
 \`\`\`javascript
-${examples(item.examples)}
+${ examples(item.examples) }
 \`\`\`
       `;
     }
@@ -265,7 +264,7 @@ ${examples(item.examples)}
   const list = [];
   for (const name in group) {
     list.push({
-      name: name,
+      name,
       content: group[name].join('\n\n'),
     });
   }

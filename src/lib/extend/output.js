@@ -26,16 +26,16 @@ export default function () {
 
     // 检查注册的formatOutput函数在失败情况下是否能正常工作
     try {
-      const ret = fn(new Error('test formatOutput'));
+      fn(new Error('test formatOutput'));
     } catch (err) {
-      throw new Error(`测试formatOutput(err)失败：${err.stack}`);
+      throw new Error(`测试formatOutput(err)失败：${ err.stack }`);
     }
 
     // 检查注册的formatOutput函数在成功情况下是否能正常工作
     try {
-      const ret = fn(null, {ok: true});
+      fn(null, {ok: true});
     } catch (err) {
-      throw new Error(`测试formatOutput(null, data)失败：${err.stack}`);
+      throw new Error(`测试formatOutput(null, data)失败：${ err.stack }`);
     }
 
     this.api.setOption('formatOutput', fn);
@@ -85,9 +85,9 @@ export default function () {
 
     // 检查注册的formatOutputReverse函数在失败情况下是否能正常工作
     try {
-      const ret = fn(formatOutput(new Error('test formatOutput')));
+      fn(formatOutput(new Error('test formatOutput')));
     } catch (err) {
-      throw new Error(`测试formatOutputReverse(err)失败：${err.stack}`);
+      throw new Error(`测试formatOutputReverse(err)失败：${ err.stack }`);
     }
 
     // 检查注册的formatOutputReverse函数在成功情况下是否能正常工作
@@ -96,7 +96,7 @@ export default function () {
       assert(Array.isArray(ret) && ret.length === 2, `formatOutputReverse(null, data)必须返回一个包含2个元素的数组`);
       assert(ret[0] === null, `formatOutputReverse(null, data)如果没有出错，返回数组结果的第一个元素值必须为null`);
     } catch (err) {
-      throw new Error(`测试formatOutputReverse(null, data)失败：${err.stack}`);
+      throw new Error(`测试formatOutputReverse(null, data)失败：${ err.stack }`);
     }
 
     this.api.setOption('formatOutputReverse', fn);
@@ -129,4 +129,4 @@ export default function () {
     this.api.$hookOutputs.push(fn);
   };
 
-};
+}

@@ -49,10 +49,10 @@ export default function (type) {
     },
     paramsChecker: (params) => {
       if ('max' in params) {
-        assert(typeof params.max === 'number', `params.max必须为数值类型，但实际输入为${params.max}(${typeof params.max})`);
+        assert(typeof params.max === 'number', `params.max必须为数值类型，但实际输入为${ params.max }(${ typeof params.max })`);
       }
       if ('min' in params) {
-        assert(typeof params.min === 'number', `params.min必须为数值类型，但实际输入为${params.min}(${typeof params.min})`);
+        assert(typeof params.min === 'number', `params.min必须为数值类型，但实际输入为${ params.min }(${ typeof params.min })`);
       }
       if ('max' in params && 'min' in params) {
         assert(params.min < params.max, `params.min必须小于params.max`);
@@ -104,7 +104,7 @@ export default function (type) {
   });
 
   type.register('Any', {
-    checker: (v) => true,
+    checker: (_) => true,
     description: '任意类型',
     isDefault: true,
   });
@@ -161,4 +161,4 @@ export default function (type) {
     isDefault: true,
   });
 
-};
+}

@@ -15,15 +15,15 @@ import {resolve as resolvePath} from 'path';
  * @return {String} 返回调用堆栈中第一个项目所在目录的文件
  */
 export function getCallerSourceLine(dir) {
-  dir = resolvePath(dir);
+  const resolvedDir = resolvePath(dir);
   const stack = (new Error()).stack.split('\n').slice(1);
   for (let line of stack) {
     line = line.trim();
-    if (line.replace(/\\/g, '/').indexOf(dir) !== -1) {
+    if (line.replace(/\\/g, '/').indexOf(resolvedDir) !== -1) {
       const s = line.match(/\((.*)\)\s*$/);
       if (s) {
         return {
-          relative: s[1].slice(dir.length + 1),
+          relative: s[1].slice(resolvedDir.length + 1),
           absolute: s[1],
         };
       }
@@ -59,5 +59,5 @@ export function mergeParams(...list) {
  * @return {String}
  */
 export function getSchemaKey(method, path) {
-  return `${method.toUpperCase()} ${path}`;
+  return `${ method.toUpperCase() } ${ path }`;
 }

@@ -46,21 +46,21 @@ export default class Hojs extends ProjectCore {
     this.validator = validator;
     this.config.set('api.path', options.path || process.cwd());
 
-    options.engine = options.engine || 'express';
-    const engineType = typeof options.engine;
+    const engine = options.engine || 'express';
+    const engineType = typeof engine;
     assert(engineType === 'string' || engineType === 'function', `engine参数必须为字符串或函数类型`);
 
     // 检查engine是否正确
     if (engineType === 'string') {
       try {
-        this.ServerEngine = require(`hojs-${options.engine}`);
+        this.ServerEngine = require(`hojs-${ engine }`);
       } catch (err) {
         console.error(err.stack);
-        throw new Error(`无法加载引擎${options.engine}，请检查是否正确安装了 hojs-${options.engine} 模块`);
+        throw new Error(`无法加载引擎${ engine }，请检查是否正确安装了 hojs-${ engine } 模块`);
       }
-      assert(typeof this.ServerEngine === 'function', `hojs-${options.engine} 不是一个有效的引擎`);
+      assert(typeof this.ServerEngine === 'function', `hojs-${ engine } 不是一个有效的引擎`);
     } else {
-      this.ServerEngine = options.engine;
+      this.ServerEngine = engine;
     }
 
     // 创建engine
@@ -144,7 +144,7 @@ export default class Hojs extends ProjectCore {
    * @param {String} msg 描述
    */
   _checkInited(msg) {
-    assert(this.inited === false, `系统已经初始化，不能再执行此操作${msg ? '：' + msg : ''}`);
+    assert(this.inited === false, `系统已经初始化，不能再执行此操作${ msg ? '：' + msg : '' }`);
   }
 
   /**

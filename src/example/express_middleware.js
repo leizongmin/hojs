@@ -36,7 +36,7 @@ const app = express();
 // 将Hojs作为中间件注册到express
 app.use($.server.getMiddleware());
 
-app.get('/', function (req, res, next) {
+app.get('/', function (req, res) {
   res.setHeader('content-type', 'text/html');
   res.end(`
 <h1>Hello, Hojs</h1>

@@ -44,7 +44,7 @@ export default function () {
     this.test[method] = (path, rawSupertest) => {
 
       const s = findSchema(method, path);
-      assert(s, `尝试请求未注册的API：${method} ${path}`);
+      assert(s, `尝试请求未注册的API：${ method } ${ path }`);
       const a = new TestAgent(method, path, s.key, getCallerSourceLine(this.config.get('api.path')), this);
 
       a.initAgent(this.server.getServerInstance());
@@ -67,7 +67,7 @@ export default function () {
       session[method] = (path, rawSupertest) => {
 
         const s = findSchema(method, path);
-        assert(s, `尝试请求未注册的API：${method} ${path}`);
+        assert(s, `尝试请求未注册的API：${ method } ${ path }`);
         const a = new TestAgent(method, path, s.key, getCallerSourceLine(this.config.get('api.path')), this);
 
         a.setAgent(session.$$agent[method](path));
@@ -89,8 +89,8 @@ export default function () {
   this.test.describe = (name, init) => {
 
     assert(name, '名称不能为空');
-    assert(typeof name === 'string', `名称必须为字符串类型，但实际为${name}(${typeof name})`);
-    assert(typeof init === 'function', `测试初始化函数必须为函数类型，但实际为${name}(${typeof name})`);
+    assert(typeof name === 'string', `名称必须为字符串类型，但实际为${ name }(${ typeof name })`);
+    assert(typeof init === 'function', `测试初始化函数必须为函数类型，但实际为${ name }(${ typeof name })`);
 
     assert(typeof describe === 'function', `describe()函数不存在，请确定是否使用了mocha来执行此文件`);
     assert(typeof before === 'function', `before()函数不存在，请确定是否使用了mocha来执行此文件`);
@@ -122,4 +122,4 @@ export default function () {
 
   };
 
-};
+}

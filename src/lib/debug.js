@@ -16,10 +16,10 @@ import createDebug from 'debug';
  */
 export function create(name) {
   return createDebug('hojs:' + name);
-};
+}
 
-export var core = create('core');
-export var schema = create('schema');
-export var test = create('test');
-export var docs = create('docs');
-export var plugin = create('plugin');
+export const core = create('core');
+export const schema = create('schema');
+export const test = create('test');
+export const docs = create('docs');
+export const plugin = create('plugin');

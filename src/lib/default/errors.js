@@ -18,14 +18,14 @@ export default function (error) {
   error.register('missing_required_parameter', {
     description: 'missing required parameter error',
     status: -2,
-    message: (msg, data) => `missing required parameter ${data.name}${msg ? ': ' + msg : ''}`,
+    message: (msg, data) => `missing required parameter ${ data.name }${ msg ? ': ' + msg : '' }`,
   });
 
   // 参数不正确错误
   error.register('parameter_error', {
     description: 'parameter error',
     status: -3,
-    message: (msg, data) => `incorrect parameter ${data.name}${msg ? ': ' + msg : ''}`,
+    message: (msg, data) => `incorrect parameter ${ data.name }${ msg ? ': ' + msg : '' }`,
   });
 
-};
+}

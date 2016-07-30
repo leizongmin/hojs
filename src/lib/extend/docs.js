@@ -9,10 +9,8 @@
 import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
-import {resolve as resolvePath} from 'path';
 import mkdirp from 'mkdirp';
 import generateMarkdown from '../plugin/generate_markdown';
-import {docs as debug} from '../debug';
 
 export default function () {
 
@@ -34,8 +32,8 @@ export default function () {
     };
 
     // types
-    this.type.forEach(t => {
-      t = this.utils.merge(t);
+    this.type.forEach(item => {
+      const t = this.utils.merge(item);
       t.parser = t.parser && t.parser.toString();
       t.checker = t.checker && t.checker.toString();
       t.formatter = t.formatter && t.formatter.toString();
@@ -61,7 +59,8 @@ export default function () {
     for (const s of data.schemas) {
       // 格式化输出结果
       if (s.examples) {
-        s.examples.forEach(v => {
+        s.examples.forEach(item => {
+          const v = item;
           v.output = formatOutput(null, v.output);
         });
       }
@@ -102,7 +101,7 @@ export default function () {
    */
   this.api.docs.save = (dir) => {
 
-    assert(typeof dir === 'string' && dir.length > 0, `文档存储目录"${dir}"格式不正确：必须是字符串类型`);
+    assert(typeof dir === 'string' && dir.length > 0, `文档存储目录"${ dir }"格式不正确：必须是字符串类型`);
     mkdirp.sync(dir);
 
     // 保存 all.json
@@ -130,4 +129,4 @@ export default function () {
     return this.api.docs;
   };
 
-};
+}

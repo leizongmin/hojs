@@ -1,6 +1,6 @@
 {
   "name": "hojs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "轻量级 RESTful API 服务器框架",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "clean": "rm -Rf dist",
     "watch": "npm run clean && babel src -d dist --watch --source-maps=true",
     "compile": "npm run clean && babel src -d dist --source-maps=true",
-    "prepublish": "npm run compile"
+    "lint": "eslint src",
+    "prepublish": "npm run lint && npm run compile"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,10 @@
     "babel-cli": "^6.11.4",
     "babel-preset-es2015-node4": "^2.0.3",
     "babel-preset-stage-3": "^6.5.0",
-    "mocha": "^2.5.3"
+    "mocha": "^2.5.3",
+    "eslint": "^3.2.0",
+    "babel-eslint": "^6.1.2",
+    "eslint-config-lei": "latest"
   },
   "dependencies": {
     "debug": "^2.2.0",
@@ -37,6 +41,7 @@
     "mkdirp": "^0.5.1",
     "path-to-regexp": "^1.5.3",
     "project-core": "0.1.5",
+    "super-microservices": "0.0.2",
     "supertest": "^1.2.0",
     "validator": "^5.5.0"
   }

@@ -11,7 +11,7 @@ import pathToRegExp from 'path-to-regexp';
 import {getSchemaKey} from './utils';
 import {schema as debug} from './debug';
 
-const SUPPORT_METHOD = ['get', 'post', 'put', 'delete']
+const SUPPORT_METHOD = ['get', 'post', 'put', 'delete'];
 
 /**
  * API类
@@ -56,7 +56,7 @@ export default class Schema {
    */
   _checkInited() {
     if (this.inited) {
-      throw new Error(`${this.key}已经完成初始化，不能再进行更改`);
+      throw new Error(`${ this.key }已经完成初始化，不能再进行更改`);
     }
   }
 
@@ -134,29 +134,32 @@ export default class Schema {
    * 输入参数
    *
    * @param {String} name 参数名称
-   * @param {Object} info
+   * @param {Object} options
    *   - {String} type 参数类型
    *   - {Boolean} format 是否格式化，默认true
    *   - {Mixed} default 默认值，默认无
    *   - {String} comment 备注信息（用于文档生成）
-   * @param {Object} params
+   * @param {Object} checkerParams
    * @return {Object}
    */
-  param(name, info, params) {
+  param(name, options, checkerParams) {
 
     this._checkInited();
+
+    let opts = options;
+    let params = checkerParams;
 
     assert(name && typeof name === 'string', '`name`必须是字符串类型');
     assert(name.indexOf(' ') === -1, '`name`不能包含空格');
     assert(name[0] !== '$', '`name`不能以"$"开头');
-    assert(!(name in this.options.params), `参数 ${name} 已存在`);
+    assert(!(name in this.options.params), `参数 ${ name } 已存在`);
 
-    assert(info && (typeof info === 'string' || typeof info === 'object'));
-    if (typeof info === 'string') info = {type: info, format: true};
+    assert(opts && (typeof opts === 'string' || typeof opts === 'object'));
+    if (typeof opts === 'string') opts = {type: opts, format: true};
 
-    if (!('format' in info)) info.format = true;
+    if (!('format' in opts)) opts.format = true;
 
-    assert(/^[A-Z]/.test(info.type[0]), `type必须以大写字母开头：${info.type}`);
+    assert(/^[A-Z]/.test(opts.type[0]), `type必须以大写字母开头：${ opts.type }`);
 
     if (params) {
       assert(typeof params === 'object', `params必须是一个对象`);
@@ -165,11 +168,11 @@ export default class Schema {
     }
 
     if (params) {
-      assert(params && !info.params, '如果通过第三个参数指定了`params`，请勿在第二参数中指定`info.params`');
+      assert(params && !opts.params, '如果通过第三个参数指定了`params`，请勿在第二参数中指定`opts.params`');
     }
 
-    info.params = params || info.params;
-    this.options.params[name] = info;
+    opts.params = params || opts.params;
+    this.options.params[name] = opts;
 
     return this;
   }
@@ -251,25 +254,25 @@ export default class Schema {
 
   init(parent) {
     this._checkInited();
-    const name = this.name = `api ${this.options.method} ${this.options.path}`;
+    const name = this.name = `api ${ this.options.method } ${ this.options.path }`;
     const checkParamHooks = [];
 
     if (!this.options.env) {
-      assert(this.options.handler, `请为 API ${name} 注册一个处理函数`);
+      assert(this.options.handler, `请为 API ${ name } 注册一个处理函数`);
     }
 
     // 初始化时参数类型检查
     for (const name in this.options.params) {
-      const options = this.options.params[name]
+      const options = this.options.params[name];
       const typeName = options.type;
       const type = parent.type.get(typeName);
-      assert(type && type.checker, `please register type ${typeName}`);
+      assert(type && type.checker, `please register type ${ typeName }`);
       if (options.params) {
         assert(type.paramsChecker(options.params), `test type params failed`);
         try {
           options._paramsJSON = JSON.stringify(options.params);
         } catch (err) {
-          throw new Error(`cannot JSON.stringify(options.params) for param ${name}`);
+          throw new Error(`cannot JSON.stringify(options.params) for param ${ name }`);
         }
       }
     }
@@ -277,14 +280,14 @@ export default class Schema {
     // 初始化时检查before钩子是否正确
     const beforeHooks = [];
     for (const name of this.options.beforeHooks) {
-      assert(parent.hook.get(name), `初始化${this.key}时出错：钩子"${name}"不存在`);
+      assert(parent.hook.get(name), `初始化${ this.key }时出错：钩子"${ name }"不存在`);
       beforeHooks.push(parent.hook.get(name));
     }
 
     // 初始化时检查after钩子是否正确
     const afterHooks = [];
     for (const name of this.options.afterHooks) {
-      assert(parent.hook.get(name), `初始化${this.key}时出错：钩子"${name}"不存在`);
+      assert(parent.hook.get(name), `初始化${ this.key }时出错：钩子"${ name }"不存在`);
       afterHooks.push(parent.hook.get(name));
     }
 
@@ -311,7 +314,7 @@ export default class Schema {
             if (ok) break;
           }
           if (!ok) {
-            throw parent.error.new('missing_required_parameter', `one of ${names.join(', ')}`, {name})
+            throw parent.error.new('missing_required_parameter', `one of ${ names.join(', ') }`, {name});
           }
         }
         return params;
@@ -344,9 +347,9 @@ export default class Schema {
             }
 
             if (!type.checker(value, options.params)) {
-              let msg = `should be valid ${options.type}`;
+              let msg = `should be valid ${ options.type }`;
               if (options.params) {
-                msg = `${msg} with additional restrictions: ${options._paramsJSON}`;
+                msg = `${ msg } with additional restrictions: ${ options._paramsJSON }`;
               }
               throw parent.error.new('parameter_error', msg, {name});
             }

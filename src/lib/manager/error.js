@@ -66,10 +66,9 @@ export default class ErrorManager extends Manager{
   new(name, msg, data) {
 
     const info = this.map.get(name);
-    assert(info, `unknown error type ${name}`);
+    assert(info, `unknown error type ${ name }`);
 
-    msg = info.message(msg, data || {});
-    return new info.Error(msg, data);
+    return new info.Error(info.message(msg, data || {}), data);
   }
 
 }
