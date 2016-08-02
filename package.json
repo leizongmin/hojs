@@ -41,7 +41,7 @@
     "mkdirp": "^0.5.1",
     "path-to-regexp": "^1.5.3",
     "project-core": "0.1.5",
-    "super-microservices": "0.0.2",
+    "super-microservices": "0.0.4",
     "supertest": "^1.2.0",
     "validator": "^5.5.0"
   }
