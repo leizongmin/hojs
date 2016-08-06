@@ -254,11 +254,9 @@ export default class Schema {
 
   init(parent) {
     this._checkInited();
-    const name = this.name = `api ${ this.options.method } ${ this.options.path }`;
-    const checkParamHooks = [];
 
     if (!this.options.env) {
-      assert(this.options.handler, `请为 API ${ name } 注册一个处理函数`);
+      assert(this.options.handler, `请为 API ${ this.key } 注册一个处理函数`);
     }
 
     // 初始化时参数类型检查
@@ -278,115 +276,16 @@ export default class Schema {
     }
 
     // 初始化时检查before钩子是否正确
-    const beforeHooks = [];
     for (const name of this.options.beforeHooks) {
       assert(parent.hook.get(name), `初始化${ this.key }时出错：钩子"${ name }"不存在`);
-      beforeHooks.push(parent.hook.get(name));
     }
 
     // 初始化时检查after钩子是否正确
-    const afterHooks = [];
     for (const name of this.options.afterHooks) {
       assert(parent.hook.get(name), `初始化${ this.key }时出错：钩子"${ name }"不存在`);
-      afterHooks.push(parent.hook.get(name));
     }
-
-
-    // 必填参数检查
-    if (this.options.required.length > 0) {
-      checkParamHooks.push((params) => {
-        for (const name of this.options.required) {
-          if (!(name in params)) {
-            throw parent.error.new('missing_required_parameter', null, { name });
-          }
-        }
-        return params;
-      });
-    }
-
-    // 可选参数检查
-    if (this.options.requiredOneOf.length > 0) {
-      checkParamHooks.push((params) => {
-        for (const names of this.options.requiredOneOf) {
-          let ok = false;
-          for (const name of names) {
-            ok = typeof params[name] !== 'undefined';
-            if (ok) break;
-          }
-          if (!ok) {
-            throw parent.error.new('missing_required_parameter', `one of ${ names.join(', ') }`, { name });
-          }
-        }
-        return params;
-      });
-    }
-
-    // 参数值检查
-    checkParamHooks.push((params) => {
-      const newParams = {};
-
-      // 类型检查与格式化，并且过滤没有定义的参数
-      for (const name in params) {
-        if (name[0] === '$') {
-
-          // 特例：以 $ 开头的参数不会做任何检查，也意味着这种参数是不可靠的
-          newParams[name] = params[name];
-
-        } else {
-          try {
-            let value = params[name];
-            const options = this.options.params[name];
-            if (!options) {
-              debug('skip undefined param: %s', name);
-              continue;
-            }
-            const type = parent.type.get(options.type);
-
-            if (type.parser) {
-              value = type.parser(value);
-            }
-
-            if (!type.checker(value, options.params)) {
-              let msg = `should be valid ${ options.type }`;
-              if (options.params) {
-                msg = `${ msg } with additional restrictions: ${ options._paramsJSON }`;
-              }
-              throw parent.error.new('parameter_error', msg, { name });
-            }
-
-            if (options.format && type.formatter) {
-              newParams[name] = type.formatter(value, options.params);
-            } else {
-              newParams[name] = value;
-            }
-
-          } catch (err) {
-            throw parent.error.new('parameter_error', err.message, { name });
-          }
-        }
-      }
-
-      // 填充默认值
-      for (const name in this.options.params) {
-        const options = this.options.params[name];
-        const type = parent.type.get(options.type);
-        if ('default' in options && !(name in newParams)) {
-          debug('use default for param %s: %j', name, options.default);
-          // TODO: 应该在注册时即检查default值是否合法，以及生成format后的值
-          newParams[name] = type.formatter(options.default, options.params);
-        }
-      }
-
-      return newParams;
-    });
 
     this.inited = true;
-    return {
-      name,
-      handler: this.options.handler,
-      before: beforeHooks.concat(checkParamHooks),
-      after: afterHooks,
-    };
   }
 
 }

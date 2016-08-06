@@ -22,9 +22,11 @@ import extendDocs from './extend/docs';
 import HookManager from './manager/hook';
 import ErrorManager from './manager/error';
 import TypeManager from './manager/type';
+import ServiceManager from './manager/service';
 
 import registerDefaultErrors from './default/errors';
 import registerDefaultTypes from './default/types';
+import registerDefaultServices from './default/services';
 
 
 /**
@@ -67,12 +69,12 @@ export default class Hojs extends ProjectCore {
     this.server = new this.ServerEngine(this);
 
     // 检查engine是否被正确实现
-    // constructor(parent)
-    // init(callback)
-    // listen(host, port, callback)
-    // getServerInstance() -> http.Server
-    // getMiddleware() -> app
-    // use(fn)
+    // - constructor(parent)
+    // - init(callback)
+    // - listen(host, port, callback)
+    // - getServerInstance() -> http.Server
+    // - getMiddleware() -> app
+    // - use(fn)
     assert(typeof this.server.init, `engine没有实现init(callback)方法`);
     assert(typeof this.server.listen, `engine没有实现listen(host, port, callback)方法`);
     assert(typeof this.server.getServerInstance, `engine没有实现getServerInstance()方法`);
@@ -99,43 +101,74 @@ export default class Hojs extends ProjectCore {
       saveApiInputOutput: false,
     };
 
+    // 注册API相关
     extendRegister.call(this);
+
+    // 配置选项相关
     extendOption.call(this);
+
+    // 服务管理
+    this.service = new ServiceManager(this);
+    registerDefaultServices.call(this, this.service);
 
     // 钩子管理
     this.hook = new HookManager(this);
 
     // 参数类型管理
     this.type = new TypeManager(this);
-    registerDefaultTypes(this.type);
+    registerDefaultTypes.call(this, this.type);
 
     // 错误类型管理
     this.error = new ErrorManager(this);
-    registerDefaultErrors(this.error);
+    registerDefaultErrors.call(this, this.error);
 
+    // 单元测试与文档生成相关的API
     extendOutput.call(this);
     extendTest.call(this);
     extendDocs.call(this);
 
-    // 初始化schema
-    this.api.$initTasks.push(() => {
-      for (const schema of this.api.$schemas) {
-        const { name, handler, before, after } = schema.init(this);
-        for (const fn of before) {
-          this.method(name).before(fn);
-        }
-        for (const fn of after) {
-          this.method(name).after(fn);
-        }
-        this.method(name).register(handler);
-      }
-    });
+    // init初始化任务
+    {
+      // 封装函数，使得适应super-microservice
+      // super-microservice为 { schema, params }
+      // 实际调用函数为 fn(params)
+      // 并将结果作为super-microservice的返回值 { schema, params: ret }
+      const wrapFn = (fn) => {
+        assert(typeof fn === 'function', `wrapFn(fn): fn 必须是一个函数`);
+        return (ctx) => {
+          const cb = (err, ret) => {
+            if (err) return ctx.error(err);
+            const data = Object.assign({}, ctx.params);
+            data.params = ret;
+            ctx.result(data);
+          };
+          const p = fn(ctx.params.params, cb);
+          if (this.utils.isPromise(p)) {
+            p.then(ret => cb(null, ret)).catch(cb);
+          }
+        };
+      };
 
-    // 初始化Web引擎
-    this.api.$initTasks.push((done) => {
-      this.server.init(done);
-    });
+      // 初始化hook
+      this.api.$initTasks.push(() => {
+        this.hook.forEach(fn => {
+          this.service.register(`hook.${ fn.options.name }`, wrapFn(fn));
+        });
+      });
 
+      // 初始化schema
+      this.api.$initTasks.push(() => {
+        for (const schema of this.api.$schemas) {
+          schema.init(this);
+          this.service.register(`handler.${ schema.key }`, wrapFn(schema.options.handler));
+        }
+      });
+
+      // 初始化Web引擎
+      this.api.$initTasks.push((done) => {
+        this.server.init(done);
+      });
+    }
   }
 
   /**

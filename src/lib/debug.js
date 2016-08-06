@@ -23,3 +23,8 @@ export const schema = create('schema');
 export const test = create('test');
 export const docs = create('docs');
 export const plugin = create('plugin');
+
+export const serviceDebug = create('service:debug');
+export const serviceInfo = create('service:info');
+export const serviceLog = create('service:log');
+export const serviceError = create('service:error');
