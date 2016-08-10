@@ -10,6 +10,7 @@ export default function () {
 
   this.service.register('api.check.params', apiCheckParams);
   this.service.register('api.hook.before', apiHookBefore);
+  this.service.register('api.hook.after', apiHookAfter);
   this.service.register('api.entry', apiEntry);
 
   const parent = this;
@@ -22,6 +23,7 @@ export default function () {
       ctx.prepareCall(`api.hook.before`, ctx.params),
       ctx.prepareCall(`api.check.params`),
       ctx.prepareCall(`handler.${ ctx.params.schema }`),
+      ctx.prepareCall(`api.hook.after`),
     ], (err, ret) => {
       if (err) return ctx.error(err);
       ctx.result(ret);
@@ -29,7 +31,7 @@ export default function () {
   }
 
   /**
-   * 执行before hook
+   * 执行 before hook
    */
   function apiHookBefore(ctx) {
 
@@ -47,6 +49,31 @@ export default function () {
 
     const hooks = [ ctx.prepareCall(`hook.${ schema.options.beforeHooks[0] }`, { schema: schemaKey, params }) ]
                   .concat(schema.options.beforeHooks.slice(1).map(name => ctx.prepareCall(`hook.${ name }`)));
+    ctx.series(hooks, (err, ret) => {
+      if (err) return ctx.error(err);
+      ctx.result({ schema: schemaKey, params: ret.params });
+    });
+  }
+
+  /**
+   * 执行 after hook
+   */
+  function apiHookAfter(ctx) {
+
+    const schemaKey = ctx.params.schema;
+    if (!schemaKey) return ctx.error(new Error(`内部错误：缺少"schema"参数`));
+    const schema = parent.api.$schemaMapping[schemaKey];
+    if (!schema) return ctx.error(new Error(`内部错误：schema "${ schemaKey }"不存在`));
+
+    const params = ctx.params.params;
+    if (!params) return ctx.error(new Error(`内部错误：缺少"params"参数`));
+
+    if (schema.options.afterHooks.length < 1) {
+      return ctx.result({ schema: schemaKey, params });
+    }
+
+    const hooks = [ ctx.prepareCall(`hook.${ schema.options.afterHooks[0] }`, { schema: schemaKey, params }) ]
+                  .concat(schema.options.afterHooks.slice(1).map(name => ctx.prepareCall(`hook.${ name }`)));
     ctx.series(hooks, (err, ret) => {
       if (err) return ctx.error(err);
       ctx.result({ schema: schemaKey, params: ret.params });
