@@ -31,6 +31,15 @@ function trimSpaces(text) {
   return text.replace(/\r\n/g, '\n').replace(/\n\n+/g, '\n\n').replace(/\n\s+\n/g, '\n\n');
 }
 
+function toString(str, defaultStr) {
+  if (typeof str === 'undefined') return defaultStr || '';
+  return String(str);
+}
+
+function stringOrEmpty(str) {
+  return toString(str, '（无）');
+}
+
 function typeDocs(data) {
 
   const defaultTypes = [];
@@ -55,15 +64,15 @@ function typeDocs(data) {
   list.push(`# 默认类型`);
   for (const item of defaultTypes) {
     list.push(`
-## ${ item.name }
+## ${ stringOrEmpty(item.name) }
     `.trim());
   }
   list.push(`# 自定义类型`);
   for (const item of defaultTypes) {
     let line = `
-## ${ item.name }
+## ${ stringOrEmpty(item.name) }
 
-${ item.description }
+${ stringOrEmpty(item.description) }
     `;
     if (item.parser) {
       line += `
@@ -113,7 +122,7 @@ function errorDocs(data) {
   list.push('# 错误类型');
   for (const item of errors) {
     list.push(`
-## ${ item.name }
+## ${ stringOrEmpty(item.name) }
 
 内容：
 
@@ -147,11 +156,11 @@ function hookDocs(data) {
   list.push('# 钩子');
   for (const item of hooks) {
     const line = `
-## ${ item.description || item.name }
+## ${ stringOrEmpty(item.description || item.name) }
 
-名称：**${ item.name }**
+名称：**${ stringOrEmpty(item.name) }**
 
-源文件：\`${ item.sourceFile }\`
+源文件：\`${ stringOrEmpty(item.sourceFile) }\`
     `;
     list.push(line.trim());
 
@@ -170,7 +179,7 @@ function schemaDocs(data) {
   }
 
   function hook(list) {
-    return list.map(name => `+ **${ name }**`).join('\n');
+    return list.map(name => `+ **${ stringOrEmpty(name) }**`).join('\n');
   }
 
   function paramsTable(item) {
@@ -191,7 +200,7 @@ function schemaDocs(data) {
         }
       }
       list.push(`
-${ name } | ${ info.type } | ${ info.format ? '是' : '否' } | ${ required } | ${ info.comment }
+${ stringOrEmpty(name) } | ${ stringOrEmpty(info.type) } | ${ info.format ? '是' : '否' } | ${ required } | ${ stringOrEmpty(info.comment) }
       `.trim());
     }
     return list.join('\n');
@@ -219,9 +228,9 @@ output = ${ utils.jsonStringify(item.output, 2) };
   for (const item of data.schemas) {
 
     let line = `
-## ${ item.title }
+## ${ stringOrEmpty(item.title) }
 
-源文件：\`${ item.sourceFile }\`
+源文件：\`${ stringOrEmpty(item.sourceFile) }\`
 
 请求地址：**${ item.method.toUpperCase() }** **${ item.path }**
     `;
