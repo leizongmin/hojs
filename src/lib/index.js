@@ -28,6 +28,9 @@ import registerDefaultErrors from './default/errors';
 import registerDefaultTypes from './default/types';
 import registerDefaultServices from './default/services';
 
+import { serviceDebug, serviceInfo, serviceLog, serviceError } from './debug';
+import { LoggerRecorder } from 'super-microservices';
+
 
 /**
  * ProjectCore类
@@ -108,6 +111,18 @@ export default class Hojs extends ProjectCore {
     extendOption.call(this);
 
     // 服务管理
+    if (!this.api.getOption('servicesLogRecorder')) {
+      const logger = {
+        debug: serviceDebug,
+        info: serviceInfo,
+        log: serviceLog,
+        error: serviceError,
+      };
+      this.api.setOption('servicesLogRecorder', new LoggerRecorder(logger, {
+        format: '{"time":$isotime,"id":"$id","type":"$type","service":"$service","uptime":$uptime,"content":$content}',
+        newline: '\n',
+      }));
+    }
     this.service = new ServiceManager(this);
     registerDefaultServices.call(this, this.service);
 

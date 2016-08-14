@@ -7,21 +7,16 @@
  */
 
 import assert from 'assert';
-import { Manager as SuperMicroServices, LoggerRecorder } from 'super-microservices';
-import { serviceDebug, serviceInfo, serviceLog, serviceError } from '../debug';
+import { Manager as SuperMicroServices } from 'super-microservices';
 
 export default class ServiceManager {
 
   constructor(parent) {
     this.parent = parent;
     assert.ok(parent, 'new ServiceManager(parent): parent不能为空!');
-    const logger = {
-      debug: serviceDebug,
-      info: serviceInfo,
-      log: serviceLog,
-      error: serviceError,
-    };
-    this.services = new SuperMicroServices({ logRecorder: new LoggerRecorder(logger) });
+    this.services = new SuperMicroServices({
+      logRecorder: parent.api.getOption('servicesLogRecorder'),
+    });
   }
 
   /**
