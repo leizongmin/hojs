@@ -43,6 +43,6 @@
     "project-core": "0.1.5",
     "super-microservices": "0.0.7",
     "supertest": "^2.0.0",
-    "validator": "^5.5.0"
+    "validator": "^6.0.0"
   }
 }
