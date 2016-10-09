@@ -163,7 +163,11 @@ export default function () {
       const type = parent.type.get(options.type);
       if ('default' in options && !(name in newParams)) {
         // TODO: 应该在注册时即检查default值是否合法，以及生成format后的值
-        newParams[name] = type.formatter(options.default, options.params);
+        if (type.formatter) {
+          newParams[name] = type.formatter(options.default, options.params);
+        } else {
+          newParams[name] = options.default;
+        }
       }
     }
 
