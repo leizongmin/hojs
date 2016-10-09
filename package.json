@@ -3,6 +3,10 @@
   "version": "0.3.3",
   "description": "轻量级 RESTful API 服务器框架",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -Rf dist",
