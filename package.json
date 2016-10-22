@@ -36,9 +36,9 @@
     "debug": "^2.2.0",
     "lei-utils": "^3.0.0",
     "mkdirp": "^0.5.1",
+    "nanoservices": "^0.0.9",
     "path-to-regexp": "^1.6.0",
     "project-core": "2.0.0",
-    "super-microservices": "0.0.8",
     "supertest": "^2.0.1",
     "validator": "^6.1.0"
   }
