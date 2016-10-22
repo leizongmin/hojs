@@ -34,9 +34,9 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "lei-utils": "^3.0.0",
+    "lei-utils": "3.0.0",
     "mkdirp": "^0.5.1",
-    "nanoservices": "^0.0.9",
+    "nanoservices": "0.0.10",
     "path-to-regexp": "^1.6.0",
     "project-core": "2.0.0",
     "supertest": "^2.0.1",
