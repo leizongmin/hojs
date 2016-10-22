@@ -44,7 +44,7 @@
     "lei-utils": "^3.0.0",
     "mkdirp": "^0.5.1",
     "path-to-regexp": "^1.6.0",
-    "project-core": "1.2.1",
+    "project-core": "2.0.0",
     "super-microservices": "0.0.8",
     "supertest": "^2.0.1",
     "validator": "^6.1.0"
