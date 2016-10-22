@@ -5,15 +5,12 @@
   "main": "index.js",
   "files": [
     "index.js",
-    "dist"
+    "lib"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -Rf dist",
-    "watch": "npm run clean && babel src -d dist --watch --source-maps=true",
-    "compile": "npm run clean && babel src -d dist --source-maps=true",
-    "lint": "eslint src",
-    "prepublish": "npm run lint && npm run compile"
+    "lint": "eslint example lib",
+    "prepublish": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -31,13 +28,9 @@
   },
   "homepage": "https://github.com/leizongmin/hojs#readme",
   "devDependencies": {
-    "babel-cli": "^6.16.0",
-    "babel-preset-es2015-node4": "^2.0.3",
-    "babel-preset-stage-3": "^6.17.0",
-    "mocha": "^3.1.2",
-    "eslint": "^3.8.0",
-    "babel-eslint": "^7.0.0",
-    "eslint-config-lei": "latest"
+    "eslint": "^3.8.1",
+    "eslint-config-lei": "^0.0.10",
+    "eslint-plugin-promise": "^3.3.0"
   },
   "dependencies": {
     "debug": "^2.2.0",

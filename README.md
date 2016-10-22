@@ -30,6 +30,8 @@
 $ npm install hojs --save
 ```
 
+**注意：仅支持 Node.js v6.0 或更高版本**
+
 
 ## 使用方法
 
@@ -42,7 +44,7 @@ $ npm install hojs --save
 ```javascript
 'use strict';
 
-import Hojs from 'hojs';
+const Hojs = require('hojs');
 
 // 创建Hojs实例
 const $ = new Hojs({

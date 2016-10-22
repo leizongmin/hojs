@@ -6,7 +6,7 @@
  * @author Zongmin Lei <leizongmin@gmail.com>
  */
 
-import Hojs from 'hojs';
+const Hojs = require('../');
 
 // 创建Hojs实例
 const $ = new Hojs({
@@ -22,11 +22,11 @@ $.api
   default: '没有提交参数',
   comment: '消息内容',
 })
-.register(async function (params) {
-  return {
+.register(function (params, callback) {
+  callback(null, {
     time: new Date(),
     msg: params.msg,
-  };
+  });
 });
 
 // 初始化并监听端口
