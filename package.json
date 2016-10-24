@@ -1,6 +1,6 @@
 {
   "name": "hojs",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "轻量级 RESTful API 服务器框架",
   "main": "lib/index.js",
   "files": [
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/leizongmin/hojs#readme",
   "devDependencies": {
     "eslint": "^3.8.1",
-    "eslint-config-lei": "^0.0.12",
+    "eslint-config-lei": "^0.0.14",
     "eslint-plugin-promise": "^3.3.0"
   },
   "dependencies": {
