@@ -1,6 +1,6 @@
 {
   "name": "hojs",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "轻量级 RESTful API 服务器框架",
   "main": "lib/index.js",
   "files": [
