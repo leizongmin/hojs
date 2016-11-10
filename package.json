@@ -36,7 +36,7 @@
     "lei-utils": "3.0.1",
     "mkdirp": "^0.5.1",
     "nanoservices": "0.0.11",
-    "path-to-regexp": "^1.6.0",
+    "path-to-regexp": "^1.7.0",
     "project-core": "2.0.1",
     "supertest": "^2.0.1",
     "validator": "^6.1.0"
