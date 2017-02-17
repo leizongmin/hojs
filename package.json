@@ -29,7 +29,7 @@
   "devDependencies": {
     "eslint": "^3.8.1",
     "eslint-config-lei": "^0.0.14",
-    "eslint-plugin-promise": "^3.3.0"
+    "eslint-plugin-promise": "^3.4.2"
   },
   "dependencies": {
     "debug": "^2.2.0",
