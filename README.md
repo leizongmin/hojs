@@ -1,5 +1,7 @@
 # 轻量级 RESTful API 服务器框架
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/leizongmin/hojs.svg)](https://greenkeeper.io/)
+
 
 ## 目标
 
